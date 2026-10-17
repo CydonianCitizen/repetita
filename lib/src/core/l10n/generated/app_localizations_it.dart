@@ -246,7 +246,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsAboutDesc => 'Licenza MIT e crediti';
 
   @override
-  String get sectionAppearance => 'ASPETTO';
+  String get sectionAppearance => 'Aspetto';
 
   @override
   String get themeMode => 'Tema';
@@ -357,7 +357,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get testHaptic => 'Prova vibrazione';
 
   @override
-  String get sectionLanguage => 'LINGUA E LOCALIZZAZIONE';
+  String get sectionLanguage => 'Lingua e localizzazione';
 
   @override
   String get selectLanguage => 'Seleziona lingua';
@@ -390,7 +390,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get active => 'Attiva';
 
   @override
-  String get sectionStudyAlgorithm => 'STUDIO E ALGORITMO';
+  String get sectionStudyAlgorithm => 'Studio e ripasso';
 
   @override
   String get fsrsParameters => 'Parametri algoritmo FSRS';
@@ -478,13 +478,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sampleDeckLoaded => 'Mazzo di esempio caricato con successo!';
 
   @override
-  String get sectionDataBackup => 'DATI E BACKUP';
+  String get sectionDataBackup => 'Dati e backup';
 
   @override
   String get backupSubtitle => 'Backup JSON e CSV';
 
   @override
-  String get sectionUpdates => 'AGGIORNAMENTI E RELEASE';
+  String get sectionUpdates => 'Aggiornamenti e release';
 
   @override
   String get checkForUpdates => 'Verifica aggiornamenti';
@@ -522,7 +522,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Verifica la tua connessione internet e riprova.';
 
   @override
-  String get sectionAbout => 'INFO E PRIVACY';
+  String get sectionAbout => 'Info e crediti';
 
   @override
   String get licenseAndCredits => 'Licenza e riconoscimenti';

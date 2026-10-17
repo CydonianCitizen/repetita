@@ -79,7 +79,7 @@
   "settingsUpdatesDesc": "Verifica release GitHub",
   "settingsAboutTitle": "Info e Crediti",
   "settingsAboutDesc": "Licenza MIT e crediti",
-  "sectionAppearance": "ASPETTO",
+  "sectionAppearance": "Aspetto",
   "themeMode": "Tema",
   "themeModeSubtitle": "Chiaro, Scuro o AMOLED",
   "themeSystem": "Predefinito di sistema",
@@ -117,7 +117,7 @@
   "hapticStrongDesc": "Feedback deciso",
   "testHaptic": "Prova vibrazione",
 
-  "sectionLanguage": "LINGUA E LOCALIZZAZIONE",
+  "sectionLanguage": "Lingua e localizzazione",
   "selectLanguage": "Seleziona lingua",
   "language": "Lingua",
   "languageSubtitle": "Lingua interfaccia",
@@ -129,7 +129,7 @@
   "comingSoon": "Prossimamente",
   "active": "Attiva",
 
-  "sectionStudyAlgorithm": "STUDIO E ALGORITMO",
+  "sectionStudyAlgorithm": "Studio e ripasso",
   "fsrsParameters": "Parametri algoritmo FSRS",
   "fsrsParametersSubtitle": "Ritenzione e intervalli",
   "retentionTarget": "90% ritenzione",
@@ -157,10 +157,10 @@
   "loadSampleDeck": "Carica mazzo di esempio",
   "sampleDeckLoaded": "Mazzo di esempio caricato con successo!",
 
-  "sectionDataBackup": "DATI E BACKUP",
+  "sectionDataBackup": "Dati e backup",
   "backupSubtitle": "Backup JSON e CSV",
 
-  "sectionUpdates": "AGGIORNAMENTI E RELEASE",
+  "sectionUpdates": "Aggiornamenti e release",
   "checkForUpdates": "Verifica aggiornamenti",
   "checkForUpdatesSubtitle": "Verifica release GitHub",
   "checkingForUpdates": "Verifica release su GitHub in corso...",
@@ -172,7 +172,7 @@
   "updateCheckFailed": "Impossibile verificare gli aggiornamenti",
   "updateCheckFailedDesc": "Verifica la tua connessione internet e riprova.",
 
-  "sectionAbout": "INFO E PRIVACY",
+  "sectionAbout": "Info e crediti",
   "licenseAndCredits": "Licenza e riconoscimenti",
   "licenseSubtitle": "Licenza MIT • Crediti",
   "licenseDialogTitle": "Licenza MIT",

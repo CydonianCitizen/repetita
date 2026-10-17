@@ -75,7 +75,7 @@ class AboutSettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            SectionHeader(title: l10n?.sectionAbout ?? 'LEGAL & CREDITS'),
+            SectionHeader(title: l10n?.licenseAndCredits ?? 'Legal & Credits'),
             SettingsCard(
               children: [
                 SettingsTile(

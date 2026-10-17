@@ -103,7 +103,7 @@
   "settingsUpdatesDesc": "Check GitHub releases",
   "settingsAboutTitle": "About & Credits",
   "settingsAboutDesc": "MIT License & credits",
-  "sectionAppearance": "APPEARANCE",
+  "sectionAppearance": "Appearance",
   "themeMode": "Theme Mode",
   "themeModeSubtitle": "Light, Dark, or AMOLED",
   "themeSystem": "System Default",
@@ -141,7 +141,7 @@
   "hapticStrongDesc": "Strong pulse",
   "testHaptic": "Test Haptics",
 
-  "sectionLanguage": "LANGUAGE & LOCALIZATION",
+  "sectionLanguage": "Language & Localization",
   "selectLanguage": "Select Language",
   "language": "Language",
   "languageSubtitle": "Interface language",
@@ -153,7 +153,7 @@
   "comingSoon": "Coming soon",
   "active": "Active",
 
-  "sectionStudyAlgorithm": "STUDY & ALGORITHM",
+  "sectionStudyAlgorithm": "Study & Algorithm",
   "fsrsParameters": "FSRS Scheduling Parameters",
   "fsrsParametersSubtitle": "Retention and intervals",
   "retentionTarget": "90% retention",
@@ -181,10 +181,10 @@
   "loadSampleDeck": "Load Sample Deck",
   "sampleDeckLoaded": "Sample deck loaded successfully!",
 
-  "sectionDataBackup": "DATA & BACKUP",
+  "sectionDataBackup": "Data & Backup",
   "backupSubtitle": "JSON and CSV transfer",
 
-  "sectionUpdates": "UPDATES & RELEASES",
+  "sectionUpdates": "Updates & Releases",
   "checkForUpdates": "Check for Updates",
   "checkForUpdatesSubtitle": "Check GitHub releases",
   "checkingForUpdates": "Checking GitHub releases...",
@@ -210,7 +210,7 @@
   "updateCheckFailed": "Could not check for updates",
   "updateCheckFailedDesc": "Please check your internet connection and try again.",
 
-  "sectionAbout": "ABOUT & PRIVACY",
+  "sectionAbout": "About & Privacy",
   "licenseAndCredits": "License & Credits",
   "licenseSubtitle": "MIT License • Credits",
   "licenseDialogTitle": "MIT License",

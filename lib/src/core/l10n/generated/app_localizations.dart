@@ -533,7 +533,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionAppearance.
   ///
   /// In en, this message translates to:
-  /// **'APPEARANCE'**
+  /// **'Appearance'**
   String get sectionAppearance;
 
   /// No description provided for @themeMode.
@@ -749,7 +749,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionLanguage.
   ///
   /// In en, this message translates to:
-  /// **'LANGUAGE & LOCALIZATION'**
+  /// **'Language & Localization'**
   String get sectionLanguage;
 
   /// No description provided for @selectLanguage.
@@ -815,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionStudyAlgorithm.
   ///
   /// In en, this message translates to:
-  /// **'STUDY & ALGORITHM'**
+  /// **'Study & Algorithm'**
   String get sectionStudyAlgorithm;
 
   /// No description provided for @fsrsParameters.
@@ -977,7 +977,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionDataBackup.
   ///
   /// In en, this message translates to:
-  /// **'DATA & BACKUP'**
+  /// **'Data & Backup'**
   String get sectionDataBackup;
 
   /// No description provided for @backupSubtitle.
@@ -989,7 +989,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionUpdates.
   ///
   /// In en, this message translates to:
-  /// **'UPDATES & RELEASES'**
+  /// **'Updates & Releases'**
   String get sectionUpdates;
 
   /// No description provided for @checkForUpdates.
@@ -1055,7 +1055,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionAbout.
   ///
   /// In en, this message translates to:
-  /// **'ABOUT & PRIVACY'**
+  /// **'About & Privacy'**
   String get sectionAbout;
 
   /// No description provided for @licenseAndCredits.

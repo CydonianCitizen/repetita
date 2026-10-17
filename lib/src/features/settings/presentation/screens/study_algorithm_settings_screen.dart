@@ -88,9 +88,7 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           children: [
-            SectionHeader(
-              title: l10n?.sectionStudyAlgorithm ?? 'SCHEDULING ENGINE',
-            ),
+            SectionHeader(title: l10n?.srsAlgorithm ?? 'Scheduling Engine'),
             SettingsCard(
               children: [
                 Consumer(

@@ -93,7 +93,7 @@ class UpdatesSettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            SectionHeader(title: l10n?.sectionUpdates ?? 'RELEASE CHANNELS'),
+            SectionHeader(title: l10n?.checkForUpdates ?? 'Release Channels'),
             SettingsCard(
               children: [
                 SettingsTile(

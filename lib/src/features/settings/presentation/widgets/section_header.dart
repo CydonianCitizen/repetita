@@ -16,7 +16,7 @@ class SectionHeader extends StatelessWidget {
     return Padding(
       padding: padding,
       child: Text(
-        title,
+        title.toUpperCase(),
         style: theme.textTheme.labelMedium?.copyWith(
           color: theme.colorScheme.primary,
           fontWeight: FontWeight.bold,
