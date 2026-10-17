@@ -28,6 +28,12 @@ void main() {
         name: 'Deck 1',
         description: 'First test deck',
       );
+      final examDate = now.add(const Duration(days: 30));
+      await db.decksDao.setDeckExamDate(
+        deckId: deck1Id,
+        examDate: examDate,
+        targetRetention: 0.92,
+      );
       final deck2Id = await db.decksDao.createDeck(
         name: 'Deck 2',
         description: 'Second test deck',
@@ -38,6 +44,7 @@ void main() {
         front: 'Front 1',
         back: 'Back 1',
       );
+      await db.cardsDao.setCardFlag(card1Id, 2);
       await db.cardsDao.createCard(
         deckId: deck2Id,
         front: 'Front 2 {{c2::cloze}}',
@@ -108,6 +115,13 @@ void main() {
       final restoredCardTags = await db.select(db.cardTags).get();
 
       expect(restoredDecks, hasLength(2));
+      final restoredDeck1 = restoredDecks.firstWhere((d) => d.name == 'Deck 1');
+      expect(restoredDeck1.examDate, isNotNull);
+      expect(restoredDeck1.examDate!.year, equals(examDate.year));
+      expect(restoredDeck1.examDate!.month, equals(examDate.month));
+      expect(restoredDeck1.examDate!.day, equals(examDate.day));
+      expect(restoredDeck1.targetRetention, closeTo(0.92, 0.001));
+
       expect(restoredCards, hasLength(2));
       expect(restoredLogs, hasLength(1));
       expect(restoredTags, hasLength(1));
@@ -117,6 +131,7 @@ void main() {
       final restoredCard1 = restoredCards.firstWhere(
         (c) => c.front == 'Front 1',
       );
+      expect(restoredCard1.flag, equals(2));
       expect(restoredCard1.state, equals(CardState.review.value));
       expect(restoredCard1.stability, closeTo(4.25, 0.001));
       expect(restoredCard1.difficulty, closeTo(6.1, 0.001));

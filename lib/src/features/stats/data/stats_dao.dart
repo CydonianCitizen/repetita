@@ -95,10 +95,9 @@ class StatsDao extends DatabaseAccessor<AppDatabase> with _$StatsDaoMixin {
   }) async {
     final fromUtc = fromDate.toUtc();
     final todayStart = DateTime.utc(fromUtc.year, fromUtc.month, fromUtc.day);
-    final countExp = cards.id.count();
+    final forecastEnd = todayStart.add(Duration(days: days));
 
-    final result = <ForecastDay>[];
-
+    final countExpressions = <Expression<int>>[];
     for (int i = 0; i < days; i++) {
       final dayStart = todayStart.add(Duration(days: i));
       final dayEnd = dayStart.add(const Duration(days: 1));
@@ -109,18 +108,26 @@ class StatsDao extends DatabaseAccessor<AppDatabase> with _$StatsDaoMixin {
                 cards.due.isBiggerOrEqualValue(dayStart) &
                 cards.due.isSmallerThanValue(dayEnd));
 
-      final query = selectOnly(cards)
-        ..addColumns([countExp])
-        ..where(
-          deckId != null
-              ? cards.deckId.equals(deckId) & dayCondition
-              : dayCondition,
-        );
-      final count = await query.map((r) => r.read(countExp)).getSingle() ?? 0;
-      result.add(ForecastDay(date: dayStart, count: count));
+      countExpressions.add(cards.id.count(filter: dayCondition));
     }
 
-    return result;
+    final overallCondition =
+        cards.state.equals(0) | cards.due.isSmallerThanValue(forecastEnd);
+    final query = selectOnly(cards)
+      ..addColumns(countExpressions)
+      ..where(
+        deckId != null
+            ? cards.deckId.equals(deckId) & overallCondition
+            : overallCondition,
+      );
+
+    final row = await query.getSingle();
+
+    return List.generate(days, (i) {
+      final dayStart = todayStart.add(Duration(days: i));
+      final count = row.read(countExpressions[i]) ?? 0;
+      return ForecastDay(date: dayStart, count: count);
+    });
   }
 
   Future<Map<DateTime, int>> getDailyReviewCounts({

@@ -297,6 +297,102 @@ final class BackupServiceProvider
 
 String _$backupServiceHash() => r'0c0fa92bf66179c32f39f95b2278dbdcd18408a3';
 
+@ProviderFor(rollingBackupService)
+final rollingBackupServiceProvider = RollingBackupServiceProvider._();
+
+final class RollingBackupServiceProvider
+    extends
+        $FunctionalProvider<
+          RollingBackupService,
+          RollingBackupService,
+          RollingBackupService
+        >
+    with $Provider<RollingBackupService> {
+  RollingBackupServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'rollingBackupServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$rollingBackupServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<RollingBackupService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  RollingBackupService create(Ref ref) {
+    return rollingBackupService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(RollingBackupService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<RollingBackupService>(value),
+    );
+  }
+}
+
+String _$rollingBackupServiceHash() =>
+    r'db8c0bb510c5cb6dede3febbfb5e0fe696a1032d';
+
+@ProviderFor(vacationModeService)
+final vacationModeServiceProvider = VacationModeServiceProvider._();
+
+final class VacationModeServiceProvider
+    extends
+        $FunctionalProvider<
+          VacationModeService,
+          VacationModeService,
+          VacationModeService
+        >
+    with $Provider<VacationModeService> {
+  VacationModeServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'vacationModeServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$vacationModeServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<VacationModeService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  VacationModeService create(Ref ref) {
+    return vacationModeService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(VacationModeService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<VacationModeService>(value),
+    );
+  }
+}
+
+String _$vacationModeServiceHash() =>
+    r'f617fdec504756b403539e8d25d92a8d8b33e977';
+
 @ProviderFor(ankiPackageService)
 final ankiPackageServiceProvider = AnkiPackageServiceProvider._();
 

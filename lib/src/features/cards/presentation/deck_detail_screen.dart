@@ -879,6 +879,24 @@ class _DeckCardsSection extends ConsumerWidget {
       for (int i = 0; i < displayedCards.length; i++) displayedCards[i].id: i,
     };
 
+    Future<void> runCardAction(
+      Future<void> Function() action,
+      String errorMessage,
+    ) async {
+      try {
+        await action();
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$errorMessage: $e'),
+              backgroundColor: colorScheme.error,
+            ),
+          );
+        }
+      }
+    }
+
     return Column(
       children: [
         if (allDeckTags.isNotEmpty)
@@ -1150,136 +1168,53 @@ class _DeckCardsSection extends ConsumerWidget {
                           ),
                         );
                       },
-                      onDelete: () async {
-                        try {
-                          await ref
-                              .read(
-                                cardListControllerProvider(deck.id).notifier,
-                              )
-                              .deleteCard(card.id);
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to delete card: $e'),
-                                backgroundColor: colorScheme.error,
-                              ),
-                            );
-                          }
+                      onDelete: () => runCardAction(
+                        () => ref
+                            .read(cardListControllerProvider(deck.id).notifier)
+                            .deleteCard(card.id),
+                        'Failed to delete card',
+                      ),
+                      onToggleSuspend: () => runCardAction(
+                        () => ref
+                            .read(cardListControllerProvider(deck.id).notifier)
+                            .toggleSuspendCard(card.id, card.isSuspended),
+                        'Failed to update card',
+                      ),
+                      onToggleBury: () => runCardAction(() async {
+                        final now = ref.read(clockProvider)();
+                        final notifier = ref.read(
+                          cardListControllerProvider(deck.id).notifier,
+                        );
+                        if (card.isBuried(now)) {
+                          await notifier.unburyCard(card.id);
+                        } else {
+                          await notifier.buryCard(card.id);
                         }
-                      },
-                      onToggleSuspend: () async {
-                        try {
-                          await ref
-                              .read(
-                                cardListControllerProvider(deck.id).notifier,
-                              )
-                              .toggleSuspendCard(card.id, card.isSuspended);
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to update card: $e'),
-                                backgroundColor: colorScheme.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      onToggleBury: () async {
-                        try {
-                          final now = ref.read(clockProvider)();
-                          final notifier = ref.read(
-                            cardListControllerProvider(deck.id).notifier,
-                          );
-                          if (card.isBuried(now)) {
-                            await notifier.unburyCard(card.id);
-                          } else {
-                            await notifier.buryCard(card.id);
-                          }
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to update card: $e'),
-                                backgroundColor: colorScheme.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      onSetDueDate: (newDue) async {
-                        try {
-                          await ref
-                              .read(
-                                cardListControllerProvider(deck.id).notifier,
-                              )
-                              .setCardDueDate(card.id, newDue);
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to set due date: $e'),
-                                backgroundColor: colorScheme.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      onResetProgress: () async {
-                        try {
-                          await ref
-                              .read(
-                                cardListControllerProvider(deck.id).notifier,
-                              )
-                              .resetCardProgress(card.id);
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to reset progress: $e'),
-                                backgroundColor: colorScheme.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      onDuplicate: () async {
-                        try {
-                          await ref
-                              .read(
-                                cardListControllerProvider(deck.id).notifier,
-                              )
-                              .duplicateCard(card.id);
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to duplicate card: $e'),
-                                backgroundColor: colorScheme.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      onSetFlag: (flag) async {
-                        try {
-                          await ref
-                              .read(
-                                cardListControllerProvider(deck.id).notifier,
-                              )
-                              .setCardFlag(card.id, flag);
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to set flag: $e'),
-                                backgroundColor: colorScheme.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
+                      }, 'Failed to update card'),
+                      onSetDueDate: (newDue) => runCardAction(
+                        () => ref
+                            .read(cardListControllerProvider(deck.id).notifier)
+                            .setCardDueDate(card.id, newDue),
+                        'Failed to set due date',
+                      ),
+                      onResetProgress: () => runCardAction(
+                        () => ref
+                            .read(cardListControllerProvider(deck.id).notifier)
+                            .resetCardProgress(card.id),
+                        'Failed to reset progress',
+                      ),
+                      onDuplicate: () => runCardAction(
+                        () => ref
+                            .read(cardListControllerProvider(deck.id).notifier)
+                            .duplicateCard(card.id),
+                        'Failed to duplicate card',
+                      ),
+                      onSetFlag: (flag) => runCardAction(
+                        () => ref
+                            .read(cardListControllerProvider(deck.id).notifier)
+                            .setCardFlag(card.id, flag),
+                        'Failed to set flag',
+                      ),
                     );
                   },
                 ),

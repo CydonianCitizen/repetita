@@ -5,6 +5,8 @@ class DeckPayload {
     this.description,
     required this.createdAt,
     required this.updatedAt,
+    this.examDate,
+    this.targetRetention,
   });
 
   final int id;
@@ -12,6 +14,8 @@ class DeckPayload {
   final String? description;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final DateTime? examDate;
+  final double? targetRetention;
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -19,6 +23,8 @@ class DeckPayload {
     'description': description,
     'createdAt': createdAt.toUtc().toIso8601String(),
     'updatedAt': updatedAt.toUtc().toIso8601String(),
+    if (examDate != null) 'examDate': examDate!.toUtc().toIso8601String(),
+    if (targetRetention != null) 'targetRetention': targetRetention,
   };
 
   factory DeckPayload.fromJson(Map<String, dynamic> json) => DeckPayload(
@@ -27,6 +33,10 @@ class DeckPayload {
     description: json['description'] as String?,
     createdAt: DateTime.parse(json['createdAt'] as String).toUtc(),
     updatedAt: DateTime.parse(json['updatedAt'] as String).toUtc(),
+    examDate: json['examDate'] != null
+        ? DateTime.parse(json['examDate'] as String).toUtc()
+        : null,
+    targetRetention: (json['targetRetention'] as num?)?.toDouble(),
   );
 
   @override
@@ -38,10 +48,20 @@ class DeckPayload {
           name == other.name &&
           description == other.description &&
           createdAt == other.createdAt &&
-          updatedAt == other.updatedAt;
+          updatedAt == other.updatedAt &&
+          examDate == other.examDate &&
+          targetRetention == other.targetRetention;
 
   @override
-  int get hashCode => Object.hash(id, name, description, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    description,
+    createdAt,
+    updatedAt,
+    examDate,
+    targetRetention,
+  );
 }
 
 class CardPayload {
@@ -62,6 +82,7 @@ class CardPayload {
     this.isSuspended = false,
     this.buriedUntil,
     this.clozeIndex,
+    this.flag = 0,
   });
 
   final int id;
@@ -80,6 +101,7 @@ class CardPayload {
   final bool isSuspended;
   final DateTime? buriedUntil;
   final int? clozeIndex;
+  final int flag;
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -98,6 +120,7 @@ class CardPayload {
     'isSuspended': isSuspended,
     'buriedUntil': buriedUntil?.toUtc().toIso8601String(),
     if (clozeIndex != null) 'clozeIndex': clozeIndex,
+    if (flag != 0) 'flag': flag,
   };
 
   factory CardPayload.fromJson(Map<String, dynamic> json) => CardPayload(
@@ -121,6 +144,7 @@ class CardPayload {
         ? DateTime.parse(json['buriedUntil'] as String).toUtc()
         : null,
     clozeIndex: json['clozeIndex'] as int?,
+    flag: (json['flag'] as int?) ?? 0,
   );
 
   @override
@@ -143,7 +167,8 @@ class CardPayload {
           createdAt == other.createdAt &&
           isSuspended == other.isSuspended &&
           buriedUntil == other.buriedUntil &&
-          clozeIndex == other.clozeIndex;
+          clozeIndex == other.clozeIndex &&
+          flag == other.flag;
 
   @override
   int get hashCode => Object.hash(
@@ -163,6 +188,7 @@ class CardPayload {
     isSuspended,
     buriedUntil,
     clozeIndex,
+    flag,
   );
 }
 

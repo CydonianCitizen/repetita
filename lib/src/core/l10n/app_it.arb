@@ -530,7 +530,11 @@
   "autoBackups": "Backup Automatici",
   "noAutoBackupsYet": "Nessun backup automatico ancora presente.",
   "restoreBackup": "Ripristina",
-  "restoreBackupConfirmation": "Sei sicuro di voler ripristinare questo backup? I dati correnti verranno sostituiti."
+  "restoreBackupConfirmation": "Sei sicuro di voler ripristinare questo backup? I dati correnti verranno sostituiti.",
+  "vacationMode": "Modalità Vacanza",
+  "vacationModeActive": "Attiva • Scadenze congelate",
+  "vacationModeInactive": "Disattivata • Studio regolare",
+  "leechCardsSubtitle": "Carte fallite spesso"
 }
 
 

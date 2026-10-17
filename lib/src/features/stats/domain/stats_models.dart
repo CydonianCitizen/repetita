@@ -76,6 +76,7 @@ class StatsData {
     required this.forecast,
     this.dailyReviewCounts = const {},
     this.currentStreak = 0,
+    this.leechCardsCount = 0,
   });
 
   final CardStateCounts stateCounts;
@@ -84,6 +85,7 @@ class StatsData {
   final List<ForecastDay> forecast;
   final Map<DateTime, int> dailyReviewCounts;
   final int currentStreak;
+  final int leechCardsCount;
 
   @override
   bool operator ==(Object other) =>
@@ -93,7 +95,8 @@ class StatsData {
           stateCounts == other.stateCounts &&
           retentionRate == other.retentionRate &&
           totalReviews == other.totalReviews &&
-          currentStreak == other.currentStreak;
+          currentStreak == other.currentStreak &&
+          leechCardsCount == other.leechCardsCount;
 
   @override
   int get hashCode => Object.hash(
@@ -103,5 +106,6 @@ class StatsData {
     forecast,
     dailyReviewCounts,
     currentStreak,
+    leechCardsCount,
   );
 }

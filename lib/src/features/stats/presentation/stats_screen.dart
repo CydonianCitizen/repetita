@@ -153,6 +153,19 @@ class StatsScreen extends ConsumerWidget {
                             color: colorScheme.secondary,
                           ),
                         ),
+                        if (stats.leechCardsCount > 0) ...[
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: MetricSummaryCard(
+                              icon: Icons.warning_amber_rounded,
+                              value: '${stats.leechCardsCount}',
+                              title: l10n?.filterLeech ?? 'Leech',
+                              subtitle:
+                                  l10n?.leechCardsSubtitle ?? 'Lapsed cards',
+                              color: Colors.deepOrange,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                     const SizedBox(height: 16),

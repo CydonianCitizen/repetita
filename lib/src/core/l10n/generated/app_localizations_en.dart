@@ -1186,4 +1186,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get restoreBackupConfirmation =>
       'Are you sure you want to restore this backup? Current data will be replaced.';
+
+  @override
+  String get vacationMode => 'Vacation Mode';
+
+  @override
+  String get vacationModeActive => 'Active • Review dates paused';
+
+  @override
+  String get vacationModeInactive => 'Disabled • Normal scheduling';
+
+  @override
+  String get leechCardsSubtitle => 'Lapsed cards';
 }

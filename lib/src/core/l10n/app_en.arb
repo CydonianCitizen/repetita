@@ -603,7 +603,11 @@
   "autoBackups": "Automatic Backups",
   "noAutoBackupsYet": "No automatic backups yet.",
   "restoreBackup": "Restore",
-  "restoreBackupConfirmation": "Are you sure you want to restore this backup? Current data will be replaced."
+  "restoreBackupConfirmation": "Are you sure you want to restore this backup? Current data will be replaced.",
+  "vacationMode": "Vacation Mode",
+  "vacationModeActive": "Active • Review dates paused",
+  "vacationModeInactive": "Disabled • Normal scheduling",
+  "leechCardsSubtitle": "Lapsed cards"
 }
 
 

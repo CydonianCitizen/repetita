@@ -7,9 +7,6 @@ import '../../domain/card_entity.dart';
 
 part 'card_list_controller.g.dart';
 
-/// Page size for the rendered card list; further rows load in chunks.
-const int kCardListPageSize = 100;
-
 @riverpod
 class DeckCardSearchQuery extends _$DeckCardSearchQuery {
   @override

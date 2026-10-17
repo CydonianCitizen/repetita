@@ -2185,6 +2185,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to restore this backup? Current data will be replaced.'**
   String get restoreBackupConfirmation;
+
+  /// No description provided for @vacationMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation Mode'**
+  String get vacationMode;
+
+  /// No description provided for @vacationModeActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active • Review dates paused'**
+  String get vacationModeActive;
+
+  /// No description provided for @vacationModeInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled • Normal scheduling'**
+  String get vacationModeInactive;
+
+  /// No description provided for @leechCardsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lapsed cards'**
+  String get leechCardsSubtitle;
 }
 
 class _AppLocalizationsDelegate

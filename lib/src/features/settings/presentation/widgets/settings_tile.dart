@@ -8,6 +8,7 @@ class SettingsTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.trailingText,
+    this.trailing,
     this.showChevron = true,
     this.onTap,
   });
@@ -17,6 +18,7 @@ class SettingsTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final String? trailingText;
+  final Widget? trailing;
   final bool showChevron;
   final VoidCallback? onTap;
 
@@ -50,33 +52,35 @@ class SettingsTile extends StatelessWidget {
           color: colorScheme.onSurfaceVariant,
         ),
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (trailingText != null)
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 120),
-              child: Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: Text(
-                  trailingText!,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w600,
+      trailing:
+          trailing ??
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (trailingText != null)
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 120),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Text(
+                      trailingText!,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          if (showChevron)
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 20,
-              color: colorScheme.outline,
-            ),
-        ],
-      ),
+              if (showChevron)
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 20,
+                  color: colorScheme.outline,
+                ),
+            ],
+          ),
       onTap: onTap,
     );
   }

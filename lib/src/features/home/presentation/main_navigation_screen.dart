@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/database/database_provider.dart';
 import '../../../core/l10n/generated/app_localizations.dart';
 import '../../decks/presentation/deck_list_screen.dart';
 import '../../settings/data/haptic_service.dart';
@@ -36,6 +37,10 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
             _onDestinationSelected(2);
           }
         });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(rollingBackupServiceProvider).checkAndPerformAutoBackup();
+    });
   }
 
   void _onDestinationSelected(int index) {

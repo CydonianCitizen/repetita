@@ -60,6 +60,8 @@ class BackupService {
               description: d.description,
               createdAt: d.createdAt,
               updatedAt: d.updatedAt,
+              examDate: d.examDate,
+              targetRetention: d.targetRetention,
             ),
           )
           .toList(),
@@ -82,6 +84,7 @@ class BackupService {
               isSuspended: c.isSuspended,
               buriedUntil: c.buriedUntil,
               clozeIndex: c.clozeIndex,
+              flag: c.flag,
             ),
           )
           .toList(),
@@ -156,6 +159,8 @@ class BackupService {
               description: Value(d.description),
               createdAt: Value(d.createdAt),
               updatedAt: Value(d.updatedAt),
+              examDate: Value(d.examDate),
+              targetRetention: Value(d.targetRetention),
             ),
         ];
 
@@ -181,6 +186,7 @@ class BackupService {
               isSuspended: Value(c.isSuspended),
               buriedUntil: Value(c.buriedUntil),
               clozeIndex: Value(c.clozeIndex),
+              flag: Value(c.flag),
             ),
         ];
 
@@ -283,6 +289,8 @@ class BackupService {
               description: Value(deck.description),
               createdAt: Value(deck.createdAt),
               updatedAt: Value(deck.updatedAt),
+              examDate: Value(deck.examDate),
+              targetRetention: Value(deck.targetRetention),
             ),
           );
           existingDecksById[assignedId] = Deck(
@@ -291,6 +299,8 @@ class BackupService {
             description: deck.description,
             createdAt: deck.createdAt,
             updatedAt: deck.updatedAt,
+            examDate: deck.examDate,
+            targetRetention: deck.targetRetention,
           );
         }
       }
@@ -352,6 +362,7 @@ class BackupService {
               isSuspended: Value(card.isSuspended),
               buriedUntil: Value(card.buriedUntil),
               clozeIndex: Value(card.clozeIndex),
+              flag: Value(card.flag),
             ),
           );
           final addedCard = Card(
@@ -371,7 +382,7 @@ class BackupService {
             isSuspended: card.isSuspended,
             buriedUntil: card.buriedUntil,
             clozeIndex: card.clozeIndex,
-            flag: 0,
+            flag: card.flag,
           );
           existingCardsById[assignedId] = addedCard;
           existingCardsByContent[contentKey] = addedCard;

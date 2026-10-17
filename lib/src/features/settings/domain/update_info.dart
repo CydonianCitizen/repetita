@@ -1,5 +1,3 @@
-import 'package:pub_semver/pub_semver.dart';
-
 class UpdateInfo {
   const UpdateInfo({
     required this.currentVersion,
@@ -21,9 +19,28 @@ class UpdateInfo {
     try {
       final cleanCurrent = current.trim().replaceFirst(RegExp(r'^[vV]'), '');
       final cleanRemote = remote.trim().replaceFirst(RegExp(r'^[vV]'), '');
-      final vCurrent = Version.parse(cleanCurrent);
-      final vRemote = Version.parse(cleanRemote);
-      return vRemote > vCurrent;
+
+      final currentParts = cleanCurrent
+          .split('.')
+          .map((p) => int.parse(p.split(RegExp(r'[-+]'))[0]))
+          .toList();
+      final remoteParts = cleanRemote
+          .split('.')
+          .map((p) => int.parse(p.split(RegExp(r'[-+]'))[0]))
+          .toList();
+
+      while (currentParts.length < 3) {
+        currentParts.add(0);
+      }
+      while (remoteParts.length < 3) {
+        remoteParts.add(0);
+      }
+
+      for (int i = 0; i < 3; i++) {
+        if (remoteParts[i] > currentParts[i]) return true;
+        if (remoteParts[i] < currentParts[i]) return false;
+      }
+      return false;
     } catch (_) {
       return false;
     }

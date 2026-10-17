@@ -1195,4 +1195,16 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get restoreBackupConfirmation =>
       'Sei sicuro di voler ripristinare questo backup? I dati correnti verranno sostituiti.';
+
+  @override
+  String get vacationMode => 'Modalità Vacanza';
+
+  @override
+  String get vacationModeActive => 'Attiva • Scadenze congelate';
+
+  @override
+  String get vacationModeInactive => 'Disattivata • Studio regolare';
+
+  @override
+  String get leechCardsSubtitle => 'Carte fallite spesso';
 }

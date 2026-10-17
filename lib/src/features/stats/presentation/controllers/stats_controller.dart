@@ -19,6 +19,7 @@ class StatsController extends _$StatsController {
       dao.getDueForecast(deckId: deckId, days: 7, fromDate: now),
       dao.getDailyReviewCounts(deckId: deckId, days: 105, toDate: now),
       dao.getCurrentStreak(deckId: deckId, today: now),
+      dao.getLeechCardsCount(deckId: deckId),
     ).wait;
 
     return StatsData(
@@ -28,6 +29,7 @@ class StatsController extends _$StatsController {
       forecast: results.$4,
       dailyReviewCounts: results.$5,
       currentStreak: results.$6,
+      leechCardsCount: results.$7,
     );
   }
 }

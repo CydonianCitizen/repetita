@@ -7,6 +7,7 @@ import '../../domain/srs_algorithm.dart';
 import '../controllers/fsrs_parameters_controller.dart';
 import '../controllers/reminder_controller.dart';
 import '../controllers/srs_algorithm_controller.dart';
+import '../controllers/vacation_mode_controller.dart';
 import '../dialogs/fsrs_settings_dialog.dart';
 import '../dialogs/reminder_dialog.dart';
 import '../widgets/section_header.dart';
@@ -125,6 +126,39 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
                       subtitle:
                           '${(fsrsParams.requestRetention * 100).round()}% ${l10n?.retention ?? 'retention'} • ${fsrsParams.maximumInterval}d',
                       onTap: () => FsrsSettingsDialog.show(context),
+                    );
+                  },
+                ),
+                const Divider(indent: 56, height: 1),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final vacationActive =
+                        ref.watch(vacationModeControllerProvider).value ??
+                        false;
+                    return SettingsTile(
+                      key: const Key('setting_vacation_mode_tile'),
+                      icon: Icons.beach_access_rounded,
+                      iconColor: Colors.amber,
+                      title: l10n?.vacationMode ?? 'Vacation Mode',
+                      subtitle: vacationActive
+                          ? (l10n?.vacationModeActive ??
+                                'Active • Review dates paused')
+                          : (l10n?.vacationModeInactive ??
+                                'Disabled • Normal scheduling'),
+                      trailing: Switch(
+                        value: vacationActive,
+                        onChanged: (_) {
+                          ref
+                              .read(vacationModeControllerProvider.notifier)
+                              .toggleVacation();
+                        },
+                      ),
+                      showChevron: false,
+                      onTap: () {
+                        ref
+                            .read(vacationModeControllerProvider.notifier)
+                            .toggleVacation();
+                      },
                     );
                   },
                 ),
