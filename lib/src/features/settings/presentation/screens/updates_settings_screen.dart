@@ -19,7 +19,7 @@ class UpdatesSettingsScreen extends ConsumerWidget {
     final appVersion = ref.watch(appVersionProvider).value ?? '';
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n?.sectionUpdates ?? 'Updates & Releases')),
+      appBar: AppBar(title: Text(l10n?.settingsUpdatesTitle ?? 'Updates')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

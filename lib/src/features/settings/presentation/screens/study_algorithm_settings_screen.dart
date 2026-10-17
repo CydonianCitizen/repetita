@@ -82,7 +82,7 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.sectionStudyAlgorithm ?? 'Study & Algorithm'),
+        title: Text(l10n?.settingsStudyAlgorithmTitle ?? 'Study & Scheduling'),
       ),
       body: SafeArea(
         child: ListView(

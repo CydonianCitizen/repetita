@@ -19,7 +19,9 @@ class AboutSettingsScreen extends ConsumerWidget {
     final appVersion = ref.watch(appVersionProvider).value ?? '';
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n?.sectionAbout ?? 'About & Privacy')),
+      appBar: AppBar(
+        title: Text(l10n?.settingsAboutTitle ?? 'About & Credits'),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

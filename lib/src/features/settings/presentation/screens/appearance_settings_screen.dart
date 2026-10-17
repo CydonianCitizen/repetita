@@ -95,7 +95,9 @@ class _AppearanceSettingsScreenState
         defaultTargetPlatform == TargetPlatform.linux;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n?.sectionAppearance ?? 'Appearance')),
+      appBar: AppBar(
+        title: Text(l10n?.settingsAppearanceTitle ?? 'Appearance & Display'),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
