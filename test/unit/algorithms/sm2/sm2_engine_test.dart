@@ -213,5 +213,78 @@ void main() {
       expect(repeats[Rating.again]!.card.state, CardState.relearning);
       expect(repeats[Rating.good]!.card.state, CardState.review);
     });
+
+    test(
+      'falls back to initialEasinessFactor when difficulty and EF are both 0.0',
+      () {
+        final blankCard = FsrsCard(
+          due: now,
+          difficulty: 0.0,
+          easinessFactor: 0.0,
+        );
+        final res = engine.schedule(blankCard, Rating.good, now);
+        expect(res.card.easinessFactor, equals(2.5));
+      },
+    );
+
+    test(
+      'handles reps >= 3 when lastReview is null or in the future gracefully',
+      () {
+        final cardWithoutLastReview = FsrsCard(
+          due: now,
+          state: CardState.review,
+          reps: 3,
+          lastReview: null,
+          easinessFactor: 2.5,
+        );
+        final resNull = engine.schedule(
+          cardWithoutLastReview,
+          Rating.good,
+          now,
+        );
+        // baseInterval falls back to 6 -> 6 * 2.5 = 15
+        expect(resNull.card.due, equals(now.add(const Duration(days: 15))));
+
+        final cardWithFutureLastReview = FsrsCard(
+          due: now,
+          state: CardState.review,
+          reps: 3,
+          lastReview: now.add(const Duration(days: 2)), // elapsed < 0
+          easinessFactor: 2.5,
+        );
+        final resFuture = engine.schedule(
+          cardWithFutureLastReview,
+          Rating.good,
+          now,
+        );
+        // baseInterval falls back to 6 -> 6 * 2.5 = 15
+        expect(resFuture.card.due, equals(now.add(const Duration(days: 15))));
+      },
+    );
+
+    test('custom Sm2Engine parameters configure initial and minimum EF', () {
+      const customEngine = Sm2Engine(
+        initialEasinessFactor: 2.8,
+        minEasinessFactor: 1.5,
+      );
+      expect(customEngine.initialEasinessFactor, 2.8);
+      expect(customEngine.minEasinessFactor, 1.5);
+
+      final blankCard = FsrsCard(
+        due: now,
+        difficulty: 0.0,
+        easinessFactor: 0.0,
+      );
+      final res = customEngine.schedule(blankCard, Rating.good, now);
+      expect(res.card.easinessFactor, 2.8);
+
+      var droppingCard = FsrsCard(due: now, easinessFactor: 1.6);
+      for (var i = 0; i < 5; i++) {
+        droppingCard = customEngine
+            .schedule(droppingCard, Rating.again, now)
+            .card;
+      }
+      expect(droppingCard.easinessFactor, equals(1.5));
+    });
   });
 }

@@ -245,6 +245,35 @@ void main() {
         final answer = ClozeParser.renderClozeAnswer(text, activeIndex: 1);
         expect(answer, equals('Formula: E=mc^2'));
       });
+
+      test(
+        'ClozeSegment value equality, hashCode, and toString work accurately',
+        () {
+          const seg1 = ClozeSegment(
+            text: 'Paris',
+            isCloze: true,
+            isActive: true,
+            hint: 'city',
+          );
+          const seg2 = ClozeSegment(
+            text: 'Paris',
+            isCloze: true,
+            isActive: true,
+            hint: 'city',
+          );
+          const seg3 = ClozeSegment(
+            text: 'Lyon',
+            isCloze: true,
+            isActive: false,
+          );
+
+          expect(seg1, equals(seg2));
+          expect(seg1.hashCode, equals(seg2.hashCode));
+          expect(seg1 == seg3, isFalse);
+          expect(seg1.toString(), contains('Paris'));
+          expect(seg1.toString(), contains('isCloze: true'));
+        },
+      );
     });
   });
 }

@@ -325,6 +325,36 @@ void main() {
       expect(custom.hashCode, isA<int>());
     });
 
+    test(
+      'FsrsCard copyWith accurately duplicates or overrides every field',
+      () {
+        final card = FsrsCard(due: baseTime);
+        final updated = card.copyWith(
+          state: CardState.relearning,
+          stability: 12.5,
+          difficulty: 8.1,
+          due: baseTime.add(const Duration(days: 10)),
+          lastReview: baseTime,
+          reps: 5,
+          lapses: 2,
+          easinessFactor: 2.1,
+        );
+
+        expect(updated.state, equals(CardState.relearning));
+        expect(updated.stability, equals(12.5));
+        expect(updated.difficulty, equals(8.1));
+        expect(updated.due, equals(baseTime.add(const Duration(days: 10))));
+        expect(updated.lastReview, equals(baseTime));
+        expect(updated.reps, equals(5));
+        expect(updated.lapses, equals(2));
+        expect(updated.easinessFactor, equals(2.1));
+
+        // No-arg copyWith returns identical fields
+        final identicalCopy = updated.copyWith();
+        expect(identicalCopy, equals(updated));
+      },
+    );
+
     test('ReviewLogSnapshot and RecordLog hashCode and equality work', () {
       final record = engine.schedule(
         FsrsCard(due: baseTime),
