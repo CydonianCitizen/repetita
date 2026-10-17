@@ -79,7 +79,10 @@ void main() {
         }
 
         expect(find.byType(SettingsScreen), findsOneWidget);
-        expect(find.text('repetita'), findsOneWidget);
+        expect(
+          find.byKey(const Key('setting_appearance_tile')),
+          findsOneWidget,
+        );
 
         // 4. Tap Decks destination back
         await tester.tap(find.byKey(const Key('nav_decks')));

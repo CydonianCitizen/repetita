@@ -52,8 +52,6 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Settings'), findsOneWidget);
-        expect(find.text('repetita'), findsOneWidget);
-        expect(find.textContaining('v0.3.0'), findsWidgets);
 
         // Section headers
         expect(find.text('APPEARANCE'), findsOneWidget);
