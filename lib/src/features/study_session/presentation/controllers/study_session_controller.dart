@@ -220,10 +220,30 @@ class StudySessionController extends _$StudySessionController {
         }
       }
 
+      var queue = current.queue;
+      if (currentCard.noteId != null) {
+        final db = ref.read(databaseProvider);
+        final autoBurySetting = await db.getSetting('auto_bury_siblings');
+        final shouldBury = autoBurySetting == null || autoBurySetting == 'true';
+        if (shouldBury) {
+          await ref.read(cardsDaoProvider).burySiblingCards(
+            noteId: currentCard.noteId!,
+            excludeCardId: currentCard.id,
+            now: now,
+          );
+          final prefix = queue.sublist(0, current.currentIndex + 1);
+          final remaining = queue
+              .sublist(current.currentIndex + 1)
+              .where((c) => c.noteId != currentCard.noteId)
+              .toList();
+          queue = [...prefix, ...remaining];
+        }
+      }
+
       final nextIndex = current.currentIndex + 1;
-      final isCompleted = nextIndex >= current.queue.length;
-      final nextCard = !isCompleted && nextIndex < current.queue.length
-          ? current.queue[nextIndex]
+      final isCompleted = nextIndex >= queue.length;
+      final nextCard = !isCompleted && nextIndex < queue.length
+          ? queue[nextIndex]
           : null;
 
       final undoEntry = StudySessionHistoryEntry(
@@ -235,6 +255,7 @@ class StudySessionController extends _$StudySessionController {
 
       state = AsyncData(
         current.copyWith(
+          queue: queue,
           currentIndex: nextIndex,
           isAnswerRevealed: false,
           isCompleted: isCompleted,

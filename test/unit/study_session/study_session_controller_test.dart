@@ -290,5 +290,75 @@ void main() {
       expect(cardInDb.state, equals(2));
       expect(cardInDb.reps, equals(1));
     });
+
+    test('submitRating with sibling cards buries sibling until tomorrow and removes sibling from remaining queue', () async {
+      final now = DateTime.utc(2026, 10, 18, 10, 0);
+      final cardIds = await db.cardsDao.createReversedCards(
+        deckId: testDeckId,
+        front: 'Capital of Italy',
+        back: 'Rome',
+        now: now,
+      );
+
+      const config = CustomStudyConfig(
+        scope: CustomStudyScope.allCards,
+        isCram: false,
+        recordReviews: true,
+      );
+
+      final provider = studySessionControllerProvider(testDeckId, config);
+      await container.read(provider.future);
+
+      final initialState = container.read(provider).value!;
+      expect(initialState.totalCards, equals(2));
+
+      // Review card 1
+      await container.read(provider.notifier).submitRating(Rating.good);
+
+      // Verify sibling card in DB is buried until tomorrow
+      final siblingInDb = await db.cardsDao.getCardById(cardIds[1]);
+      expect(siblingInDb!.buriedUntil, isNotNull);
+      expect(siblingInDb.buriedUntil!.toUtc(), equals(DateTime.utc(2026, 10, 19, 0, 0)));
+
+      // In-memory queue should have removed the sibling and marked session completed
+      final stateAfterRating = container.read(provider).value!;
+      expect(stateAfterRating.isCompleted, isTrue);
+    });
+
+    test('submitRating does not bury siblings when auto_bury_siblings is false', () async {
+      await db.setSetting('auto_bury_siblings', 'false');
+
+      final now = DateTime.utc(2026, 10, 18, 10, 0);
+      final cardIds = await db.cardsDao.createReversedCards(
+        deckId: testDeckId,
+        front: 'Dog',
+        back: 'Cane',
+        now: now,
+      );
+
+      const config = CustomStudyConfig(
+        scope: CustomStudyScope.allCards,
+        isCram: false,
+        recordReviews: true,
+      );
+
+      final provider = studySessionControllerProvider(testDeckId, config);
+      await container.read(provider.future);
+
+      final initialState = container.read(provider).value!;
+      expect(initialState.totalCards, equals(2));
+
+      // Review card 1
+      await container.read(provider.notifier).submitRating(Rating.good);
+
+      // Sibling should NOT be buried
+      final siblingInDb = await db.cardsDao.getCardById(cardIds[1]);
+      expect(siblingInDb!.buriedUntil, isNull);
+
+      // Remaining queue still contains sibling
+      final stateAfterRating = container.read(provider).value!;
+      expect(stateAfterRating.isCompleted, isFalse);
+      expect(stateAfterRating.currentCard?.id, equals(cardIds[1]));
+    });
   });
 }

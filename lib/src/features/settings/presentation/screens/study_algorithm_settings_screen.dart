@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/l10n/generated/app_localizations.dart';
 import '../../domain/srs_algorithm.dart';
+import '../controllers/auto_bury_siblings_controller.dart';
 import '../controllers/fsrs_parameters_controller.dart';
 import '../controllers/reminder_controller.dart';
 import '../controllers/srs_algorithm_controller.dart';
@@ -156,6 +157,39 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
                         ref
                             .read(vacationModeControllerProvider.notifier)
                             .toggleVacation();
+                      },
+                    );
+                  },
+                ),
+                const Divider(indent: 56, height: 1),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final autoBury = ref.watch(
+                      autoBurySiblingsControllerProvider,
+                    );
+                    return SettingsTile(
+                      key: const Key('setting_auto_bury_siblings_tile'),
+                      icon: Icons.alt_route_rounded,
+                      iconColor: colorScheme.primary,
+                      title:
+                          l10n?.autoBurySiblings ??
+                          'Bury siblings automatically',
+                      subtitle:
+                          l10n?.autoBurySiblingsSubtitle ??
+                          'Postpone sibling cards until tomorrow upon review',
+                      trailing: Switch(
+                        value: autoBury,
+                        onChanged: (_) {
+                          ref
+                              .read(autoBurySiblingsControllerProvider.notifier)
+                              .toggle();
+                        },
+                      ),
+                      showChevron: false,
+                      onTap: () {
+                        ref
+                            .read(autoBurySiblingsControllerProvider.notifier)
+                            .toggle();
                       },
                     );
                   },
