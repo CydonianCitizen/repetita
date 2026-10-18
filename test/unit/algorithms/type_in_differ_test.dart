@@ -3,13 +3,16 @@ import 'package:repetita/src/core/algorithms/type_in/type_in_differ.dart';
 
 void main() {
   group('TypeInDiffer Unit Tests', () {
-    test('exact match returns isExactMatch true and single correct segment', () {
-      final res = TypeInDiffer.diff(expected: 'Paris', actual: 'Paris');
-      expect(res.isExactMatch, isTrue);
-      expect(res.segments, hasLength(1));
-      expect(res.segments.first.status, equals(TypeInCharStatus.correct));
-      expect(res.segments.first.text, equals('Paris'));
-    });
+    test(
+      'exact match returns isExactMatch true and single correct segment',
+      () {
+        final res = TypeInDiffer.diff(expected: 'Paris', actual: 'Paris');
+        expect(res.isExactMatch, isTrue);
+        expect(res.segments, hasLength(1));
+        expect(res.segments.first.status, equals(TypeInCharStatus.correct));
+        expect(res.segments.first.text, equals('Paris'));
+      },
+    );
 
     test('case-insensitive match matches when ignoreCase is true', () {
       final res = TypeInDiffer.diff(
@@ -48,15 +51,25 @@ void main() {
       final res = TypeInDiffer.diff(expected: 'cat', actual: 'cut');
       expect(res.isExactMatch, isFalse);
       expect(
-        res.segments.any((s) => s.status == TypeInCharStatus.correct && s.text == 'c'),
+        res.segments.any(
+          (s) => s.status == TypeInCharStatus.correct && s.text == 'c',
+        ),
         isTrue,
       );
       expect(
-        res.segments.any((s) => s.status == TypeInCharStatus.correct && s.text == 't'),
+        res.segments.any(
+          (s) => s.status == TypeInCharStatus.correct && s.text == 't',
+        ),
         isTrue,
       );
-      expect(res.segments.any((s) => s.status == TypeInCharStatus.wrong), isTrue);
-      expect(res.segments.any((s) => s.status == TypeInCharStatus.missing), isTrue);
+      expect(
+        res.segments.any((s) => s.status == TypeInCharStatus.wrong),
+        isTrue,
+      );
+      expect(
+        res.segments.any((s) => s.status == TypeInCharStatus.missing),
+        isTrue,
+      );
     });
 
     test('empty inputs handled cleanly', () {
@@ -66,11 +79,15 @@ void main() {
 
       final res2 = TypeInDiffer.diff(expected: 'hello', actual: '');
       expect(res2.isExactMatch, isFalse);
-      expect(res2.segments, [const TypeInDiffSegment('hello', TypeInCharStatus.missing)]);
+      expect(res2.segments, [
+        const TypeInDiffSegment('hello', TypeInCharStatus.missing),
+      ]);
 
       final res3 = TypeInDiffer.diff(expected: '', actual: 'hello');
       expect(res3.isExactMatch, isFalse);
-      expect(res3.segments, [const TypeInDiffSegment('hello', TypeInCharStatus.wrong)]);
+      expect(res3.segments, [
+        const TypeInDiffSegment('hello', TypeInCharStatus.wrong),
+      ]);
     });
 
     test('whitespace trimming works before diffing', () {

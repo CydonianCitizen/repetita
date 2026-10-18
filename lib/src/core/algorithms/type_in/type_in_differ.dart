@@ -1,8 +1,4 @@
-enum TypeInCharStatus {
-  correct,
-  wrong,
-  missing,
-}
+enum TypeInCharStatus { correct, wrong, missing }
 
 class TypeInDiffSegment {
   const TypeInDiffSegment(this.text, this.status);

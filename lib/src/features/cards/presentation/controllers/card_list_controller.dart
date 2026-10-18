@@ -219,4 +219,3 @@ class CardListController extends _$CardListController {
     return dao.unburyDeckCards(deckId);
   }
 }
-

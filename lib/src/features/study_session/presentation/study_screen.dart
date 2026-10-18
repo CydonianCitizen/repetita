@@ -71,8 +71,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
           ],
         ),
         content: Text(
-          l10n?.timeboxReachedMessage ??
-              'Your session time limit has expired. Would you like to wrap up or continue?',
+          l10n?.timeboxReachedMessage ?? 'Your session time limit has expired. Would you like to wrap up or continue?',
         ),
         actions: [
           TextButton(

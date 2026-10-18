@@ -320,11 +320,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
         } else if (_isReverseCard && indices.isEmpty) {
           await ref
               .read(cardListControllerProvider(widget.deckId).notifier)
-              .createReversedCard(
-                front: front,
-                back: back,
-                tagIds: tagIds,
-              );
+              .createReversedCard(front: front, back: back, tagIds: tagIds);
         } else {
           await ref
               .read(cardListControllerProvider(widget.deckId).notifier)
@@ -580,8 +576,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                                 ),
                               ),
                               subtitle: Text(
-                                l10n?.generateReverseCardSubtitle ??
-                                    'Creates two connected cards swapping prompt and answer',
+                                l10n?.generateReverseCardSubtitle ?? 'Creates two connected cards swapping prompt and answer',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
@@ -590,7 +585,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                               onChanged: isCloze
                                   ? null
                                   : (val) =>
-                                      setState(() => _isReverseCard = val),
+                                        setState(() => _isReverseCard = val),
                             );
                           },
                         ),

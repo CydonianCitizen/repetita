@@ -567,14 +567,15 @@ void main() {
         await tester.pumpAndSettle();
 
         // Navigate to Study & Algorithm sub-screen
-        await tester.tap(
-          find.byKey(const Key('setting_study_algorithm_tile')),
-        );
+        await tester.tap(find.byKey(const Key('setting_study_algorithm_tile')));
         await tester.pumpAndSettle();
 
         // Check tiles exist
         expect(find.byKey(const Key('setting_timebox_tile')), findsOneWidget);
-        expect(find.byKey(const Key('setting_auto_advance_tile')), findsOneWidget);
+        expect(
+          find.byKey(const Key('setting_auto_advance_tile')),
+          findsOneWidget,
+        );
         expect(find.byKey(const Key('setting_type_in_tile')), findsOneWidget);
 
         // Toggle type-in switch

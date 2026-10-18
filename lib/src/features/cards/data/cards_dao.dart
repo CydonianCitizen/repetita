@@ -137,13 +137,12 @@ class CardsDao extends DatabaseAccessor<AppDatabase> with _$CardsDaoMixin {
     DateTime? now,
   }) {
     final tomorrow = computeTomorrowMidnight(now);
-    return (update(cards)
-          ..where(
-            (t) =>
-                t.noteId.equals(noteId) &
-                t.id.equals(excludeCardId).not() &
-                t.isSuspended.equals(false),
-          ))
+    return (update(cards)..where(
+          (t) =>
+              t.noteId.equals(noteId) &
+              t.id.equals(excludeCardId).not() &
+              t.isSuspended.equals(false),
+        ))
         .write(CardsCompanion(buriedUntil: Value(tomorrow)));
   }
 

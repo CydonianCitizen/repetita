@@ -225,11 +225,13 @@ class StudySessionController extends _$StudySessionController {
       if (currentCard.noteId != null) {
         final shouldBury = ref.read(autoBurySiblingsControllerProvider);
         if (shouldBury) {
-          await ref.read(cardsDaoProvider).burySiblingCards(
-            noteId: currentCard.noteId!,
-            excludeCardId: currentCard.id,
-            now: now,
-          );
+          await ref
+              .read(cardsDaoProvider)
+              .burySiblingCards(
+                noteId: currentCard.noteId!,
+                excludeCardId: currentCard.id,
+                now: now,
+              );
           final prefix = queue.sublist(0, current.currentIndex + 1);
           final remaining = queue
               .sublist(current.currentIndex + 1)

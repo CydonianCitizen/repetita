@@ -77,9 +77,7 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
           groupValue: current,
           onChanged: (val) {
             if (val != null) {
-              ref
-                  .read(autoAdvanceControllerProvider.notifier)
-                  .setSeconds(val);
+              ref.read(autoAdvanceControllerProvider.notifier).setSeconds(val);
               Navigator.of(dialogCtx).pop();
             }
           },
@@ -355,7 +353,9 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
                 const Divider(indent: 56, height: 1),
                 Consumer(
                   builder: (context, ref, _) {
-                    final advanceSecs = ref.watch(autoAdvanceControllerProvider);
+                    final advanceSecs = ref.watch(
+                      autoAdvanceControllerProvider,
+                    );
                     return SettingsTile(
                       key: const Key('setting_auto_advance_tile'),
                       icon: Icons.speed_rounded,
@@ -379,8 +379,7 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
                       icon: Icons.keyboard_alt_outlined,
                       iconColor: colorScheme.primary,
                       title:
-                          l10n?.typeInAnswerToggle ??
-                          'Type-in answer practice',
+                          l10n?.typeInAnswerToggle ?? 'Type-in answer practice',
                       subtitle:
                           l10n?.typeInAnswerToggleSubtitle ??
                           'Type your answer before revealing the card',
