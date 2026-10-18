@@ -38,6 +38,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
   final Set<int> _initialTagIds = {};
   bool _tagsLoaded = false;
   bool _isSaving = false;
+  bool _isReverseCard = false;
 
   @override
   void initState() {
@@ -67,6 +68,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
     final backInitial = widget.initialBack ?? '';
     if (_frontController.text != frontInitial) return true;
     if (_backController.text != backInitial) return true;
+    if (_isReverseCard) return true;
     if (widget.isEditing) {
       if (!_tagsLoaded) return false;
       final currentTagIds = _selectedTags.map((t) => t.id).toSet();
@@ -314,6 +316,14 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                 clozeIndices: indices,
                 tagIds: tagIds,
               );
+        } else if (_isReverseCard && indices.isEmpty) {
+          await ref
+              .read(cardListControllerProvider(widget.deckId).notifier)
+              .createReversedCard(
+                front: front,
+                back: back,
+                tagIds: tagIds,
+              );
         } else {
           await ref
               .read(cardListControllerProvider(widget.deckId).notifier)
@@ -533,6 +543,38 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                           );
                         },
                       ),
+                      if (!widget.isEditing) ...[
+                        const SizedBox(height: 12),
+                        ValueListenableBuilder<TextEditingValue>(
+                          valueListenable: _frontController,
+                          builder: (context, value, _) {
+                            final isCloze = ClozeParser.isCloze(value.text);
+                            return SwitchListTile.adaptive(
+                              key: const Key('reverse_card_switch'),
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                l10n?.generateReverseCard ??
+                                    'Generate reverse card (Front ↔ Back)',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Text(
+                                l10n?.generateReverseCardSubtitle ??
+                                    'Creates two connected cards swapping prompt and answer',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              value: isCloze ? false : _isReverseCard,
+                              onChanged: isCloze
+                                  ? null
+                                  : (val) =>
+                                      setState(() => _isReverseCard = val),
+                            );
+                          },
+                        ),
+                      ],
                       const SizedBox(height: 20),
                       Row(
                         children: [

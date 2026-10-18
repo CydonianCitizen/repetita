@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repetita/src/core/database/app_database.dart';
 import 'package:repetita/src/core/database/database_provider.dart';
+import 'package:repetita/src/core/l10n/generated/app_localizations.dart';
 import 'package:repetita/src/features/cards/presentation/card_editor_screen.dart';
 import 'package:repetita/src/features/cards/presentation/deck_detail_screen.dart';
 import 'package:repetita/src/features/study_session/presentation/study_screen.dart';
@@ -35,7 +36,11 @@ void main() {
   Widget buildSubject() {
     return ProviderScope(
       overrides: [databaseProvider.overrideWithValue(db)],
-      child: MaterialApp(home: DeckDetailScreen(deck: testDeck)),
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: DeckDetailScreen(deck: testDeck),
+      ),
     );
   }
 
@@ -332,11 +337,39 @@ void main() {
         await tester.pumpAndSettle();
 
         // Choose Red Flag from dialog
-        await tester.tap(find.text('Red Flag'));
+        await tester.tap(find.text('Red Flag').last);
         await tester.pumpAndSettle();
 
         // Should find flag icon in card tile
         expect(find.byIcon(Icons.flag_rounded), findsOneWidget);
+
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(milliseconds: 50));
+      },
+    );
+
+    testWidgets(
+      'unbury all cards menu action clears buriedUntil on all deck cards',
+      (tester) async {
+        final now = DateTime.now().toUtc();
+        final cardId = await db.cardsDao.createCard(
+          deckId: testDeck.id,
+          front: 'Buried Card',
+          back: 'Buried Answer',
+        );
+        await db.cardsDao.buryCardUntilTomorrow(cardId, now);
+
+        await tester.pumpWidget(buildSubject());
+        await tester.pumpAndSettle();
+
+        expect(find.text('Buried'), findsOneWidget);
+
+        // Tap Unbury all cards button
+        await tester.tap(find.byKey(const Key('unbury_deck_cards_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Buried'), findsNothing);
+        expect(find.text('1 card unburied'), findsOneWidget);
 
         await tester.pumpWidget(const SizedBox());
         await tester.pump(const Duration(milliseconds: 50));

@@ -187,4 +187,32 @@ class CardListController extends _$CardListController {
     final dao = ref.read(cardsDaoProvider);
     return dao.duplicateCard(id);
   }
+
+  Future<List<int>> createReversedCard({
+    required String front,
+    required String back,
+    List<int> tagIds = const [],
+  }) async {
+    final dao = ref.read(cardsDaoProvider);
+    final tagsDao = ref.read(tagsDaoProvider);
+    return dao.attachedDatabase.transaction(() async {
+      final cardIds = await dao.createReversedCards(
+        deckId: deckId,
+        front: front,
+        back: back,
+      );
+      if (tagIds.isNotEmpty) {
+        for (final id in cardIds) {
+          await tagsDao.setCardTags(id, tagIds);
+        }
+      }
+      return cardIds;
+    });
+  }
+
+  Future<int> unburyDeckCards() async {
+    final dao = ref.read(cardsDaoProvider);
+    return dao.unburyDeckCards(deckId);
+  }
 }
+

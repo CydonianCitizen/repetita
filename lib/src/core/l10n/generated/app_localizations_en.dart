@@ -1091,4 +1091,95 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get leechCardsSubtitle => 'Lapsed cards';
+
+  @override
+  String get generateReverseCard => 'Generate reverse card (Front ↔ Back)';
+
+  @override
+  String get generateReverseCardSubtitle =>
+      'Creates two connected cards swapping prompt and answer';
+
+  @override
+  String get unburyAllCards => 'Unbury all cards';
+
+  @override
+  String unburiedCardsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cards unburied',
+      one: '1 card unburied',
+      zero: 'No buried cards to unbury',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoBurySiblings => 'Bury siblings automatically';
+
+  @override
+  String get autoBurySiblingsSubtitle =>
+      'Postpone sibling cards until tomorrow upon review';
+
+  @override
+  String get typeInAnswer => 'Type your answer';
+
+  @override
+  String get typeInAnswerHint => 'Type your answer here...';
+
+  @override
+  String get typeInAnswerToggle => 'Type-in answer practice';
+
+  @override
+  String get typeInAnswerToggleSubtitle =>
+      'Type your answer before revealing the card';
+
+  @override
+  String get timeboxReachedTitle => 'Timebox reached';
+
+  @override
+  String get timeboxReachedMessage =>
+      'Your session time limit has expired. Would you like to wrap up or continue?';
+
+  @override
+  String get timeboxing => 'Session timeboxing';
+
+  @override
+  String get timeboxingSubtitle => 'Set a study session time limit';
+
+  @override
+  String timeboxMinutes(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: '$minutes minutes',
+      one: '1 minute',
+      zero: 'Disabled',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoAdvance => 'Auto-advance';
+
+  @override
+  String get autoAdvanceSubtitle => 'Automatically reveal answer after a delay';
+
+  @override
+  String autoAdvanceSeconds(int seconds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: '$seconds seconds',
+      one: '1 second',
+      zero: 'Disabled',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get continueStudying => 'Continue studying';
+
+  @override
+  String get finishSession => 'Finish session';
 }

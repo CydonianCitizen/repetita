@@ -169,5 +169,48 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(milliseconds: 50));
     });
+
+    testWidgets('toggling reverse card switch creates forward and reverse card pair', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('open_editor_button')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('card_front_field')),
+        'Front Question',
+      );
+      await tester.enterText(
+        find.byKey(const Key('card_back_field')),
+        'Back Answer',
+      );
+
+      // Scroll to reveal switch if needed
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('reverse_card_switch')),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.byKey(const Key('reverse_card_switch')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('save_card_button')));
+      for (int i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      final cards = await db.cardsDao.getCardsByDeck(testDeckId);
+      expect(cards, hasLength(2));
+      expect(cards[0].noteId, isNotNull);
+      expect(cards[1].noteId, equals(cards[0].noteId));
+      expect(cards.any((c) => c.front == 'Front Question' && c.back == 'Back Answer'), isTrue);
+      expect(cards.any((c) => c.front == 'Back Answer' && c.back == 'Front Question'), isTrue);
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(milliseconds: 50));
+    });
   });
 }

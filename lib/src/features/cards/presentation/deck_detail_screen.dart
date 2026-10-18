@@ -82,13 +82,35 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
               icon: const Icon(Icons.close),
               onPressed: _closeSearch,
             )
-          else
+          else ...[
             IconButton(
               key: const Key('search_cards_button'),
               icon: const Icon(Icons.search),
               tooltip: l10n?.search ?? 'Search',
               onPressed: () => setState(() => _isSearching = true),
             ),
+            IconButton(
+              key: const Key('unbury_deck_cards_button'),
+              icon: const Icon(Icons.wb_sunny_outlined),
+              tooltip: l10n?.unburyAllCards ?? 'Unbury all cards',
+              onPressed: () async {
+                final count = await ref
+                    .read(cardListControllerProvider(widget.deck.id).notifier)
+                    .unburyDeckCards();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        l10n?.unburiedCardsCount(count) ??
+                            'Unburied $count cards',
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
         ],
       ),
       body: SafeArea(

@@ -547,5 +547,46 @@
   "vacationMode": "Vacation Mode",
   "vacationModeActive": "Active • Review dates paused",
   "vacationModeInactive": "Disabled • Normal scheduling",
-  "leechCardsSubtitle": "Lapsed cards"
+  "leechCardsSubtitle": "Lapsed cards",
+  "generateReverseCard": "Generate reverse card (Front ↔ Back)",
+  "generateReverseCardSubtitle": "Creates two connected cards swapping prompt and answer",
+  "unburyAllCards": "Unbury all cards",
+  "unburiedCardsCount": "{count, plural, =0{No buried cards to unbury} =1{1 card unburied} other{{count} cards unburied}}",
+  "@unburiedCardsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "autoBurySiblings": "Bury siblings automatically",
+  "autoBurySiblingsSubtitle": "Postpone sibling cards until tomorrow upon review",
+  "typeInAnswer": "Type your answer",
+  "typeInAnswerHint": "Type your answer here...",
+  "typeInAnswerToggle": "Type-in answer practice",
+  "typeInAnswerToggleSubtitle": "Type your answer before revealing the card",
+  "timeboxReachedTitle": "Timebox reached",
+  "timeboxReachedMessage": "Your session time limit has expired. Would you like to wrap up or continue?",
+  "timeboxing": "Session timeboxing",
+  "timeboxingSubtitle": "Set a study session time limit",
+  "timeboxMinutes": "{minutes, plural, =0{Disabled} =1{1 minute} other{{minutes} minutes}}",
+  "@timeboxMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "autoAdvance": "Auto-advance",
+  "autoAdvanceSubtitle": "Automatically reveal answer after a delay",
+  "autoAdvanceSeconds": "{seconds, plural, =0{Disabled} =1{1 second} other{{seconds} seconds}}",
+  "@autoAdvanceSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "continueStudying": "Continue studying",
+  "finishSession": "Finish session"
 }

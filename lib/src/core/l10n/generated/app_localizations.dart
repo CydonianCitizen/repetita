@@ -2023,6 +2023,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lapsed cards'**
   String get leechCardsSubtitle;
+
+  /// No description provided for @generateReverseCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate reverse card (Front ↔ Back)'**
+  String get generateReverseCard;
+
+  /// No description provided for @generateReverseCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Creates two connected cards swapping prompt and answer'**
+  String get generateReverseCardSubtitle;
+
+  /// No description provided for @unburyAllCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Unbury all cards'**
+  String get unburyAllCards;
+
+  /// No description provided for @unburiedCardsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No buried cards to unbury} =1{1 card unburied} other{{count} cards unburied}}'**
+  String unburiedCardsCount(int count);
+
+  /// No description provided for @autoBurySiblings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bury siblings automatically'**
+  String get autoBurySiblings;
+
+  /// No description provided for @autoBurySiblingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Postpone sibling cards until tomorrow upon review'**
+  String get autoBurySiblingsSubtitle;
+
+  /// No description provided for @typeInAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your answer'**
+  String get typeInAnswer;
+
+  /// No description provided for @typeInAnswerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your answer here...'**
+  String get typeInAnswerHint;
+
+  /// No description provided for @typeInAnswerToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type-in answer practice'**
+  String get typeInAnswerToggle;
+
+  /// No description provided for @typeInAnswerToggleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your answer before revealing the card'**
+  String get typeInAnswerToggleSubtitle;
+
+  /// No description provided for @timeboxReachedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Timebox reached'**
+  String get timeboxReachedTitle;
+
+  /// No description provided for @timeboxReachedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session time limit has expired. Would you like to wrap up or continue?'**
+  String get timeboxReachedMessage;
+
+  /// No description provided for @timeboxing.
+  ///
+  /// In en, this message translates to:
+  /// **'Session timeboxing'**
+  String get timeboxing;
+
+  /// No description provided for @timeboxingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a study session time limit'**
+  String get timeboxingSubtitle;
+
+  /// No description provided for @timeboxMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{Disabled} =1{1 minute} other{{minutes} minutes}}'**
+  String timeboxMinutes(int minutes);
+
+  /// No description provided for @autoAdvance.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-advance'**
+  String get autoAdvance;
+
+  /// No description provided for @autoAdvanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically reveal answer after a delay'**
+  String get autoAdvanceSubtitle;
+
+  /// No description provided for @autoAdvanceSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds, plural, =0{Disabled} =1{1 second} other{{seconds} seconds}}'**
+  String autoAdvanceSeconds(int seconds);
+
+  /// No description provided for @continueStudying.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue studying'**
+  String get continueStudying;
+
+  /// No description provided for @finishSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish session'**
+  String get finishSession;
 }
 
 class _AppLocalizationsDelegate
