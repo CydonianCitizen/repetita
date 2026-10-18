@@ -212,5 +212,39 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(milliseconds: 50));
     });
+
+    testWidgets('creating multiple cloze cards assigns shared noteId', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('open_editor_button')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('card_front_field')),
+        '{{c1::Rome}} is the capital of {{c2::Italy}}',
+      );
+      await tester.enterText(
+        find.byKey(const Key('card_back_field')),
+        'Geography notes',
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('save_card_button')));
+      for (int i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      final cards = await db.cardsDao.getCardsByDeck(testDeckId);
+      expect(cards, hasLength(2));
+      expect(cards[0].noteId, isNotNull);
+      expect(cards[1].noteId, equals(cards[0].noteId));
+      expect(cards.map((c) => c.clozeIndex).toSet(), equals({1, 2}));
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(milliseconds: 50));
+    });
   });
 }

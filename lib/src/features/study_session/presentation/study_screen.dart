@@ -560,6 +560,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                 final progress = total > 0 ? currentNum / total : 0.0;
 
                 Future<void> submitRating(Rating rating) async {
+                  _lastAutoCardId = null;
                   _autoAdvanceTimer?.cancel();
                   final haptic = ref.read(hapticServiceProvider);
                   final intensity = ref.read(hapticFeedbackControllerProvider);
@@ -575,6 +576,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                 }
 
                 void revealAnswer() {
+                  _lastAutoCardId = null;
                   _autoAdvanceTimer?.cancel();
                   final intensity = ref.read(hapticFeedbackControllerProvider);
                   ref.read(hapticServiceProvider).triggerSelection(intensity);
@@ -583,15 +585,21 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
 
                 if (!sessionState.isAnswerRevealed) {
                   final seconds = ref.watch(autoAdvanceControllerProvider);
-                  if (seconds > 0 && (_lastAutoCardId != currentCard.id)) {
-                    _lastAutoCardId = currentCard.id;
+                  if (seconds > 0) {
+                    if (_lastAutoCardId != currentCard.id) {
+                      _lastAutoCardId = currentCard.id;
+                      _autoAdvanceTimer?.cancel();
+                      _autoAdvanceTimer = Timer(Duration(seconds: seconds), () {
+                        if (mounted) revealAnswer();
+                      });
+                    }
+                  } else {
                     _autoAdvanceTimer?.cancel();
-                    _autoAdvanceTimer = Timer(Duration(seconds: seconds), () {
-                      if (mounted) revealAnswer();
-                    });
+                    _lastAutoCardId = null;
                   }
                 } else {
                   _autoAdvanceTimer?.cancel();
+                  _lastAutoCardId = null;
                 }
 
                 final isDesktop =

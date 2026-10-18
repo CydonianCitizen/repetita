@@ -111,9 +111,12 @@ class CardListController extends _$CardListController {
     required String back,
     required Iterable<int> clozeIndices,
     List<int> tagIds = const [],
+    int? noteId,
   }) async {
     final dao = ref.read(cardsDaoProvider);
     final tagsDao = ref.read(tagsDaoProvider);
+    final sharedNoteId =
+        noteId ?? DateTime.now().toUtc().microsecondsSinceEpoch;
     return dao.attachedDatabase.transaction(() async {
       final cardIds = <int>[];
       for (final idx in clozeIndices) {
@@ -122,6 +125,7 @@ class CardListController extends _$CardListController {
           front: front,
           back: back,
           clozeIndex: idx,
+          noteId: sharedNoteId,
         );
         if (tagIds.isNotEmpty) {
           await tagsDao.setCardTags(cardId, tagIds);

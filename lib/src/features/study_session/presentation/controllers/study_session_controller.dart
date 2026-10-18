@@ -7,6 +7,7 @@ import '../../../../core/database/app_database.dart' show Card;
 import '../../../../core/database/database_provider.dart';
 import '../../../cards/data/cards_dao.dart';
 import '../../../cards/domain/card_entity.dart';
+import '../../../settings/presentation/controllers/auto_bury_siblings_controller.dart';
 import '../../../settings/presentation/controllers/fsrs_parameters_controller.dart';
 import '../../../stats/presentation/controllers/stats_controller.dart';
 import '../../domain/models/custom_study_config.dart';
@@ -222,9 +223,7 @@ class StudySessionController extends _$StudySessionController {
 
       var queue = current.queue;
       if (currentCard.noteId != null) {
-        final db = ref.read(databaseProvider);
-        final autoBurySetting = await db.getSetting('auto_bury_siblings');
-        final shouldBury = autoBurySetting == null || autoBurySetting == 'true';
+        final shouldBury = ref.read(autoBurySiblingsControllerProvider);
         if (shouldBury) {
           await ref.read(cardsDaoProvider).burySiblingCards(
             noteId: currentCard.noteId!,

@@ -326,6 +326,7 @@ class AnkiPackageService {
       tags: note.tags,
       deckName: deckName,
       easinessFactor: easinessFactor,
+      noteId: note.id,
     );
   }
 
@@ -422,6 +423,7 @@ class AnkiPackageService {
                 isSuspended: const Value(false),
                 clozeIndex: Value(card.clozeIndex),
                 easinessFactor: Value(card.easinessFactor),
+                noteId: Value(card.noteId),
               ),
             );
         cardsImported++;

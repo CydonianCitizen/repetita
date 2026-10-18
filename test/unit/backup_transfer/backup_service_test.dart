@@ -43,6 +43,7 @@ void main() {
         deckId: deck1Id,
         front: 'Front 1',
         back: 'Back 1',
+        noteId: 777,
       );
       await db.cardsDao.setCardFlag(card1Id, 2);
       await db.cardsDao.createCard(
@@ -89,6 +90,7 @@ void main() {
       expect(jsonString, contains('Front 1'));
       expect(jsonString, contains('Front 2'));
       expect(jsonString, contains('"clozeIndex": 2'));
+      expect(jsonString, contains('"noteId": 777'));
       expect(jsonString, contains('Medicine'));
 
       // 3. Clear database
@@ -132,6 +134,7 @@ void main() {
         (c) => c.front == 'Front 1',
       );
       expect(restoredCard1.flag, equals(2));
+      expect(restoredCard1.noteId, equals(777));
       expect(restoredCard1.state, equals(CardState.review.value));
       expect(restoredCard1.stability, closeTo(4.25, 0.001));
       expect(restoredCard1.difficulty, closeTo(6.1, 0.001));

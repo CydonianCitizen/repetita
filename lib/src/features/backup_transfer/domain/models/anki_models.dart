@@ -108,6 +108,7 @@ class AnkiParsedCard {
     required this.tags,
     required this.deckName,
     this.easinessFactor = 2.5,
+    this.noteId,
   });
 
   final String front;
@@ -116,4 +117,5 @@ class AnkiParsedCard {
   final List<String> tags;
   final String deckName;
   final double easinessFactor;
+  final int? noteId;
 }

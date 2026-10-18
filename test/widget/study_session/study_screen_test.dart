@@ -446,5 +446,65 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(milliseconds: 50));
     });
+
+    testWidgets(
+      'auto-advance re-arms when single card is failed and repeated in cram mode',
+      (tester) async {
+        await db.setSetting('study_auto_advance_seconds', '1');
+        await db.cardsDao.createCard(
+          deckId: testDeckId,
+          front: 'Repeat Front',
+          back: 'Repeat Back',
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [databaseProvider.overrideWithValue(db)],
+            child: MaterialApp(
+              home: StudyScreen(
+                deckId: testDeckId,
+                customStudyConfig: const CustomStudyConfig(
+                  scope: CustomStudyScope.allCards,
+                  isCram: true,
+                ),
+              ),
+            ),
+          ),
+        );
+        for (int i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        expect(find.text('Repeat Front'), findsOneWidget);
+        expect(find.text('Repeat Back'), findsNothing);
+
+        // 1st auto-advance
+        await tester.pump(const Duration(seconds: 1));
+        for (int i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+        expect(find.text('Repeat Back'), findsOneWidget);
+
+        // Fail card (Again) -> requeues in cram mode
+        await tester.tap(find.byKey(const Key('rating_button_again')));
+        for (int i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        // Card front is shown again (same card id)
+        expect(find.text('Repeat Front'), findsOneWidget);
+        expect(find.text('Repeat Back'), findsNothing);
+
+        // 2nd auto-advance should re-arm and reveal answer!
+        await tester.pump(const Duration(seconds: 1));
+        for (int i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+        expect(find.text('Repeat Back'), findsOneWidget);
+
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(milliseconds: 50));
+      },
+    );
   });
 }

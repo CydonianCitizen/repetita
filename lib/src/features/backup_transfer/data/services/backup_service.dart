@@ -85,6 +85,7 @@ class BackupService {
               buriedUntil: c.buriedUntil,
               clozeIndex: c.clozeIndex,
               flag: c.flag,
+              noteId: c.noteId,
             ),
           )
           .toList(),
@@ -187,6 +188,7 @@ class BackupService {
               buriedUntil: Value(c.buriedUntil),
               clozeIndex: Value(c.clozeIndex),
               flag: Value(c.flag),
+              noteId: Value(c.noteId),
             ),
         ];
 
@@ -363,6 +365,7 @@ class BackupService {
               buriedUntil: Value(card.buriedUntil),
               clozeIndex: Value(card.clozeIndex),
               flag: Value(card.flag),
+              noteId: Value(card.noteId),
             ),
           );
           final addedCard = Card(

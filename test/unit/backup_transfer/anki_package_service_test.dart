@@ -233,6 +233,7 @@ void main() {
         );
         expect(basicCard.back, equals('UI framework by Google'));
         expect(basicCard.clozeIndex, isNull);
+        expect(basicCard.noteId, equals(101));
         expect(basicCard.state, equals(0)); // New
         expect(basicCard.stability, equals(0.0));
 
@@ -240,14 +241,17 @@ void main() {
         final cloze1 = cards.firstWhere((c) => c.clozeIndex == 1);
         expect(cloze1.front, contains('{{c1::Dart}}'));
         expect(cloze1.back, equals('Language note'));
+        expect(cloze1.noteId, equals(102));
 
         final cloze2 = cards.firstWhere((c) => c.clozeIndex == 2);
         expect(cloze2.front, contains('{{c2::Google}}'));
+        expect(cloze2.noteId, equals(102));
 
         // Verify HTML sanitized card
         final htmlCard = cards.firstWhere((c) => c.front.contains('**Ciao**'));
         expect(htmlCard.front, equals('**Ciao** means'));
         expect(htmlCard.back, equals('*Hello* or *Goodbye*'));
+        expect(htmlCard.noteId, equals(103));
 
         // Verify tags
         final tags = await db.select(db.tags).get();
