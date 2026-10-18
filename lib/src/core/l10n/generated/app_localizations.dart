@@ -164,12 +164,6 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get navSettings;
 
-  /// No description provided for @decksTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'repetita Decks'**
-  String get decksTitle;
-
   /// No description provided for @noDecksYet.
   ///
   /// In en, this message translates to:
@@ -236,29 +230,11 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
-  /// No description provided for @totalCardsCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 card} other{{count} cards}}'**
-  String totalCardsCount(int count);
-
   /// No description provided for @dueCount.
   ///
   /// In en, this message translates to:
   /// **'{count} due'**
   String dueCount(int count);
-
-  /// No description provided for @deleteDeckConfirmation.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to delete this deck? All cards and review history will be lost.'**
-  String get deleteDeckConfirmation;
-
-  /// No description provided for @cardsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Cards'**
-  String get cardsTitle;
 
   /// No description provided for @addCard.
   ///
@@ -284,18 +260,6 @@ abstract class AppLocalizations {
   /// **'Back (Answer / Explanation)'**
   String get cardBack;
 
-  /// No description provided for @noCardsYet.
-  ///
-  /// In en, this message translates to:
-  /// **'No cards in this deck yet.'**
-  String get noCardsYet;
-
-  /// No description provided for @addCardPrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'Add flashcards to start studying with the FSRS spaced repetition engine.'**
-  String get addCardPrompt;
-
   /// No description provided for @deleteCardConfirmation.
   ///
   /// In en, this message translates to:
@@ -313,36 +277,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show Answer'**
   String get showAnswer;
-
-  /// No description provided for @sessionComplete.
-  ///
-  /// In en, this message translates to:
-  /// **'Session Complete!'**
-  String get sessionComplete;
-
-  /// No description provided for @sessionCompleteSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'All due cards in this deck have been reviewed for today.'**
-  String get sessionCompleteSubtitle;
-
-  /// No description provided for @noDueCardsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'All Caught Up!'**
-  String get noDueCardsTitle;
-
-  /// No description provided for @noDueCardsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'There are no cards due for review in this deck right now.'**
-  String get noDueCardsSubtitle;
-
-  /// No description provided for @backToDecks.
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Decks'**
-  String get backToDecks;
 
   /// No description provided for @ratingAgain.
   ///
@@ -368,12 +302,6 @@ abstract class AppLocalizations {
   /// **'Easy'**
   String get ratingEasy;
 
-  /// No description provided for @statsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Review Analytics'**
-  String get statsTitle;
-
   /// No description provided for @retentionRate.
   ///
   /// In en, this message translates to:
@@ -385,24 +313,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Reviews'**
   String get totalReviews;
-
-  /// No description provided for @cardsLearned.
-  ///
-  /// In en, this message translates to:
-  /// **'Cards Learned'**
-  String get cardsLearned;
-
-  /// No description provided for @retentionSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Percentage of successful recall reviews'**
-  String get retentionSubtitle;
-
-  /// No description provided for @cardStateDistribution.
-  ///
-  /// In en, this message translates to:
-  /// **'Card State Distribution'**
-  String get cardStateDistribution;
 
   /// No description provided for @stateNew.
   ///
@@ -440,23 +350,11 @@ abstract class AppLocalizations {
   /// **'Export JSON Backup'**
   String get exportBackup;
 
-  /// No description provided for @importBackup.
-  ///
-  /// In en, this message translates to:
-  /// **'Import Backup'**
-  String get importBackup;
-
   /// No description provided for @exportDescription.
   ///
   /// In en, this message translates to:
   /// **'Create an offline JSON backup of all your decks, cards, and review histories.'**
   String get exportDescription;
-
-  /// No description provided for @importDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Restore or merge flashcards from a JSON backup file.'**
-  String get importDescription;
 
   /// No description provided for @settingsTitle.
   ///
@@ -583,12 +481,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refresh Rate'**
   String get refreshRate;
-
-  /// No description provided for @refreshRateSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Display refresh frequency'**
-  String get refreshRateSubtitle;
 
   /// No description provided for @refreshRateAuto.
   ///
@@ -764,23 +656,11 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
-  /// No description provided for @languageSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Interface language'**
-  String get languageSubtitle;
-
   /// No description provided for @systemLanguageSubtitle.
   ///
   /// In en, this message translates to:
   /// **'Follow device system language'**
   String get systemLanguageSubtitle;
-
-  /// No description provided for @currentLanguage.
-  ///
-  /// In en, this message translates to:
-  /// **'Current active language'**
-  String get currentLanguage;
 
   /// No description provided for @english.
   ///
@@ -823,12 +703,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'FSRS Scheduling Parameters'**
   String get fsrsParameters;
-
-  /// No description provided for @fsrsParametersSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Retention and intervals'**
-  String get fsrsParametersSubtitle;
 
   /// No description provided for @retentionTarget.
   ///
@@ -938,12 +812,6 @@ abstract class AppLocalizations {
   /// **'Desktop Notifications'**
   String get desktopNotifications;
 
-  /// No description provided for @desktopNotificationsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'System review alerts'**
-  String get desktopNotificationsSubtitle;
-
   /// No description provided for @desktopNotificationsActive.
   ///
   /// In en, this message translates to:
@@ -979,12 +847,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Data & Backup'**
   String get sectionDataBackup;
-
-  /// No description provided for @backupSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'JSON and CSV transfer'**
-  String get backupSubtitle;
 
   /// No description provided for @sectionUpdates.
   ///
@@ -1232,12 +1094,6 @@ abstract class AppLocalizations {
   /// **'Undo Review'**
   String get undoReview;
 
-  /// No description provided for @cardUndone.
-  ///
-  /// In en, this message translates to:
-  /// **'Review undone'**
-  String get cardUndone;
-
   /// No description provided for @suspendCard.
   ///
   /// In en, this message translates to:
@@ -1267,12 +1123,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Card suspended'**
   String get cardSuspended;
-
-  /// No description provided for @cardUnsuspended.
-  ///
-  /// In en, this message translates to:
-  /// **'Card unsuspended'**
-  String get cardUnsuspended;
 
   /// No description provided for @cardBuried.
   ///
@@ -1315,12 +1165,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 day} other{{count} days}}'**
   String daysStreak(int count);
-
-  /// No description provided for @noReviewsYet.
-  ///
-  /// In en, this message translates to:
-  /// **'No reviews recorded yet'**
-  String get noReviewsYet;
 
   /// No description provided for @deleteDeckConfirmTitle.
   ///
@@ -1411,12 +1255,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Tag'**
   String get addTag;
-
-  /// No description provided for @manageTags.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage Tags'**
-  String get manageTags;
 
   /// No description provided for @newTagHint.
   ///
@@ -1736,12 +1574,6 @@ abstract class AppLocalizations {
   /// **'Optional description of this deck'**
   String get deckDescriptionHint;
 
-  /// No description provided for @themeSystemSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Follow device theme settings'**
-  String get themeSystemSubtitle;
-
   /// No description provided for @themeDarkSubtitle.
   ///
   /// In en, this message translates to:
@@ -1874,12 +1706,6 @@ abstract class AppLocalizations {
   /// **'Save to File'**
   String get saveToFile;
 
-  /// No description provided for @pasteText.
-  ///
-  /// In en, this message translates to:
-  /// **'Paste Text'**
-  String get pasteText;
-
   /// No description provided for @selectAnkiDestination.
   ///
   /// In en, this message translates to:
@@ -1975,12 +1801,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'F'**
   String get weekdayFri;
-
-  /// No description provided for @copyReleaseLink.
-  ///
-  /// In en, this message translates to:
-  /// **'Copy Release Link'**
-  String get copyReleaseLink;
 
   /// No description provided for @linkCopiedToClipboard.
   ///
@@ -2155,12 +1975,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Leech detected! Card lapsed multiple times.'**
   String get leechDetectedAlert;
-
-  /// No description provided for @leechSuspendedAlert.
-  ///
-  /// In en, this message translates to:
-  /// **'Leech detected! Card automatically suspended.'**
-  String get leechSuspendedAlert;
 
   /// No description provided for @autoBackups.
   ///

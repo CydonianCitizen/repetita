@@ -52,19 +52,37 @@ void main() {
         const CardsCompanion(state: Value(2), isSuspended: Value(true)),
       );
 
+      // Card 4: Relearning card (state = 3, due = now)
+      final relearningCardId = await db.cardsDao.createCard(
+        deckId: testDeckId,
+        front: 'Relearning Front',
+        back: 'Relearning Back',
+        now: now,
+      );
+      await (db.update(db.cards)
+            ..where((tbl) => tbl.id.equals(relearningCardId)))
+          .write(const CardsCompanion(state: Value(3)));
+
       // Shift by 7 days of vacation
       final shiftedCount = await db.cardsDao.shiftDueDatesForVacation(7);
-      expect(shiftedCount, equals(1)); // Only the active review card
+      expect(
+        shiftedCount,
+        equals(2),
+      ); // Both active review and relearning cards
 
       final newCard = await db.cardsDao.getCardById(newCardId);
       final reviewCard = await db.cardsDao.getCardById(reviewCardId);
       final suspendedCard = await db.cardsDao.getCardById(suspendedCardId);
+      final relearningCard = await db.cardsDao.getCardById(relearningCardId);
 
       // New card due is UNCHANGED
       expect(newCard?.due.day, equals(now.day));
 
       // Review card due is shifted forward by 7 days
       expect(reviewCard?.due.day, equals(now.day + 7));
+
+      // Relearning card due is shifted forward by 7 days
+      expect(relearningCard?.due.day, equals(now.day + 7));
 
       // Suspended card due is UNCHANGED
       expect(suspendedCard?.due.day, equals(now.day));

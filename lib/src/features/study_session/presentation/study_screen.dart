@@ -18,20 +18,7 @@ import 'controllers/study_session_controller.dart';
 import 'widgets/flip_card_view.dart';
 import 'widgets/rating_bar.dart';
 
-Color _getFlagColor(int flag) {
-  switch (flag) {
-    case 1:
-      return Colors.red;
-    case 2:
-      return Colors.orange;
-    case 3:
-      return Colors.green;
-    case 4:
-      return Colors.blue;
-    default:
-      return Colors.transparent;
-  }
-}
+import '../../cards/presentation/widgets/card_flag_color.dart';
 
 class StudyScreen extends ConsumerWidget {
   const StudyScreen({super.key, required this.deckId, this.customStudyConfig});
@@ -137,7 +124,7 @@ class StudyScreen extends ConsumerWidget {
                 key: const Key('study_card_flag_button'),
                 icon: Icon(
                   flag > 0 ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                  color: flag > 0 ? _getFlagColor(flag) : null,
+                  color: flag > 0 ? getCardFlagColor(flag) : null,
                 ),
                 tooltip: l10n?.flag ?? 'Flag',
                 onSelected: (newFlag) async {

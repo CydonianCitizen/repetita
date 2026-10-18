@@ -43,9 +43,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get navSettings => 'Impostazioni';
 
   @override
-  String get decksTitle => 'Mazzi repetita';
-
-  @override
   String get noDecksYet => 'Nessun mazzo presente. Tocca + per crearne uno.';
 
   @override
@@ -80,27 +77,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings => 'Impostazioni';
 
   @override
-  String totalCardsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count carte',
-      one: '1 carta',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String dueCount(int count) {
     return '$count da ripassare';
   }
-
-  @override
-  String get deleteDeckConfirmation =>
-      'Sei sicuro di voler eliminare questo mazzo? Tutte le carte e la cronologia delle ripetizioni andranno perse.';
-
-  @override
-  String get cardsTitle => 'Carte';
 
   @override
   String get addCard => 'Aggiungi carta';
@@ -115,13 +94,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get cardBack => 'Retro (Risposta / Spiegazione)';
 
   @override
-  String get noCardsYet => 'Nessuna carta in questo mazzo.';
-
-  @override
-  String get addCardPrompt =>
-      'Aggiungi flashcard per iniziare a studiare con il motore a ripetizione spaziata FSRS.';
-
-  @override
   String get deleteCardConfirmation =>
       'Sei sicuro di voler eliminare questa carta?';
 
@@ -130,23 +102,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get showAnswer => 'Mostra risposta';
-
-  @override
-  String get sessionComplete => 'Sessione completata!';
-
-  @override
-  String get sessionCompleteSubtitle =>
-      'Tutte le carte in scadenza per oggi in questo mazzo sono state ripassate.';
-
-  @override
-  String get noDueCardsTitle => 'Tutto in pari!';
-
-  @override
-  String get noDueCardsSubtitle =>
-      'Non ci sono carte da ripassare in questo mazzo in questo momento.';
-
-  @override
-  String get backToDecks => 'Torna ai mazzi';
 
   @override
   String get ratingAgain => 'Ripeti';
@@ -161,22 +116,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get ratingEasy => 'Facile';
 
   @override
-  String get statsTitle => 'Analisi ripassi';
-
-  @override
   String get retentionRate => 'Tasso di ritenzione';
 
   @override
   String get totalReviews => 'Revisioni totali';
-
-  @override
-  String get cardsLearned => 'Carte apprese';
-
-  @override
-  String get retentionSubtitle => 'Percentuale di risposte corrette';
-
-  @override
-  String get cardStateDistribution => 'Distribuzione stati carte';
 
   @override
   String get stateNew => 'Nuova';
@@ -197,15 +140,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get exportBackup => 'Esporta backup JSON';
 
   @override
-  String get importBackup => 'Importa backup';
-
-  @override
   String get exportDescription =>
       'Crea un backup JSON offline di tutti i tuoi mazzi, carte e cronologia.';
-
-  @override
-  String get importDescription =>
-      'Ripristina o unisci flashcard da un file di backup JSON.';
 
   @override
   String get settingsTitle => 'Impostazioni';
@@ -271,9 +207,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get refreshRate => 'Frequenza di aggiornamento';
-
-  @override
-  String get refreshRateSubtitle => 'Frequenza schermo';
 
   @override
   String get refreshRateAuto => 'Predefinito di sistema (Dinamico)';
@@ -366,13 +299,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get language => 'Lingua';
 
   @override
-  String get languageSubtitle => 'Lingua interfaccia';
-
-  @override
   String get systemLanguageSubtitle => 'Segui la lingua del dispositivo';
-
-  @override
-  String get currentLanguage => 'Lingua attualmente attiva';
 
   @override
   String get english => 'English';
@@ -394,9 +321,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get fsrsParameters => 'Parametri algoritmo FSRS';
-
-  @override
-  String get fsrsParametersSubtitle => 'Ritenzione e intervalli';
 
   @override
   String retentionTarget(int percent) {
@@ -459,9 +383,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get desktopNotifications => 'Notifiche desktop';
 
   @override
-  String get desktopNotificationsSubtitle => 'Avvisi di sistema';
-
-  @override
   String get desktopNotificationsActive => 'Notifiche di sistema attive';
 
   @override
@@ -479,9 +400,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get sectionDataBackup => 'Dati e backup';
-
-  @override
-  String get backupSubtitle => 'Backup JSON e CSV';
 
   @override
   String get sectionUpdates => 'Aggiornamenti e release';
@@ -614,9 +532,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get undoReview => 'Annulla ripasso';
 
   @override
-  String get cardUndone => 'Ripasso annullato';
-
-  @override
   String get suspendCard => 'Sospendi carta';
 
   @override
@@ -630,9 +545,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get cardSuspended => 'Carta sospesa';
-
-  @override
-  String get cardUnsuspended => 'Carta riattivata';
 
   @override
   String get cardBuried => 'Carta rinviata a domani';
@@ -662,9 +574,6 @@ class AppLocalizationsIt extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get noReviewsYet => 'Nessuna revisione registrata';
 
   @override
   String get deleteDeckConfirmTitle => 'Eliminare il mazzo?';
@@ -715,9 +624,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get addTag => 'Aggiungi tag';
-
-  @override
-  String get manageTags => 'Gestisci Tag';
 
   @override
   String get newTagHint => 'Inserisci nome tag...';
@@ -909,9 +815,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get deckDescriptionHint => 'Descrizione opzionale di questo mazzo';
 
   @override
-  String get themeSystemSubtitle => 'Segui le impostazioni del dispositivo';
-
-  @override
   String get themeDarkSubtitle => 'Usa sempre il tema scuro';
 
   @override
@@ -1005,9 +908,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get saveToFile => 'Salva su File';
 
   @override
-  String get pasteText => 'Incolla Testo';
-
-  @override
   String get selectAnkiDestination => 'Destinazione Importazione Anki';
 
   @override
@@ -1067,9 +967,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weekdayFri => 'V';
-
-  @override
-  String get copyReleaseLink => 'Copia link release';
 
   @override
   String linkCopiedToClipboard(String url) {
@@ -1178,10 +1075,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get leechDetectedAlert =>
       'Sanguisuga rilevata! Carta fallita ripetutamente.';
-
-  @override
-  String get leechSuspendedAlert =>
-      'Sanguisuga rilevata! Carta sospesa automaticamente.';
 
   @override
   String get autoBackups => 'Backup Automatici';

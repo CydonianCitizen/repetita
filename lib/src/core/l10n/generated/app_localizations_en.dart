@@ -43,9 +43,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navSettings => 'Settings';
 
   @override
-  String get decksTitle => 'repetita Decks';
-
-  @override
   String get noDecksYet => 'No decks yet. Tap + to create one.';
 
   @override
@@ -80,27 +77,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String totalCardsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count cards',
-      one: '1 card',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String dueCount(int count) {
     return '$count due';
   }
-
-  @override
-  String get deleteDeckConfirmation =>
-      'Are you sure you want to delete this deck? All cards and review history will be lost.';
-
-  @override
-  String get cardsTitle => 'Cards';
 
   @override
   String get addCard => 'Add Card';
@@ -115,13 +94,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cardBack => 'Back (Answer / Explanation)';
 
   @override
-  String get noCardsYet => 'No cards in this deck yet.';
-
-  @override
-  String get addCardPrompt =>
-      'Add flashcards to start studying with the FSRS spaced repetition engine.';
-
-  @override
   String get deleteCardConfirmation =>
       'Are you sure you want to delete this card?';
 
@@ -130,23 +102,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get showAnswer => 'Show Answer';
-
-  @override
-  String get sessionComplete => 'Session Complete!';
-
-  @override
-  String get sessionCompleteSubtitle =>
-      'All due cards in this deck have been reviewed for today.';
-
-  @override
-  String get noDueCardsTitle => 'All Caught Up!';
-
-  @override
-  String get noDueCardsSubtitle =>
-      'There are no cards due for review in this deck right now.';
-
-  @override
-  String get backToDecks => 'Back to Decks';
 
   @override
   String get ratingAgain => 'Again';
@@ -161,22 +116,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ratingEasy => 'Easy';
 
   @override
-  String get statsTitle => 'Review Analytics';
-
-  @override
   String get retentionRate => 'Retention Rate';
 
   @override
   String get totalReviews => 'Total Reviews';
-
-  @override
-  String get cardsLearned => 'Cards Learned';
-
-  @override
-  String get retentionSubtitle => 'Percentage of successful recall reviews';
-
-  @override
-  String get cardStateDistribution => 'Card State Distribution';
 
   @override
   String get stateNew => 'New';
@@ -197,15 +140,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportBackup => 'Export JSON Backup';
 
   @override
-  String get importBackup => 'Import Backup';
-
-  @override
   String get exportDescription =>
       'Create an offline JSON backup of all your decks, cards, and review histories.';
-
-  @override
-  String get importDescription =>
-      'Restore or merge flashcards from a JSON backup file.';
 
   @override
   String get settingsTitle => 'Settings';
@@ -271,9 +207,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refreshRate => 'Refresh Rate';
-
-  @override
-  String get refreshRateSubtitle => 'Display refresh frequency';
 
   @override
   String get refreshRateAuto => 'System Default (Dynamic)';
@@ -366,13 +299,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
-  String get languageSubtitle => 'Interface language';
-
-  @override
   String get systemLanguageSubtitle => 'Follow device system language';
-
-  @override
-  String get currentLanguage => 'Current active language';
 
   @override
   String get english => 'English';
@@ -394,9 +321,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fsrsParameters => 'FSRS Scheduling Parameters';
-
-  @override
-  String get fsrsParametersSubtitle => 'Retention and intervals';
 
   @override
   String retentionTarget(int percent) {
@@ -459,9 +383,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get desktopNotifications => 'Desktop Notifications';
 
   @override
-  String get desktopNotificationsSubtitle => 'System review alerts';
-
-  @override
   String get desktopNotificationsActive => 'System notifications enabled';
 
   @override
@@ -479,9 +400,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sectionDataBackup => 'Data & Backup';
-
-  @override
-  String get backupSubtitle => 'JSON and CSV transfer';
 
   @override
   String get sectionUpdates => 'Updates & Releases';
@@ -614,9 +532,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get undoReview => 'Undo Review';
 
   @override
-  String get cardUndone => 'Review undone';
-
-  @override
   String get suspendCard => 'Suspend Card';
 
   @override
@@ -630,9 +545,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardSuspended => 'Card suspended';
-
-  @override
-  String get cardUnsuspended => 'Card unsuspended';
 
   @override
   String get cardBuried => 'Card buried until tomorrow';
@@ -662,9 +574,6 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get noReviewsYet => 'No reviews recorded yet';
 
   @override
   String get deleteDeckConfirmTitle => 'Delete Deck?';
@@ -714,9 +623,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addTag => 'Add Tag';
-
-  @override
-  String get manageTags => 'Manage Tags';
 
   @override
   String get newTagHint => 'Enter tag name...';
@@ -906,9 +812,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deckDescriptionHint => 'Optional description of this deck';
 
   @override
-  String get themeSystemSubtitle => 'Follow device theme settings';
-
-  @override
   String get themeDarkSubtitle => 'Always use dark palette';
 
   @override
@@ -996,9 +899,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveToFile => 'Save to File';
 
   @override
-  String get pasteText => 'Paste Text';
-
-  @override
   String get selectAnkiDestination => 'Anki Import Destination';
 
   @override
@@ -1058,9 +958,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weekdayFri => 'F';
-
-  @override
-  String get copyReleaseLink => 'Copy Release Link';
 
   @override
   String linkCopiedToClipboard(String url) {
@@ -1169,10 +1066,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get leechDetectedAlert =>
       'Leech detected! Card lapsed multiple times.';
-
-  @override
-  String get leechSuspendedAlert =>
-      'Leech detected! Card automatically suspended.';
 
   @override
   String get autoBackups => 'Automatic Backups';

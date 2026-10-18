@@ -17,21 +17,7 @@ import '../../tags/presentation/controllers/tags_controller.dart';
 import '../domain/card_entity.dart';
 import 'card_editor_screen.dart';
 import 'controllers/card_list_controller.dart';
-
-Color _getFlagColor(int flag) {
-  switch (flag) {
-    case 1:
-      return Colors.red;
-    case 2:
-      return Colors.orange;
-    case 3:
-      return Colors.green;
-    case 4:
-      return Colors.blue;
-    default:
-      return Colors.transparent;
-  }
-}
+import 'widgets/card_flag_color.dart';
 
 class DeckDetailScreen extends ConsumerStatefulWidget {
   const DeckDetailScreen({super.key, required this.deck});
@@ -378,7 +364,7 @@ class _CardTile extends StatelessWidget {
                           Icon(
                             Icons.flag_rounded,
                             size: 16,
-                            color: _getFlagColor(card.flag),
+                            color: getCardFlagColor(card.flag),
                           ),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -594,7 +580,7 @@ class _CardTile extends StatelessWidget {
                                       : Icons.outlined_flag,
                                   size: 18,
                                   color: card.flag > 0
-                                      ? _getFlagColor(card.flag)
+                                      ? getCardFlagColor(card.flag)
                                       : null,
                                 ),
                                 const SizedBox(width: 8),

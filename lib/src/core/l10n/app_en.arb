@@ -11,12 +11,9 @@
   "edit": "Edit",
   "ok": "OK",
   "search": "Search",
-
   "navHome": "Decks",
   "navStats": "Stats",
   "navSettings": "Settings",
-
-  "decksTitle": "repetita Decks",
   "noDecksYet": "No decks yet. Tap + to create one.",
   "createFirstDeckPrompt": "Create your first deck to begin spaced repetition studying.",
   "createDeck": "Create Deck",
@@ -28,14 +25,6 @@
   "stats": "Statistics",
   "backup": "Backup & Restore",
   "settings": "Settings",
-  "totalCardsCount": "{count, plural, =1{1 card} other{{count} cards}}",
-  "@totalCardsCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "dueCount": "{count} due",
   "@dueCount": {
     "placeholders": {
@@ -44,46 +33,26 @@
       }
     }
   },
-  "deleteDeckConfirmation": "Are you sure you want to delete this deck? All cards and review history will be lost.",
-
-  "cardsTitle": "Cards",
   "addCard": "Add Card",
   "editCard": "Edit Card",
   "cardFront": "Front (Question / Prompt)",
   "cardBack": "Back (Answer / Explanation)",
-  "noCardsYet": "No cards in this deck yet.",
-  "addCardPrompt": "Add flashcards to start studying with the FSRS spaced repetition engine.",
   "deleteCardConfirmation": "Are you sure you want to delete this card?",
-
   "studySessionTitle": "Study Session",
   "showAnswer": "Show Answer",
-  "sessionComplete": "Session Complete!",
-  "sessionCompleteSubtitle": "All due cards in this deck have been reviewed for today.",
-  "noDueCardsTitle": "All Caught Up!",
-  "noDueCardsSubtitle": "There are no cards due for review in this deck right now.",
-  "backToDecks": "Back to Decks",
   "ratingAgain": "Again",
   "ratingHard": "Hard",
   "ratingGood": "Good",
   "ratingEasy": "Easy",
-
-  "statsTitle": "Review Analytics",
   "retentionRate": "Retention Rate",
   "totalReviews": "Total Reviews",
-  "cardsLearned": "Cards Learned",
-  "retentionSubtitle": "Percentage of successful recall reviews",
-  "cardStateDistribution": "Card State Distribution",
   "stateNew": "New",
   "stateLearning": "Learning",
   "stateReview": "Review",
   "stateRelearning": "Relearning",
-
   "backupTitle": "Backup & Transfer",
   "exportBackup": "Export JSON Backup",
-  "importBackup": "Import Backup",
   "exportDescription": "Create an offline JSON backup of all your decks, cards, and review histories.",
-  "importDescription": "Restore or merge flashcards from a JSON backup file.",
-
   "settingsTitle": "Settings",
   "appSubtitle": "Offline Spaced Repetition Engine • {version}",
   "@appSubtitle": {
@@ -112,7 +81,6 @@
   "themeLight": "Light Theme",
   "themeAmoledSubtitle": "Pure black for OLED displays",
   "refreshRate": "Refresh Rate",
-  "refreshRateSubtitle": "Display refresh frequency",
   "refreshRateAuto": "System Default (Dynamic)",
   "refreshRateAutoDesc": "Adaptive refresh rate managed by Android OS",
   "refreshRatePowerSave": "Battery Saver (60 Hz)",
@@ -128,7 +96,6 @@
   "animationExpressive": "Expressive",
   "animationExpressiveDesc": "Dynamic spring motion",
   "testMotion": "Test Motion",
-
   "hapticFeedback": "Haptic Feedback",
   "hapticFeedbackSubtitle": "Touch vibration response",
   "hapticOff": "Off",
@@ -140,23 +107,18 @@
   "hapticStrong": "Strong",
   "hapticStrongDesc": "Strong pulse",
   "testHaptic": "Test Haptics",
-
   "sectionLanguage": "Language & Localization",
   "selectLanguage": "Select Language",
   "language": "Language",
-  "languageSubtitle": "Interface language",
   "systemLanguageSubtitle": "Follow device system language",
-  "currentLanguage": "Current active language",
   "english": "English",
   "italian": "Italiano",
   "spanish": "Español",
   "comingSoon": "Coming soon",
   "active": "Active",
-
   "sectionStudyAlgorithm": "Study & Algorithm",
   "fsrsParameters": "FSRS Scheduling Parameters",
-  "fsrsParametersSubtitle": "Retention and intervals",
-  "retentionTarget": "90% retention",
+  "retentionTarget": "Target retention: {percent}%",
   "desiredRetention": "Desired Retention",
   "desiredRetentionDesc": "Target recall probability at review time. Higher retention requires more frequent reviews.",
   "maxInterval": "Maximum Interval",
@@ -174,16 +136,12 @@
   "notificationSent": "Test notification dispatched!",
   "reminderDesc": "Receive a gentle reminder each day to keep your review streak active and retain flashcards.",
   "desktopNotifications": "Desktop Notifications",
-  "desktopNotificationsSubtitle": "System review alerts",
   "desktopNotificationsActive": "System notifications enabled",
   "desktopNotificationsDisabled": "System notifications disabled",
   "desktopNotificationsExplanation": "On Windows and macOS, notifications are active while the application is running. Fixed-time daily alarms cannot trigger when the application is closed.",
   "loadSampleDeck": "Load Sample Deck",
   "sampleDeckLoaded": "Sample deck loaded successfully!",
-
   "sectionDataBackup": "Data & Backup",
-  "backupSubtitle": "JSON and CSV transfer",
-
   "sectionUpdates": "Updates & Releases",
   "checkForUpdates": "Check for Updates",
   "checkForUpdatesSubtitle": "Check GitHub releases",
@@ -209,7 +167,6 @@
   "viewOnGitHub": "View on GitHub",
   "updateCheckFailed": "Could not check for updates",
   "updateCheckFailedDesc": "Please check your internet connection and try again.",
-
   "sectionAbout": "About & Privacy",
   "licenseAndCredits": "License & Credits",
   "licenseSubtitle": "MIT License • Credits",
@@ -247,13 +204,11 @@
   "reviews": "Reviews",
   "undo": "Undo",
   "undoReview": "Undo Review",
-  "cardUndone": "Review undone",
   "suspendCard": "Suspend Card",
   "unsuspendCard": "Unsuspend Card",
   "buryCard": "Bury Card",
   "unburyCard": "Unbury Card",
   "cardSuspended": "Card suspended",
-  "cardUnsuspended": "Card unsuspended",
   "cardBuried": "Card buried until tomorrow",
   "suspendedBadge": "Suspended",
   "buriedBadge": "Buried",
@@ -268,8 +223,6 @@
       }
     }
   },
-  "totalReviews": "Total Reviews",
-  "noReviewsYet": "No reviews recorded yet",
   "deleteDeckConfirmTitle": "Delete Deck?",
   "deleteDeckConfirmMessage": "Are you sure you want to delete \"{name}\"? All cards in this deck will be deleted.",
   "@deleteDeckConfirmMessage": {
@@ -284,10 +237,6 @@
   "promptBadge": "PROMPT",
   "answerBadge": "ANSWER",
   "tapToFlipHint": "Tap or press Show Answer to flip",
-  "ratingAgain": "Again",
-  "ratingHard": "Hard",
-  "ratingGood": "Good",
-  "ratingEasy": "Easy",
   "saveAndAddAnother": "Save & Add Another",
   "cardSaved": "Card saved",
   "insertCloze": "Cloze [...]",
@@ -303,7 +252,6 @@
   },
   "tags": "Tags",
   "addTag": "Add Tag",
-  "manageTags": "Manage Tags",
   "newTagHint": "Enter tag name...",
   "filterAll": "All",
   "noTags": "No tags",
@@ -373,7 +321,6 @@
   "allCardsReviewedTitle": "All cards reviewed for today!",
   "greatJobUpcomingReviews": "Great job! Check back later for upcoming reviews.",
   "backToDeck": "Back to Deck",
-  "showAnswer": "Show Answer",
   "cardProgress": "Card {current} of {total}",
   "@cardProgress": {
     "placeholders": {
@@ -399,7 +346,6 @@
   "deckNameRequired": "Deck name is required",
   "nameTooLong": "Name must be 100 characters or less",
   "deckDescriptionHint": "Optional description of this deck",
-  "themeSystemSubtitle": "Follow device theme settings",
   "themeDarkSubtitle": "Always use dark palette",
   "themeLightSubtitle": "Always use light palette",
   "cardsDueForReview": "{count} cards due for review",
@@ -483,7 +429,6 @@
   },
   "pickFile": "Select File",
   "saveToFile": "Save to File",
-  "pasteText": "Paste Text",
   "selectAnkiDestination": "Anki Import Destination",
   "keepAnkiDecks": "Preserve original deck names",
   "chooseTargetDeck": "Import into an existing deck",
@@ -493,7 +438,6 @@
   "discardChangesTitle": "Discard changes?",
   "discardChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
   "discard": "Discard",
-  "addTag": "Add Tag",
   "clearSearch": "Clear search",
   "totalCount": "{count} total",
   "@totalCount": {
@@ -525,7 +469,6 @@
   "weekdayMon": "M",
   "weekdayWed": "W",
   "weekdayFri": "F",
-  "copyReleaseLink": "Copy Release Link",
   "linkCopiedToClipboard": "Release URL copied to clipboard: {url}",
   "@linkCopiedToClipboard": {
     "placeholders": {
@@ -576,7 +519,6 @@
       }
     }
   },
-  "retentionTarget": "Target retention: {percent}%",
   "@retentionTarget": {
     "placeholders": {
       "percent": {
@@ -595,11 +537,9 @@
   "flagOrange": "Orange Flag",
   "flagGreen": "Green Flag",
   "flagBlue": "Blue Flag",
-  "filterAll": "All",
   "filterLeech": "Leech",
   "filterFlag": "Flag",
   "leechDetectedAlert": "Leech detected! Card lapsed multiple times.",
-  "leechSuspendedAlert": "Leech detected! Card automatically suspended.",
   "autoBackups": "Automatic Backups",
   "noAutoBackupsYet": "No automatic backups yet.",
   "restoreBackup": "Restore",
@@ -609,6 +549,3 @@
   "vacationModeInactive": "Disabled • Normal scheduling",
   "leechCardsSubtitle": "Lapsed cards"
 }
-
-
-

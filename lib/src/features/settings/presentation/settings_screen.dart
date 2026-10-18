@@ -12,16 +12,6 @@ import 'widgets/section_header.dart';
 import 'widgets/settings_card.dart';
 import 'widgets/settings_tile.dart';
 
-export 'screens/about_settings_screen.dart';
-export 'screens/appearance_settings_screen.dart';
-export 'screens/language_settings_screen.dart';
-export 'screens/study_algorithm_settings_screen.dart';
-export 'screens/updates_settings_screen.dart';
-export 'widgets/level_slider.dart';
-export 'widgets/section_header.dart';
-export 'widgets/settings_card.dart';
-export 'widgets/settings_tile.dart';
-
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key, this.isEmbedded = false});
 
