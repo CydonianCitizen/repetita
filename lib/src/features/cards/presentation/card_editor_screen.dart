@@ -404,31 +404,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
           }
         },
         child: Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-            actions: [
-              if (!widget.isEditing)
-                TextButton(
-                  key: const Key('save_and_add_another_button'),
-                  onPressed: _isSaving ? null : () => _save(addAnother: true),
-                  child: Text(l10n?.saveAndAddAnother ?? 'Save & Add Another'),
-                ),
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: FilledButton(
-                  key: const Key('save_card_button'),
-                  onPressed: _isSaving ? null : () => _save(addAnother: false),
-                  child: _isSaving
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n?.save ?? 'Save'),
-                ),
-              ),
-            ],
-          ),
+          appBar: AppBar(title: Text(title)),
           body: SafeArea(
             child: Center(
               child: ConstrainedBox(
@@ -436,12 +412,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                 child: Form(
                   key: _formKey,
                   child: ListView(
-                    padding: EdgeInsets.fromLTRB(
-                      16,
-                      16,
-                      16,
-                      32 + MediaQuery.viewPaddingOf(context).bottom,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                     children: [
                       ValueListenableBuilder<TextEditingValue>(
                         valueListenable: _frontController,
@@ -633,6 +604,61 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                             onPressed: () => _showAddTagDialog(context),
                           ),
                         ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          bottomNavigationBar: SafeArea(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: theme.scaffoldBackgroundColor,
+                border: Border(
+                  top: BorderSide(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+              child: Center(
+                heightFactor: 1.0,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: Row(
+                    children: [
+                      if (!widget.isEditing) ...[
+                        Expanded(
+                          child: OutlinedButton(
+                            key: const Key('save_and_add_another_button'),
+                            onPressed: _isSaving
+                                ? null
+                                : () => _save(addAnother: true),
+                            child: Text(
+                              l10n?.saveAndAddAnother ?? 'Save & Add Another',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                      ],
+                      Expanded(
+                        child: FilledButton(
+                          key: const Key('save_card_button'),
+                          onPressed: _isSaving
+                              ? null
+                              : () => _save(addAnother: false),
+                          child: _isSaving
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(l10n?.save ?? 'Save'),
+                        ),
                       ),
                     ],
                   ),

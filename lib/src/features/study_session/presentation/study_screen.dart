@@ -67,7 +67,12 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
           children: [
             const Icon(Icons.timer_outlined, color: Colors.orange),
             const SizedBox(width: 8),
-            Text(l10n?.timeboxReachedTitle ?? 'Timebox reached'),
+            Expanded(
+              child: Text(
+                l10n?.timeboxReachedTitle ?? 'Timebox reached',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         content: Text(
@@ -141,30 +146,41 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
             final titleText = isCram
                 ? (l10n?.cramSessionTitle ?? 'Cram Session')
                 : (l10n?.studySessionTitle ?? 'Study Session');
+            if (!isCram) {
+              return Text(
+                titleText,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              );
+            }
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(titleText),
-                if (isCram) ...[
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.tertiaryContainer,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      l10n?.cramBadge ?? 'CRAM',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onTertiaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
+                Flexible(
+                  child: Text(
+                    titleText,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    l10n?.cramBadge ?? 'CRAM',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onTertiaryContainer,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
+                ),
               ],
             );
           },
@@ -623,15 +639,20 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      l10n?.cardProgress(currentNum, total) ??
-                                          'Card $currentNum of $total',
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: colorScheme.onSurfaceVariant,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                    Flexible(
+                                      child: Text(
+                                        l10n?.cardProgress(currentNum, total) ??
+                                            'Card $currentNum of $total',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color:
+                                                  colorScheme.onSurfaceVariant,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
                                     ),
+                                    const SizedBox(width: 8),
                                     Text(
                                       l10n?.cardsRemaining(
                                             sessionState.remainingCards,
