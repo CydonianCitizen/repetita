@@ -106,6 +106,21 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
     super.dispose();
   }
 
+  String _getFlagLabel(int flag, AppLocalizations? l10n) {
+    switch (flag) {
+      case 1:
+        return l10n?.flagRed ?? 'Red';
+      case 2:
+        return l10n?.flagOrange ?? 'Orange';
+      case 3:
+        return l10n?.flagGreen ?? 'Green';
+      case 4:
+        return l10n?.flagBlue ?? 'Blue';
+      default:
+        return l10n?.flag ?? 'Flag';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -146,9 +161,14 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
             final titleText = isCram
                 ? (l10n?.cramSessionTitle ?? 'Cram Session')
                 : (l10n?.studySessionTitle ?? 'Study Session');
+            final titleStyle = theme.textTheme.titleMedium?.copyWith(
+              fontSize: 19,
+              fontWeight: FontWeight.w600,
+            );
             if (!isCram) {
               return Text(
                 titleText,
+                style: titleStyle,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               );
@@ -159,6 +179,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                 Flexible(
                   child: Text(
                     titleText,
+                    style: titleStyle,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -205,104 +226,6 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                           .showSnackBar(SnackBar(content: Text(e.toString())));
                     }
                   }
-                },
-              );
-            },
-          ),
-          Consumer(
-            builder: (context, ref, _) {
-              final isTypeIn = ref.watch(typeInPracticeControllerProvider);
-              return IconButton(
-                key: const Key('toggle_type_in_button'),
-                icon: Icon(
-                  isTypeIn
-                      ? Icons.keyboard_rounded
-                      : Icons.keyboard_alt_outlined,
-                ),
-                tooltip: l10n?.typeInAnswerToggle ?? 'Type-in answer practice',
-                onPressed: () => ref
-                    .read(typeInPracticeControllerProvider.notifier)
-                    .toggle(),
-              );
-            },
-          ),
-          Consumer(
-            builder: (context, ref, _) {
-              final currentCard = ref.watch(
-                provider.select((s) => s.value?.currentCard),
-              );
-              if (currentCard == null) return const SizedBox.shrink();
-              final flag = currentCard.flag;
-              return PopupMenuButton<int>(
-                key: const Key('study_card_flag_button'),
-                icon: Icon(
-                  flag > 0 ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                  color: flag > 0 ? getCardFlagColor(flag) : null,
-                ),
-                tooltip: l10n?.flag ?? 'Flag',
-                onSelected: (newFlag) async {
-                  await ref
-                      .read(cardsDaoProvider)
-                      .setCardFlag(currentCard.id, newFlag);
-                },
-                itemBuilder: (context) {
-                  final itemL10n = AppLocalizations.of(context);
-                  return [
-                    PopupMenuItem(
-                      value: 0,
-                      child: Row(
-                        children: [
-                          const Icon(Icons.outlined_flag, size: 18),
-                          const SizedBox(width: 8),
-                          Text(itemL10n?.flagNone ?? 'No Flag'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 1,
-                      child: Row(
-                        children: [
-                          const Icon(Icons.flag, size: 18, color: Colors.red),
-                          const SizedBox(width: 8),
-                          Text(itemL10n?.flagRed ?? 'Red Flag'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 2,
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.flag,
-                            size: 18,
-                            color: Colors.orange,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(itemL10n?.flagOrange ?? 'Orange Flag'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 3,
-                      child: Row(
-                        children: [
-                          const Icon(Icons.flag, size: 18, color: Colors.green),
-                          const SizedBox(width: 8),
-                          Text(itemL10n?.flagGreen ?? 'Green Flag'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 4,
-                      child: Row(
-                        children: [
-                          const Icon(Icons.flag, size: 18, color: Colors.blue),
-                          const SizedBox(width: 8),
-                          Text(itemL10n?.flagBlue ?? 'Blue Flag'),
-                        ],
-                      ),
-                    ),
-                  ];
                 },
               );
             },
@@ -710,12 +633,230 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                               ),
                             ),
                           ),
-                          if (!sessionState.isAnswerRevealed)
+                          if (!sessionState.isAnswerRevealed) ...[
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Consumer(
+                                      builder: (context, ref, _) {
+                                        final isTypeIn = ref.watch(
+                                          typeInPracticeControllerProvider,
+                                        );
+                                        return OutlinedButton.icon(
+                                          key: const Key(
+                                            'toggle_type_in_button',
+                                          ),
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor: isTypeIn
+                                                ? colorScheme.primary
+                                                : colorScheme.onSurfaceVariant,
+                                            side: BorderSide(
+                                              color: isTypeIn
+                                                  ? colorScheme.primary
+                                                  : colorScheme.outlineVariant,
+                                              width: isTypeIn ? 1.5 : 1.0,
+                                            ),
+                                            backgroundColor: isTypeIn
+                                                ? colorScheme.primaryContainer
+                                                      .withValues(alpha: 0.35)
+                                                : null,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 10,
+                                              horizontal: 8,
+                                            ),
+                                          ),
+                                          onPressed: () => ref
+                                              .read(
+                                                typeInPracticeControllerProvider
+                                                    .notifier,
+                                              )
+                                              .toggle(),
+                                          icon: Icon(
+                                            isTypeIn
+                                                ? Icons.keyboard_rounded
+                                                : Icons.keyboard_alt_outlined,
+                                            size: 18,
+                                          ),
+                                          label: Text(
+                                            l10n?.typeInAnswer ?? 'Type answer',
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Consumer(
+                                      builder: (context, ref, _) {
+                                        final flag = currentCard.flag;
+                                        final flagColor = flag > 0
+                                            ? getCardFlagColor(flag)
+                                            : null;
+
+                                        return PopupMenuButton<int>(
+                                          key: const Key(
+                                            'study_card_flag_button',
+                                          ),
+                                          tooltip: l10n?.flag ?? 'Flag',
+                                          onSelected: (newFlag) async {
+                                            await ref
+                                                .read(cardsDaoProvider)
+                                                .setCardFlag(
+                                                  currentCard.id,
+                                                  newFlag,
+                                                );
+                                          },
+                                          itemBuilder: (context) {
+                                            final itemL10n =
+                                                AppLocalizations.of(context);
+                                            return [
+                                              PopupMenuItem(
+                                                value: 0,
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.outlined_flag,
+                                                      size: 18,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      itemL10n?.flagNone ??
+                                                          'No Flag',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                value: 1,
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.flag,
+                                                      size: 18,
+                                                      color: Colors.red,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      itemL10n?.flagRed ??
+                                                          'Red Flag',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                value: 2,
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.flag,
+                                                      size: 18,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      itemL10n?.flagOrange ??
+                                                          'Orange Flag',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                value: 3,
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.flag,
+                                                      size: 18,
+                                                      color: Colors.green,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      itemL10n?.flagGreen ??
+                                                          'Green Flag',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                value: 4,
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.flag,
+                                                      size: 18,
+                                                      color: Colors.blue,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      itemL10n?.flagBlue ??
+                                                          'Blue Flag',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ];
+                                          },
+                                          child: IgnorePointer(
+                                            child: OutlinedButton.icon(
+                                              style: OutlinedButton.styleFrom(
+                                                foregroundColor:
+                                                    flagColor ??
+                                                    colorScheme
+                                                        .onSurfaceVariant,
+                                                side: BorderSide(
+                                                  color:
+                                                      flagColor ??
+                                                      colorScheme
+                                                          .outlineVariant,
+                                                  width: flag > 0 ? 1.5 : 1.0,
+                                                ),
+                                                backgroundColor: flagColor
+                                                    ?.withValues(alpha: 0.12),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 10,
+                                                      horizontal: 8,
+                                                    ),
+                                              ),
+                                              onPressed: () {},
+                                              icon: Icon(
+                                                flag > 0
+                                                    ? Icons.flag_rounded
+                                                    : Icons
+                                                          .outlined_flag_rounded,
+                                                color: flagColor,
+                                                size: 18,
+                                              ),
+                                              label: Text(
+                                                flag > 0
+                                                    ? _getFlagLabel(flag, l10n)
+                                                    : (l10n?.flag ?? 'Flag'),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                               child: SizedBox(
                                 width: double.infinity,
                                 height: 52,
@@ -734,8 +875,8 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                                   ),
                                 ),
                               ).animate().fadeIn(duration: 150.ms),
-                            )
-                          else
+                            ),
+                          ] else
                             RatingBar(
                               intervals: sessionState.intervalPreviews,
                               onRatingSelected: submitRating,
