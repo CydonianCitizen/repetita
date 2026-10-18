@@ -18,8 +18,8 @@ Documento di pianificazione tecnica basato sulle scelte funzionali definite per 
 | **v0.8.0** <br>*(Completato)* | Motore Multi-Algoritmo (FSRS & SM-2) | • Architettura Strategy Pattern per scheduler SRS [x]<br>• Motore logico SM-2 puro (Easiness Factor & Intervalli) [x]<br>• Selettore algoritmo nelle Impostazioni [x]<br>• Migrazione schema Drift e gestione transizioni carte [x] | Media |
 | **v0.8.7** <br>*(Completato)* | Performance, Display & Settings Modularization | • Tema Pure Black AMOLED & gestione dinamica refresh rate [x]<br>• PRAGMA SQLite ad alte prestazioni (WAL, cache, mmap) [x]<br>• Haptic feedback nativo Android & ripristino vibrazione [x]<br>• Riorganizzazione modulare impostazioni in sotto-schermate [x] | Media |
 | **v0.9.0** <br>*(Completato)* | Study Controls, Revision & Exam Mastery | • Set Due Date / Reset / Create Copy [x]<br>• Leech Detection (soglia lapse + auto-tag/suspend) [x]<br>• Flag Colorate (4 colori) [x]<br>• Exam Scheduler (piano per data esame, retention consigliata) [x]<br>• Fuzz factor FSRS & Pause scheduler (vacation mode) [x]<br>• Backup automatico rolling [x] | Bassa |
-| **v1.0.0** <br>*(Completato)* | Consolidamento & Stabilità Finale | • Migrazioni Drift blindate (test suite automatica) [x]<br>• Zero bug, zero warning, 100% test coverage motori SRS [x] | Bassa |
-| **v1.1.0** | Modello Note, Siblings & Input Attivo | • Carte reverse come note type [NUOVA]<br>• Bury siblings automatico [NUOVA]<br>• Type-in-the-answer [NUOVA]<br>• Supporto RTL languages [NUOVA]<br>• Timeboxing & Auto-advance | Media |
+| **v0.9.1** <br>*(Completato)* | Modello Note, Siblings & Input Attivo | • Carte reverse come note type [x]<br>• Bury siblings automatico [x]<br>• Type-in-the-answer [x]<br>• Supporto RTL languages [x]<br>• Timeboxing & Auto-advance [x] | Media |
+| **v1.0.0** | Consolidamento & Stabilità Finale | • Migrazioni Drift blindate (test suite automatica) [x]<br>• Zero bug, zero warning, 100% test coverage motori SRS [x] | Bassa |
 | **v1.2.0** | Media Pipeline & Image Occlusion | • Pipeline Media Immagini (storage locale, deduplica SHA-256)<br>• Editor & Rendering Studio (zoom, adaptive)<br>• Import/Export media con .apkg<br>• Image Occlusion (canvas editor, hide-all reveal-one) | Alta |
 | **v1.3.0** | Ecosistema, Gerarchia & Card Browser | • Export `.apkg` completo compatibile Anki<br>• Subdeck gerarchici (`PARENT::CHILD`)<br>• Ricerca Globale Flashcard (Card Browser FTS5) | Media |
 | **v1.4.0** | Audio & Ergonomia Mobile | • Audio nelle carte (registrazione/playback open-source)<br>• Widget home screen + quick study<br>• Gesture personalizzabili in Studio<br>• Whiteboard effimera in Studio (recall motorio) | Media |
@@ -217,8 +217,8 @@ Documento di pianificazione tecnica basato sulle scelte funzionali definite per 
 
 Il piano evolutivo nasce da un'analisi di benchmark sulle feature dei competitor (Anki Desktop, AnkiDroid, AnkiMobile, RemNote, Mochi, ecosistema FSRS) e assegna a ciascuna funzionalità una versione precisa:
 * **v0.9.0**: Study Controls, Revision Utilities & Exam Mastery (Set Due/Reset/Copy §7.3, Leech Detection §7.4, Flag colorate §7.2, Fuzz §8.1, Vacation mode §8.2, Rolling Backup §7.1, Exam Scheduler §12.1).
+* **v0.9.1**: Modello Note, Siblings & Input Attivo (Carte Reverse §10.1, Bury Siblings §10.2, Type-in-the-answer §10.3, RTL languages §13.3, Timeboxing §10.5, Auto-advance §10.6).
 * **v1.0.0**: Consolidamento, Migrazioni Drift blindate & Test Coverage completa.
-* **v1.1.0**: Modello Note, Siblings & Input Attivo (Carte Reverse §10.1, Bury Siblings §10.2, Type-in-the-answer §10.3, RTL languages §13.3, Timeboxing §10.5, Auto-advance §10.6).
 * **v1.2.0**: Media Pipeline & Image Occlusion (§9.1-9.3, §10.4).
 * **v1.3.0**: Ecosistema, Gerarchia & Card Browser (Export .apkg §11.1, Subdeck §11.2, Card Browser FTS5 §11.3).
 * **v1.4.0**: Audio & Ergonomia Mobile (Audio §9.4, Widget §13.1, Gestures §13.2, Whiteboard §15.1).
@@ -317,9 +317,9 @@ Il piano evolutivo nasce da un'analisi di benchmark sulle feature dei competitor
 
 ---
 
-### 10. Tipi di Carta & Studio [v1.1.0 & v1.2.0]
-
-#### 10.1 Carte Reverse come Note Type [NUOVA]
+### 10. Tipi di Carta & Studio [v0.9.1 & v1.2.0]
+ 
+#### 10.1 Carte Reverse come Note Type [COMPLETATO in v0.9.1]
 * **Obiettivo**: Generazione bidirezionale Fronte→Retro e Retro→Fronte dalla stessa nota (vocabolari, definizioni bidirezionali). L'import `.apkg` già riconosce il modello "Basic (and reversed)" ma l'editor non può crearlo.
 * **Specifiche**:
   * Introduzione del concetto di **nota** con N carte generate: campo `noteId` in `Cards` (+ eventuale tabella `Notes` per i contenuti condivisi) e tipo di nota sul modello.
@@ -329,7 +329,7 @@ Il piano evolutivo nasce da un'analisi di benchmark sulle feature dei competitor
   * Creazione/modifica/eliminazione sincronizzata delle carte sorelle in transazione atomica.
   * Dipendenze strutturali: Bury Siblings (§10.2) e Image Occlusion multi-maschera (§10.4) si agganciano allo stesso concetto di nota.
 
-#### 10.2 Bury Siblings Automatico [NUOVA]
+#### 10.2 Bury Siblings Automatico [COMPLETATO in v0.9.1]
 * **Obiettivo**: Evitare l'autoinganno: vedere carte sorelle della stessa nota nella stessa sessione fa "ricordare" per contagio, non per richiamo attivo.
 * **Specifiche**:
   * La relazione sibling è **derivata automaticamente** dal `noteId` (§10.1): le carte generate dalla stessa nota sono sorelle per costruzione — nessuna segnalazione manuale dell'utente è richiesta. Due carte create indipendentemente, anche se simili per contenuto, non sono sorelle.
@@ -337,7 +337,7 @@ Il piano evolutivo nasce da un'analisi di benchmark sulle feature dei competitor
   * Opzione attivabile/disattivabile (default: attiva) + azione "Unbury" dalla schermata del mazzo.
   * Dipendenza: richiede il concetto di nota (§10.1).
 
-#### 10.3 Type-in-the-Answer [NUOVA]
+#### 10.3 Type-in-the-Answer [COMPLETATO in v0.9.1]
 * **Obiettivo**: Verifica oggettiva del richiamo per spelling, numeri e formule, contro l'autovalutazione indulgente.
 * **Specifiche**:
   * Campo di input nel fronte della carta (marcatore `{{type:...}}` sul campo o flag per tipo di nota).
@@ -354,13 +354,13 @@ Il piano evolutivo nasce da un'analisi di benchmark sulle feature dei competitor
   * Rendering: maschere riempite col colore superficie del tema, reveal al flip della carta.
   * Non distruttivo: definizione delle maschere in JSON referenziato dalla carta, modificabile in seguito.
 
-#### 10.5 Timeboxing
+#### 10.5 Timeboxing [COMPLETATO in v0.9.1]
 * **Obiettivo**: Sessioni a tempo con riepilogo periodico per mantenere la concentrazione (tecnica Pomodoro-like).
 * **Specifiche**:
   * Impostazione limite minuti (0 = disattivato) in Impostazioni → Studio.
   * Alla scadenza: riepilogo carte studiate e tempo trascorso con scelta "continua"/"termina" (comportamento AnkiDroid).
 
-#### 10.6 Auto-advance
+#### 10.6 Auto-advance [COMPLETATO in v0.9.1]
 * **Obiettivo**: Flusso hands-free per revisioni passive.
 * **Specifiche**:
   * Mostra la risposta automaticamente dopo N secondi configurabili; opzione di passaggio alla carta successiva con rating automatico "Again" dopo M secondi (comportamento AnkiDroid).
@@ -421,7 +421,7 @@ Il piano evolutivo nasce da un'analisi di benchmark sulle feature dei competitor
   * Mappatura configurabile: swipe (su/giù/sinistra/destra), double-tap, tap zone → azioni (rating 1-4, flip, undo, flag, bury, suspend).
   * Perimetro limitato a `StudyScreen`; persistenza in `appSettings`.
 
-#### 13.3 Supporto RTL Languages [v1.1.0 - NUOVA]
+#### 13.3 Supporto RTL Languages [v0.9.1 - COMPLETATO]
 * **Obiettivo**: Editing e visualizzazione corretti per lingue destra→sinistra (arabo, ebraico, farsi, urdu) — oggi punteggiatura e numeri risultano disallineati nei testi misti.
 * **Specifiche**:
   * Rilevamento automatico della direzione per paragrafo (algoritmo Unicode Bidi sul primo carattere forte) oppure flag esplicito per campo/nota.
