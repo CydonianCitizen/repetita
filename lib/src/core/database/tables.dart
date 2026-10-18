@@ -12,6 +12,7 @@ class Decks extends Table {
 
 @TableIndex(name: 'idx_cards_deck_id', columns: {#deckId})
 @TableIndex(name: 'idx_cards_due', columns: {#due})
+@TableIndex(name: 'idx_cards_note_id', columns: {#noteId})
 class Cards extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get deckId =>
@@ -31,6 +32,7 @@ class Cards extends Table {
   IntColumn get clozeIndex => integer().nullable()();
   RealColumn get easinessFactor => real().withDefault(const Constant(2.5))();
   IntColumn get flag => integer().withDefault(const Constant(0))();
+  IntColumn get noteId => integer().nullable()();
 }
 
 @TableIndex(name: 'idx_review_logs_card_id', columns: {#cardId})

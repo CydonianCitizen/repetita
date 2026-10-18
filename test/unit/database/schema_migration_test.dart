@@ -69,9 +69,9 @@ void main() {
     ''');
   }
 
-  group('Drift Schema Migration Tests (v1 -> v7)', () {
+  group('Drift Schema Migration Tests (v1 -> v8)', () {
     test(
-      'upgrades from v1 directly to v7 preserving all data and column defaults',
+      'upgrades from v1 directly to v8 preserving all data and column defaults',
       () async {
         final dbFile = getNextDbFile();
         final raw = sqlite.sqlite3.open(dbFile.path);
@@ -90,7 +90,7 @@ void main() {
       ''');
         raw.close();
 
-        // Open database with Drift at current schemaVersion (7)
+        // Open database with Drift at current schemaVersion (8)
         final appDb = AppDatabase.forTesting(NativeDatabase(dbFile));
 
         // Trigger schema upgrade via query
@@ -103,7 +103,7 @@ void main() {
         expect(deck.examDate, isNull);
         expect(deck.targetRetention, isNull);
 
-        // Verify Card row with default values on new v2, v3, v6, v7 columns
+        // Verify Card row with default values on new v2, v3, v6, v7, v8 columns
         final cards = await appDb.select(appDb.cards).get();
         expect(cards, hasLength(1));
         final card = cards.first;
@@ -115,6 +115,7 @@ void main() {
         expect(card.clozeIndex, isNull); // v3 added
         expect(card.easinessFactor, 2.5); // v6 added
         expect(card.flag, 0); // v7 added
+        expect(card.noteId, isNull); // v8 added
 
         // Verify ReviewLog row with default value on new v6 easinessFactor
         final logs = await appDb.select(appDb.reviewLogs).get();
@@ -145,11 +146,11 @@ void main() {
         await appDb.setSetting('app_theme', 'pure_black');
         expect(await appDb.getSetting('app_theme'), 'pure_black');
 
-        // Verify PRAGMA user_version is 7
+        // Verify PRAGMA user_version is 8
         final versionResult = await appDb
             .customSelect('PRAGMA user_version;')
             .getSingle();
-        expect(versionResult.read<int>('user_version'), 7);
+        expect(versionResult.read<int>('user_version'), 8);
 
         await appDb.close();
       },
@@ -171,6 +172,7 @@ void main() {
 
       expect(indexNames, contains('idx_cards_deck_id'));
       expect(indexNames, contains('idx_cards_due'));
+      expect(indexNames, contains('idx_cards_note_id'));
       expect(indexNames, contains('idx_review_logs_card_id'));
       expect(indexNames, contains('idx_review_logs_reviewed_at'));
       expect(indexNames, contains('idx_card_tags_tag_id'));
@@ -329,13 +331,79 @@ void main() {
       final versionResult = await appDb
           .customSelect('PRAGMA user_version;')
           .getSingle();
-      expect(versionResult.read<int>('user_version'), 7);
+      expect(versionResult.read<int>('user_version'), 8);
+
+      await appDb.close();
+    });
+
+    test('upgrades from schema v7 to v8 seamlessly', () async {
+      final dbFile = getNextDbFile();
+      final raw = sqlite.sqlite3.open(dbFile.path);
+      setupV1Schema(raw);
+
+      // Apply up to v7
+      raw.execute('''
+        ALTER TABLE cards ADD COLUMN is_suspended INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE cards ADD COLUMN buried_until INTEGER;
+        ALTER TABLE cards ADD COLUMN cloze_index INTEGER;
+        CREATE TABLE tags (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          color INTEGER NOT NULL DEFAULT 0,
+          created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+        );
+        CREATE TABLE card_tags (
+          card_id INTEGER NOT NULL REFERENCES cards (id) ON DELETE CASCADE,
+          tag_id INTEGER NOT NULL REFERENCES tags (id) ON DELETE CASCADE,
+          PRIMARY KEY (card_id, tag_id)
+        );
+        CREATE TABLE app_settings (
+          key TEXT NOT NULL PRIMARY KEY,
+          value TEXT NOT NULL
+        );
+        CREATE INDEX idx_cards_deck_id ON cards (deck_id);
+        CREATE INDEX idx_cards_due ON cards (due);
+        CREATE INDEX idx_review_logs_card_id ON review_logs (card_id);
+        CREATE INDEX idx_review_logs_reviewed_at ON review_logs (reviewed_at);
+        CREATE INDEX idx_card_tags_tag_id ON card_tags (tag_id);
+        ALTER TABLE cards ADD COLUMN easiness_factor REAL NOT NULL DEFAULT 2.5;
+        ALTER TABLE review_logs ADD COLUMN easiness_factor REAL NOT NULL DEFAULT 2.5;
+        ALTER TABLE cards ADD COLUMN flag INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE decks ADD COLUMN exam_date INTEGER;
+        ALTER TABLE decks ADD COLUMN target_retention REAL;
+
+        PRAGMA user_version = 7;
+
+        INSERT INTO decks (id, name) VALUES (1, 'V7 Deck');
+        INSERT INTO cards (id, deck_id, front, back, due, flag) VALUES (1, 1, 'Q', 'A', 1700000000, 2);
+      ''');
+      raw.close();
+
+      final appDb = AppDatabase.forTesting(NativeDatabase(dbFile));
+      final cards = await appDb.select(appDb.cards).get();
+      expect(cards.first.flag, 2);
+      expect(cards.first.noteId, isNull);
+
+      final versionResult = await appDb
+          .customSelect('PRAGMA user_version;')
+          .getSingle();
+      expect(versionResult.read<int>('user_version'), 8);
+
+      // Verify creating card with noteId on v8 works
+      final newCardId = await appDb.cardsDao.createCard(
+        deckId: 1,
+        front: 'Front',
+        back: 'Back',
+        noteId: 999,
+      );
+      final newCard = await appDb.cardsDao.getCardById(newCardId);
+      expect(newCard?.noteId, equals(999));
 
       await appDb.close();
     });
 
     test(
-      'reopening an already migrated v7 database is idempotent and safe',
+      'reopening an already migrated v8 database is idempotent and safe',
       () async {
         final dbFile = getNextDbFile();
         final raw = sqlite.sqlite3.open(dbFile.path);
@@ -345,7 +413,7 @@ void main() {
         );
         raw.close();
 
-        // First open -> triggers migration from 1 to 7
+        // First open -> triggers migration from 1 to 8
         var appDb = AppDatabase.forTesting(NativeDatabase(dbFile));
         expect(await appDb.select(appDb.decks).get(), hasLength(1));
         await appDb.close();
@@ -359,7 +427,7 @@ void main() {
         final versionResult = await appDb
             .customSelect('PRAGMA user_version;')
             .getSingle();
-        expect(versionResult.read<int>('user_version'), 7);
+        expect(versionResult.read<int>('user_version'), 8);
         await appDb.close();
       },
     );

@@ -246,5 +246,79 @@ void main() {
         );
       },
     );
+
+    test('createReversedCards creates pair with shared noteId and swapped front/back', () async {
+      final now = DateTime.utc(2026, 10, 18, 10, 0);
+      final cardIds = await cardsDao.createReversedCards(
+        deckId: deck1Id,
+        front: 'Capital of France',
+        back: 'Paris',
+        now: now,
+      );
+
+      expect(cardIds, hasLength(2));
+      final card1 = await cardsDao.getCardById(cardIds[0]);
+      final card2 = await cardsDao.getCardById(cardIds[1]);
+
+      expect(card1, isNotNull);
+      expect(card2, isNotNull);
+      expect(card1!.noteId, isNotNull);
+      expect(card2!.noteId, equals(card1.noteId));
+      expect(card1.front, equals('Capital of France'));
+      expect(card1.back, equals('Paris'));
+      expect(card2.front, equals('Paris'));
+      expect(card2.back, equals('Capital of France'));
+      expect(card1.deckId, equals(deck1Id));
+      expect(card2.deckId, equals(deck1Id));
+    });
+
+    test('burySiblingCards buries siblings with same noteId except active card', () async {
+      final now = DateTime.utc(2026, 10, 18, 10, 0);
+      final cardIds = await cardsDao.createReversedCards(
+        deckId: deck1Id,
+        front: 'Question A',
+        back: 'Answer A',
+        now: now,
+      );
+
+      final card1 = await cardsDao.getCardById(cardIds[0]);
+      final card2 = await cardsDao.getCardById(cardIds[1]);
+
+      final count = await cardsDao.burySiblingCards(
+        noteId: card1!.noteId!,
+        excludeCardId: card1.id,
+        now: now,
+      );
+
+      expect(count, equals(1));
+
+      final c1 = await cardsDao.getCardById(card1.id);
+      final c2 = await cardsDao.getCardById(card2!.id);
+
+      expect(c1!.buriedUntil, isNull);
+      expect(c2!.buriedUntil, isNotNull);
+      expect(c2.buriedUntil!.toUtc(), equals(DateTime.utc(2026, 10, 19, 0, 0)));
+    });
+
+    test('unburyDeckCards clears buriedUntil for all cards in deck', () async {
+      final now = DateTime.utc(2026, 10, 18, 10, 0);
+      final cardIds = await cardsDao.createReversedCards(
+        deckId: deck1Id,
+        front: 'Question B',
+        back: 'Answer B',
+        now: now,
+      );
+
+      await cardsDao.buryCardUntilTomorrow(cardIds[0], now);
+      await cardsDao.buryCardUntilTomorrow(cardIds[1], now);
+
+      final count = await cardsDao.unburyDeckCards(deck1Id);
+      expect(count, equals(2));
+
+      final deckCards = await cardsDao.watchCardsByDeck(deck1Id).first;
+      for (final card in deckCards) {
+        expect(card.buriedUntil, isNull);
+      }
+    });
   });
 }

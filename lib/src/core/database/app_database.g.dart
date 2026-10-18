@@ -662,6 +662,15 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _noteIdMeta = const VerificationMeta('noteId');
+  @override
+  late final GeneratedColumn<int> noteId = GeneratedColumn<int>(
+    'note_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -681,6 +690,7 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
     clozeIndex,
     easinessFactor,
     flag,
+    noteId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -810,6 +820,12 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
         flag.isAcceptableOrUnknown(data['flag']!, _flagMeta),
       );
     }
+    if (data.containsKey('note_id')) {
+      context.handle(
+        _noteIdMeta,
+        noteId.isAcceptableOrUnknown(data['note_id']!, _noteIdMeta),
+      );
+    }
     return context;
   }
 
@@ -887,6 +903,10 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
         DriftSqlType.int,
         data['${effectivePrefix}flag'],
       )!,
+      noteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}note_id'],
+      ),
     );
   }
 
@@ -914,6 +934,7 @@ class Card extends DataClass implements Insertable<Card> {
   final int? clozeIndex;
   final double easinessFactor;
   final int flag;
+  final int? noteId;
   const Card({
     required this.id,
     required this.deckId,
@@ -932,6 +953,7 @@ class Card extends DataClass implements Insertable<Card> {
     this.clozeIndex,
     required this.easinessFactor,
     required this.flag,
+    this.noteId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -959,6 +981,9 @@ class Card extends DataClass implements Insertable<Card> {
     }
     map['easiness_factor'] = Variable<double>(easinessFactor);
     map['flag'] = Variable<int>(flag);
+    if (!nullToAbsent || noteId != null) {
+      map['note_id'] = Variable<int>(noteId);
+    }
     return map;
   }
 
@@ -987,6 +1012,9 @@ class Card extends DataClass implements Insertable<Card> {
           : Value(clozeIndex),
       easinessFactor: Value(easinessFactor),
       flag: Value(flag),
+      noteId: noteId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(noteId),
     );
   }
 
@@ -1013,6 +1041,7 @@ class Card extends DataClass implements Insertable<Card> {
       clozeIndex: serializer.fromJson<int?>(json['clozeIndex']),
       easinessFactor: serializer.fromJson<double>(json['easinessFactor']),
       flag: serializer.fromJson<int>(json['flag']),
+      noteId: serializer.fromJson<int?>(json['noteId']),
     );
   }
   @override
@@ -1036,6 +1065,7 @@ class Card extends DataClass implements Insertable<Card> {
       'clozeIndex': serializer.toJson<int?>(clozeIndex),
       'easinessFactor': serializer.toJson<double>(easinessFactor),
       'flag': serializer.toJson<int>(flag),
+      'noteId': serializer.toJson<int?>(noteId),
     };
   }
 
@@ -1057,6 +1087,7 @@ class Card extends DataClass implements Insertable<Card> {
     Value<int?> clozeIndex = const Value.absent(),
     double? easinessFactor,
     int? flag,
+    Value<int?> noteId = const Value.absent(),
   }) => Card(
     id: id ?? this.id,
     deckId: deckId ?? this.deckId,
@@ -1075,6 +1106,7 @@ class Card extends DataClass implements Insertable<Card> {
     clozeIndex: clozeIndex.present ? clozeIndex.value : this.clozeIndex,
     easinessFactor: easinessFactor ?? this.easinessFactor,
     flag: flag ?? this.flag,
+    noteId: noteId.present ? noteId.value : this.noteId,
   );
   Card copyWithCompanion(CardsCompanion data) {
     return Card(
@@ -1107,6 +1139,7 @@ class Card extends DataClass implements Insertable<Card> {
           ? data.easinessFactor.value
           : this.easinessFactor,
       flag: data.flag.present ? data.flag.value : this.flag,
+      noteId: data.noteId.present ? data.noteId.value : this.noteId,
     );
   }
 
@@ -1129,7 +1162,8 @@ class Card extends DataClass implements Insertable<Card> {
           ..write('buriedUntil: $buriedUntil, ')
           ..write('clozeIndex: $clozeIndex, ')
           ..write('easinessFactor: $easinessFactor, ')
-          ..write('flag: $flag')
+          ..write('flag: $flag, ')
+          ..write('noteId: $noteId')
           ..write(')'))
         .toString();
   }
@@ -1153,6 +1187,7 @@ class Card extends DataClass implements Insertable<Card> {
     clozeIndex,
     easinessFactor,
     flag,
+    noteId,
   );
   @override
   bool operator ==(Object other) =>
@@ -1174,7 +1209,8 @@ class Card extends DataClass implements Insertable<Card> {
           other.buriedUntil == this.buriedUntil &&
           other.clozeIndex == this.clozeIndex &&
           other.easinessFactor == this.easinessFactor &&
-          other.flag == this.flag);
+          other.flag == this.flag &&
+          other.noteId == this.noteId);
 }
 
 class CardsCompanion extends UpdateCompanion<Card> {
@@ -1195,6 +1231,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
   final Value<int?> clozeIndex;
   final Value<double> easinessFactor;
   final Value<int> flag;
+  final Value<int?> noteId;
   const CardsCompanion({
     this.id = const Value.absent(),
     this.deckId = const Value.absent(),
@@ -1213,6 +1250,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
     this.clozeIndex = const Value.absent(),
     this.easinessFactor = const Value.absent(),
     this.flag = const Value.absent(),
+    this.noteId = const Value.absent(),
   });
   CardsCompanion.insert({
     this.id = const Value.absent(),
@@ -1232,6 +1270,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
     this.clozeIndex = const Value.absent(),
     this.easinessFactor = const Value.absent(),
     this.flag = const Value.absent(),
+    this.noteId = const Value.absent(),
   }) : deckId = Value(deckId),
        front = Value(front),
        back = Value(back),
@@ -1254,6 +1293,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
     Expression<int>? clozeIndex,
     Expression<double>? easinessFactor,
     Expression<int>? flag,
+    Expression<int>? noteId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1273,6 +1313,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
       if (clozeIndex != null) 'cloze_index': clozeIndex,
       if (easinessFactor != null) 'easiness_factor': easinessFactor,
       if (flag != null) 'flag': flag,
+      if (noteId != null) 'note_id': noteId,
     });
   }
 
@@ -1294,6 +1335,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
     Value<int?>? clozeIndex,
     Value<double>? easinessFactor,
     Value<int>? flag,
+    Value<int?>? noteId,
   }) {
     return CardsCompanion(
       id: id ?? this.id,
@@ -1313,6 +1355,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
       clozeIndex: clozeIndex ?? this.clozeIndex,
       easinessFactor: easinessFactor ?? this.easinessFactor,
       flag: flag ?? this.flag,
+      noteId: noteId ?? this.noteId,
     );
   }
 
@@ -1370,6 +1413,9 @@ class CardsCompanion extends UpdateCompanion<Card> {
     if (flag.present) {
       map['flag'] = Variable<int>(flag.value);
     }
+    if (noteId.present) {
+      map['note_id'] = Variable<int>(noteId.value);
+    }
     return map;
   }
 
@@ -1392,7 +1438,8 @@ class CardsCompanion extends UpdateCompanion<Card> {
           ..write('buriedUntil: $buriedUntil, ')
           ..write('clozeIndex: $clozeIndex, ')
           ..write('easinessFactor: $easinessFactor, ')
-          ..write('flag: $flag')
+          ..write('flag: $flag, ')
+          ..write('noteId: $noteId')
           ..write(')'))
         .toString();
   }
@@ -2837,6 +2884,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_cards_due',
     'CREATE INDEX idx_cards_due ON cards (due)',
   );
+  late final Index idxCardsNoteId = Index(
+    'idx_cards_note_id',
+    'CREATE INDEX idx_cards_note_id ON cards (note_id)',
+  );
   late final Index idxReviewLogsCardId = Index(
     'idx_review_logs_card_id',
     'CREATE INDEX idx_review_logs_card_id ON review_logs (card_id)',
@@ -2869,6 +2920,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     appSettings,
     idxCardsDeckId,
     idxCardsDue,
+    idxCardsNoteId,
     idxReviewLogsCardId,
     idxReviewLogsReviewedAt,
     idxCardTagsTagId,
@@ -3252,6 +3304,7 @@ typedef $$CardsTableCreateCompanionBuilder = CardsCompanion Function({
   Value<int?> clozeIndex,
   Value<double> easinessFactor,
   Value<int> flag,
+  Value<int?> noteId,
 });
 typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<int> id,
@@ -3271,6 +3324,7 @@ typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<int?> clozeIndex,
   Value<double> easinessFactor,
   Value<int> flag,
+  Value<int?> noteId,
 });
 
 final class $$CardsTableReferences
@@ -3417,6 +3471,11 @@ class $$CardsTableFilterComposer extends Composer<_$AppDatabase, $CardsTable> {
 
   ColumnFilters<int> get flag => $composableBuilder(
     column: $table.flag,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get noteId => $composableBuilder(
+    column: $table.noteId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3583,6 +3642,11 @@ class $$CardsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get noteId => $composableBuilder(
+    column: $table.noteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$DecksTableOrderingComposer get deckId {
     final $$DecksTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -3675,6 +3739,9 @@ class $$CardsTableAnnotationComposer
 
   GeneratedColumn<int> get flag =>
       $composableBuilder(column: $table.flag, builder: (column) => column);
+
+  GeneratedColumn<int> get noteId =>
+      $composableBuilder(column: $table.noteId, builder: (column) => column);
 
   $$DecksTableAnnotationComposer get deckId {
     final $$DecksTableAnnotationComposer composer = $composerBuilder(
@@ -3799,6 +3866,7 @@ class $$CardsTableTableManager
                 Value<int?> clozeIndex = const Value.absent(),
                 Value<double> easinessFactor = const Value.absent(),
                 Value<int> flag = const Value.absent(),
+                Value<int?> noteId = const Value.absent(),
               }) => CardsCompanion(
                 id: id,
                 deckId: deckId,
@@ -3817,6 +3885,7 @@ class $$CardsTableTableManager
                 clozeIndex: clozeIndex,
                 easinessFactor: easinessFactor,
                 flag: flag,
+                noteId: noteId,
               ),
           createCompanionCallback:
               ({
@@ -3837,6 +3906,7 @@ class $$CardsTableTableManager
                 Value<int?> clozeIndex = const Value.absent(),
                 Value<double> easinessFactor = const Value.absent(),
                 Value<int> flag = const Value.absent(),
+                Value<int?> noteId = const Value.absent(),
               }) => CardsCompanion.insert(
                 id: id,
                 deckId: deckId,
@@ -3855,6 +3925,7 @@ class $$CardsTableTableManager
                 clozeIndex: clozeIndex,
                 easinessFactor: easinessFactor,
                 flag: flag,
+                noteId: noteId,
               ),
           withReferenceMapper: (p0) => p0
               .map(

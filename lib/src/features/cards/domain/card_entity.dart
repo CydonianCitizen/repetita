@@ -21,6 +21,7 @@ class CardEntity {
     this.clozeIndex,
     this.easinessFactor = 2.5,
     this.flag = 0,
+    this.noteId,
   });
 
   final int id;
@@ -40,6 +41,7 @@ class CardEntity {
   final int? clozeIndex;
   final double easinessFactor;
   final int flag;
+  final int? noteId;
 
   bool get isCloze => ClozeParser.isCloze(front);
 
@@ -91,7 +93,8 @@ class CardEntity {
           buriedUntil == other.buriedUntil &&
           clozeIndex == other.clozeIndex &&
           easinessFactor == other.easinessFactor &&
-          flag == other.flag;
+          flag == other.flag &&
+          noteId == other.noteId;
 
   @override
   int get hashCode => Object.hash(
@@ -112,5 +115,6 @@ class CardEntity {
     clozeIndex,
     easinessFactor,
     flag,
+    noteId,
   );
 }

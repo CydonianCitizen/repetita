@@ -25,6 +25,7 @@ extension CardToEntity on Card {
     clozeIndex: clozeIndex,
     easinessFactor: easinessFactor,
     flag: flag,
+    noteId: noteId,
   );
 }
 
@@ -74,6 +75,7 @@ class CardsDao extends DatabaseAccessor<AppDatabase> with _$CardsDaoMixin {
     required String front,
     required String back,
     int? clozeIndex,
+    int? noteId,
     DateTime? now,
   }) {
     final effectiveNow = (now ?? DateTime.now()).toUtc();
@@ -91,8 +93,58 @@ class CardsDao extends DatabaseAccessor<AppDatabase> with _$CardsDaoMixin {
         createdAt: Value(effectiveNow),
         isSuspended: const Value(false),
         clozeIndex: Value(clozeIndex),
+        noteId: Value(noteId),
       ),
     );
+  }
+
+  Future<List<int>> createReversedCards({
+    required int deckId,
+    required String front,
+    required String back,
+    DateTime? now,
+  }) {
+    final effectiveNow = (now ?? DateTime.now()).toUtc();
+    return transaction(() async {
+      final noteId = effectiveNow.microsecondsSinceEpoch;
+      final card1 = await createCard(
+        deckId: deckId,
+        front: front,
+        back: back,
+        noteId: noteId,
+        now: effectiveNow,
+      );
+      final card2 = await createCard(
+        deckId: deckId,
+        front: back,
+        back: front,
+        noteId: noteId,
+        now: effectiveNow,
+      );
+      return [card1, card2];
+    });
+  }
+
+  Future<int> unburyDeckCards(int deckId) {
+    return (update(cards)
+          ..where((t) => t.deckId.equals(deckId) & t.buriedUntil.isNotNull()))
+        .write(const CardsCompanion(buriedUntil: Value(null)));
+  }
+
+  Future<int> burySiblingCards({
+    required int noteId,
+    required int excludeCardId,
+    DateTime? now,
+  }) {
+    final tomorrow = computeTomorrowMidnight(now);
+    return (update(cards)
+          ..where(
+            (t) =>
+                t.noteId.equals(noteId) &
+                t.id.equals(excludeCardId).not() &
+                t.isSuspended.equals(false),
+          ))
+        .write(CardsCompanion(buriedUntil: Value(tomorrow)));
   }
 
   Future<bool> updateCardContent({
