@@ -29,27 +29,29 @@ class DeckDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
-  bool _isSearching = false;
   late final TextEditingController _searchController;
+  late final FocusNode _searchFocusNode;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    _searchFocusNode = FocusNode();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
-  }
-
-  void _closeSearch() {
-    setState(() {
-      _isSearching = false;
-      _searchController.clear();
-    });
-    ref.read(deckCardSearchQueryProvider.notifier).clear();
   }
 
   @override
@@ -60,57 +62,29 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: _isSearching
-            ? TextField(
-                key: const Key('deck_search_field'),
-                controller: _searchController,
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: l10n?.searchCards ?? 'Search cards...',
-                  border: InputBorder.none,
-                ),
-                onChanged: (val) => ref
-                    .read(deckCardSearchQueryProvider.notifier)
-                    .setQuery(val),
-              )
-            : Text(widget.deck.name),
+        title: Text(widget.deck.name),
         actions: [
-          if (_isSearching)
-            IconButton(
-              key: const Key('clear_search_button'),
-              tooltip: l10n?.clearSearch ?? 'Clear search',
-              icon: const Icon(Icons.close),
-              onPressed: _closeSearch,
-            )
-          else ...[
-            IconButton(
-              key: const Key('search_cards_button'),
-              icon: const Icon(Icons.search),
-              tooltip: l10n?.search ?? 'Search',
-              onPressed: () => setState(() => _isSearching = true),
-            ),
-            IconButton(
-              key: const Key('unbury_deck_cards_button'),
-              icon: const Icon(Icons.wb_sunny_outlined),
-              tooltip: l10n?.unburyAllCards ?? 'Unbury all cards',
-              onPressed: () async {
-                final count = await ref
-                    .read(cardListControllerProvider(widget.deck.id).notifier)
-                    .unburyDeckCards();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        l10n?.unburiedCardsCount(count) ??
-                            'Unburied $count cards',
-                      ),
-                      behavior: SnackBarBehavior.floating,
+          IconButton(
+            key: const Key('unbury_deck_cards_button'),
+            icon: const Icon(Icons.wb_sunny_outlined),
+            tooltip: l10n?.unburyAllCards ?? 'Unbury all cards',
+            onPressed: () async {
+              final count = await ref
+                  .read(cardListControllerProvider(widget.deck.id).notifier)
+                  .unburyDeckCards();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      l10n?.unburiedCardsCount(count) ??
+                          'Unburied $count cards',
                     ),
-                  );
-                }
-              },
-            ),
-          ],
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            },
+          ),
         ],
       ),
       body: SafeArea(
@@ -193,6 +167,8 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
                         cards: cards,
                         allDeckTags: allDeckTags,
                         cardTagsMap: cardTagsMap,
+                        searchController: _searchController,
+                        searchFocusNode: _searchFocusNode,
                       ),
                     ),
                   ],
@@ -775,8 +751,8 @@ class _DeckStudyHeader extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(16),
@@ -866,12 +842,16 @@ class _DeckCardsSection extends ConsumerWidget {
     required this.cards,
     required this.allDeckTags,
     required this.cardTagsMap,
+    required this.searchController,
+    required this.searchFocusNode,
   });
 
   final Deck deck;
   final List<CardEntity> cards;
   final List<TagEntity> allDeckTags;
   final Map<int, List<TagEntity>> cardTagsMap;
+  final TextEditingController searchController;
+  final FocusNode searchFocusNode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -907,6 +887,68 @@ class _DeckCardsSection extends ConsumerWidget {
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 2, 16, 4),
+          child: TextField(
+            key: const Key('deck_search_field'),
+            controller: searchController,
+            focusNode: searchFocusNode,
+            decoration: InputDecoration(
+              hintText: l10n?.searchCards ?? 'Search cards...',
+              prefixIcon: IconButton(
+                key: const Key('search_cards_button'),
+                icon: const Icon(Icons.search, size: 20),
+                tooltip: l10n?.search ?? 'Search',
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 36),
+                padding: EdgeInsets.zero,
+                onPressed: () => searchFocusNode.requestFocus(),
+              ),
+              suffixIcon: searchController.text.isNotEmpty
+                  ? IconButton(
+                      key: const Key('clear_search_button'),
+                      icon: const Icon(Icons.clear, size: 20),
+                      tooltip: l10n?.clearSearch ?? 'Clear search',
+                      constraints: const BoxConstraints(
+                        minWidth: 40,
+                        minHeight: 36,
+                      ),
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        searchController.clear();
+                        ref.read(deckCardSearchQueryProvider.notifier).clear();
+                      },
+                    )
+                  : null,
+              filled: true,
+              isDense: true,
+              fillColor: colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.5,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 6,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
+              ),
+            ),
+            onChanged: (val) =>
+                ref.read(deckCardSearchQueryProvider.notifier).setQuery(val),
+          ),
+        ),
         if (allDeckTags.isNotEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -1139,6 +1181,7 @@ class _DeckCardsSection extends ConsumerWidget {
                           ref
                               .read(deckCardSearchQueryProvider.notifier)
                               .clear();
+                          searchController.clear();
                         },
                         child: Text(l10n?.filterAll ?? 'Show all cards'),
                       ),
