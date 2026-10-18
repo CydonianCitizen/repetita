@@ -93,15 +93,16 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
     final isReduced =
         animLevel.isReduced || MediaQuery.of(context).disableAnimations;
 
+    final frontCard = RepaintBoundary(
+      child: _buildFrontCard(context, colorScheme, theme, l10n),
+    );
+    final backCard = RepaintBoundary(
+      child: _buildBackCard(context, colorScheme, theme, l10n),
+    );
+
     Widget cardBody;
     if (isReduced) {
-      cardBody = widget.isAnswerRevealed
-          ? RepaintBoundary(
-              child: _buildBackCard(context, colorScheme, theme, l10n),
-            )
-          : RepaintBoundary(
-              child: _buildFrontCard(context, colorScheme, theme, l10n),
-            );
+      cardBody = widget.isAnswerRevealed ? backCard : frontCard;
     } else {
       cardBody = TweenAnimationBuilder<double>(
         key: ValueKey(widget.card.id),
@@ -111,7 +112,7 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
         ),
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOutCubic,
-        builder: (context, value, child) {
+        builder: (context, value, _) {
           final isBack = value >= 0.5;
           final angle = value * math.pi;
 
@@ -124,13 +125,9 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                 ? Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.identity()..rotateY(math.pi),
-                    child: RepaintBoundary(
-                      child: _buildBackCard(context, colorScheme, theme, l10n),
-                    ),
+                    child: backCard,
                   )
-                : RepaintBoundary(
-                    child: _buildFrontCard(context, colorScheme, theme, l10n),
-                  ),
+                : frontCard,
           );
         },
       );
