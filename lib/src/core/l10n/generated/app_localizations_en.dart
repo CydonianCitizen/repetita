@@ -1128,6 +1128,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get typeInAnswerHint => 'Type your answer here...';
 
   @override
+  String get typeInAnswerYourInput => 'Your answer:';
+
+  @override
   String get typeInAnswerToggle => 'Type-in answer practice';
 
   @override

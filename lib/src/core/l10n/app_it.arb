@@ -490,6 +490,7 @@
   "autoBurySiblingsSubtitle": "Rimanda le carte collegate a domani durante lo studio",
   "typeInAnswer": "Digita la risposta",
   "typeInAnswerHint": "Scrivi qui la risposta...",
+  "typeInAnswerYourInput": "La tua risposta:",
   "typeInAnswerToggle": "Modalità risposta digitata",
   "typeInAnswerToggleSubtitle": "Digita la risposta prima di mostrare la carta",
   "timeboxReachedTitle": "Limite sessione raggiunto",

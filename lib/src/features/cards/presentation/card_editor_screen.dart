@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/algorithms/cloze/cloze_parser.dart';
 import '../../../core/l10n/generated/app_localizations.dart';
+import '../../../core/utils/text_direction_utils.dart';
 import '../../tags/data/tags_dao.dart';
 import '../../../core/database/database_provider.dart';
 import '../../tags/domain/tag_entity.dart';
@@ -446,25 +447,34 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                       32 + MediaQuery.viewPaddingOf(context).bottom,
                     ),
                     children: [
-                      TextFormField(
-                        key: const Key('card_front_field'),
-                        controller: _frontController,
-                        autofocus: !widget.isEditing,
-                        maxLines: 5,
-                        minLines: 3,
-                        decoration: InputDecoration(
-                          labelText: l10n?.cardFront ?? 'Front (Prompt)',
-                          hintText:
-                              l10n?.promptHint ?? 'Enter question or prompt...',
-                          alignLabelWithHint: true,
-                          border: const OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n?.frontPromptCannotBeEmpty ??
-                                'Front prompt cannot be empty';
-                          }
-                          return null;
+                      ValueListenableBuilder<TextEditingValue>(
+                        valueListenable: _frontController,
+                        builder: (context, value, _) {
+                          return TextFormField(
+                            key: const Key('card_front_field'),
+                            controller: _frontController,
+                            textDirection: TextDirectionUtils.getDirection(
+                              value.text,
+                            ),
+                            autofocus: !widget.isEditing,
+                            maxLines: 5,
+                            minLines: 3,
+                            decoration: InputDecoration(
+                              labelText: l10n?.cardFront ?? 'Front (Prompt)',
+                              hintText:
+                                  l10n?.promptHint ??
+                                  'Enter question or prompt...',
+                              alignLabelWithHint: true,
+                              border: const OutlineInputBorder(),
+                            ),
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return l10n?.frontPromptCannotBeEmpty ??
+                                    'Front prompt cannot be empty';
+                              }
+                              return null;
+                            },
+                          );
                         },
                       ),
                       const SizedBox(height: 8),
@@ -511,34 +521,44 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                       ),
                       const SizedBox(height: 16),
                       ValueListenableBuilder<TextEditingValue>(
-                        valueListenable: _frontController,
-                        builder: (context, value, _) {
-                          final isCloze = ClozeParser.isCloze(value.text);
-                          return TextFormField(
-                            key: const Key('card_back_field'),
-                            controller: _backController,
-                            maxLines: 5,
-                            minLines: 3,
-                            decoration: InputDecoration(
-                              labelText: isCloze
-                                  ? (l10n?.cardBackNotes ??
-                                        'Back (Extra Notes, Optional)')
-                                  : (l10n?.cardBack ?? 'Back (Answer)'),
-                              hintText: isCloze
-                                  ? (l10n?.cardBackNotes ??
-                                        'Optional notes or explanation...')
-                                  : (l10n?.answerHint ?? 'Enter answer...'),
-                              alignLabelWithHint: true,
-                              border: const OutlineInputBorder(),
-                            ),
-                            validator: (val) {
-                              if (!isCloze) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return l10n?.backAnswerCannotBeEmpty ??
-                                      'Back answer cannot be empty';
-                                }
-                              }
-                              return null;
+                        valueListenable: _backController,
+                        builder: (context, backVal, _) {
+                          return ValueListenableBuilder<TextEditingValue>(
+                            valueListenable: _frontController,
+                            builder: (context, frontVal, _) {
+                              final isCloze = ClozeParser.isCloze(
+                                frontVal.text,
+                              );
+                              return TextFormField(
+                                key: const Key('card_back_field'),
+                                controller: _backController,
+                                textDirection: TextDirectionUtils.getDirection(
+                                  backVal.text,
+                                ),
+                                maxLines: 5,
+                                minLines: 3,
+                                decoration: InputDecoration(
+                                  labelText: isCloze
+                                      ? (l10n?.cardBackNotes ??
+                                            'Back (Extra Notes, Optional)')
+                                      : (l10n?.cardBack ?? 'Back (Answer)'),
+                                  hintText: isCloze
+                                      ? (l10n?.cardBackNotes ??
+                                            'Optional notes or explanation...')
+                                      : (l10n?.answerHint ?? 'Enter answer...'),
+                                  alignLabelWithHint: true,
+                                  border: const OutlineInputBorder(),
+                                ),
+                                validator: (val) {
+                                  if (!isCloze) {
+                                    if (val == null || val.trim().isEmpty) {
+                                      return l10n?.backAnswerCannotBeEmpty ??
+                                          'Back answer cannot be empty';
+                                    }
+                                  }
+                                  return null;
+                                },
+                              );
                             },
                           );
                         },

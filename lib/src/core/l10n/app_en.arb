@@ -563,6 +563,7 @@
   "autoBurySiblingsSubtitle": "Postpone sibling cards until tomorrow upon review",
   "typeInAnswer": "Type your answer",
   "typeInAnswerHint": "Type your answer here...",
+  "typeInAnswerYourInput": "Your answer:",
   "typeInAnswerToggle": "Type-in answer practice",
   "typeInAnswerToggleSubtitle": "Type your answer before revealing the card",
   "timeboxReachedTitle": "Timebox reached",

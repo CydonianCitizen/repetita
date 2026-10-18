@@ -1137,6 +1137,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get typeInAnswerHint => 'Scrivi qui la risposta...';
 
   @override
+  String get typeInAnswerYourInput => 'La tua risposta:';
+
+  @override
   String get typeInAnswerToggle => 'Modalità risposta digitata';
 
   @override

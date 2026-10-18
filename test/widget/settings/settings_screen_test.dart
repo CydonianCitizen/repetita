@@ -552,6 +552,50 @@ void main() {
         }
       },
     );
+
+    testWidgets(
+      'study algorithm screen configures session controls (timeboxing, auto-advance, type-in)',
+      (tester) async {
+        tester.view.physicalSize = const Size(1080, 4000);
+        tester.view.devicePixelRatio = 2.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        await tester.pumpWidget(buildSubject());
+        await tester.pumpAndSettle();
+
+        // Navigate to Study & Algorithm sub-screen
+        await tester.tap(
+          find.byKey(const Key('setting_study_algorithm_tile')),
+        );
+        await tester.pumpAndSettle();
+
+        // Check tiles exist
+        expect(find.byKey(const Key('setting_timebox_tile')), findsOneWidget);
+        expect(find.byKey(const Key('setting_auto_advance_tile')), findsOneWidget);
+        expect(find.byKey(const Key('setting_type_in_tile')), findsOneWidget);
+
+        // Toggle type-in switch
+        await tester.tap(find.byKey(const Key('setting_type_in_tile')));
+        await tester.pumpAndSettle();
+
+        // Open timeboxing dialog and select 10 min
+        await tester.tap(find.byKey(const Key('setting_timebox_tile')));
+        await tester.pumpAndSettle();
+        expect(find.text('Session timeboxing'), findsWidgets);
+        await tester.tap(find.text('10 minutes'));
+        await tester.pumpAndSettle();
+
+        // Open auto-advance dialog and select 5 sec
+        await tester.tap(find.byKey(const Key('setting_auto_advance_tile')));
+        await tester.pumpAndSettle();
+        expect(find.text('Auto-advance'), findsWidgets);
+        await tester.tap(find.text('5 seconds'));
+        await tester.pumpAndSettle();
+      },
+    );
   });
 }
 

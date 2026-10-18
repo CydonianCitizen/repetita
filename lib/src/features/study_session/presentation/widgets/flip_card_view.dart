@@ -7,9 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/algorithms/cloze/cloze_parser.dart';
 import '../../../../core/algorithms/cloze/cloze_segment.dart';
+import '../../../../core/algorithms/type_in/type_in_differ.dart';
 import '../../../../core/l10n/generated/app_localizations.dart';
+import '../../../../core/utils/text_direction_utils.dart';
 import '../../../cards/domain/card_entity.dart';
 import '../../../settings/presentation/controllers/animation_level_controller.dart';
+import '../controllers/type_in_controller.dart';
 
 class FlipCardView extends ConsumerStatefulWidget {
   const FlipCardView({
@@ -33,20 +36,31 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
   late String _answerText;
   late List<ClozeSegment> _promptSegments;
   late List<ClozeSegment> _answerSegments;
+  late final TextEditingController _typeInController;
 
   @override
   void initState() {
     super.initState();
+    _typeInController = TextEditingController();
     _recomputeCardData();
   }
 
   @override
   void didUpdateWidget(FlipCardView oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.card.id != widget.card.id) {
+      _typeInController.clear();
+    }
     if (oldWidget.card.front != widget.card.front ||
         oldWidget.card.clozeIndex != widget.card.clozeIndex) {
       _recomputeCardData();
     }
+  }
+
+  @override
+  void dispose() {
+    _typeInController.dispose();
+    super.dispose();
   }
 
   void _recomputeCardData() {
@@ -146,10 +160,13 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
     AppLocalizations? l10n,
   ) {
     final isCloze = _isCloze;
+    final typeInEnabled = ref.watch(typeInPracticeControllerProvider);
     final promptBadgeText = isCloze
         ? (l10n?.clozeBadge(widget.card.activeClozeIndex) ??
               'CLOZE c${widget.card.activeClozeIndex}')
         : (l10n?.promptBadge ?? 'PROMPT');
+    final promptText = isCloze ? _promptText : widget.card.front;
+    final promptDirection = TextDirectionUtils.getDirection(promptText);
 
     return Card(
       elevation: 2,
@@ -215,49 +232,73 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
               const SizedBox(height: 28),
               Semantics(
                 label:
-                    l10n?.cardPromptSemantics(
-                      isCloze ? _promptText : widget.card.front,
-                    ) ??
-                    'Card Prompt: ${isCloze ? _promptText : widget.card.front}',
+                    l10n?.cardPromptSemantics(promptText) ??
+                    'Card Prompt: $promptText',
                 readOnly: true,
-                child: isCloze
-                    ? Text.rich(
-                        TextSpan(
-                          children: _promptSegments.map((s) {
-                            if (s.isActive) {
+                child: Directionality(
+                  textDirection: promptDirection,
+                  child: isCloze
+                      ? Text.rich(
+                          TextSpan(
+                            children: _promptSegments.map((s) {
+                              if (s.isActive) {
+                                return TextSpan(
+                                  text: s.text,
+                                  style: theme.textTheme.headlineSmall
+                                      ?.copyWith(
+                                        color: colorScheme.primary,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: colorScheme.primary
+                                            .withValues(alpha: 0.5),
+                                      ),
+                                );
+                              }
                               return TextSpan(
                                 text: s.text,
                                 style: theme.textTheme.headlineSmall?.copyWith(
-                                  color: colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: colorScheme.primary
-                                      .withValues(alpha: 0.5),
+                                  color: colorScheme.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.4,
                                 ),
                               );
-                            }
-                            return TextSpan(
-                              text: s.text,
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                color: colorScheme.onSurface,
-                                fontWeight: FontWeight.w600,
-                                height: 1.4,
-                              ),
-                            );
-                          }).toList(),
+                            }).toList(),
+                          ),
+                          key: const Key('card_front_text'),
+                        )
+                      : Text(
+                          widget.card.front,
+                          key: const Key('card_front_text'),
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                            height: 1.4,
+                          ),
                         ),
-                        key: const Key('card_front_text'),
-                      )
-                    : Text(
-                        widget.card.front,
-                        key: const Key('card_front_text'),
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                          height: 1.4,
-                        ),
-                      ),
+                ),
               ),
+              if (typeInEnabled) ...[
+                const SizedBox(height: 20),
+                Directionality(
+                  textDirection: TextDirectionUtils.getDirection(
+                    isCloze ? _answerText : widget.card.back,
+                  ),
+                  child: TextField(
+                    key: const Key('type_in_answer_field'),
+                    controller: _typeInController,
+                    autofocus: true,
+                    textInputAction: TextInputAction.done,
+                    decoration: InputDecoration(
+                      labelText: l10n?.typeInAnswer ?? 'Type your answer',
+                      hintText:
+                          l10n?.typeInAnswerHint ?? 'Type your answer here...',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.keyboard_outlined),
+                    ),
+                    onSubmitted: (_) => widget.onCardTap?.call(),
+                  ),
+                ),
+              ],
               const SizedBox(height: 28),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -290,6 +331,14 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
     AppLocalizations? l10n,
   ) {
     final isCloze = _isCloze;
+    final typeInEnabled = ref.watch(typeInPracticeControllerProvider);
+    final answerText = isCloze ? _answerText : widget.card.back;
+    final answerDirection = TextDirectionUtils.getDirection(answerText);
+    final typedText = _typeInController.text.trim();
+    final hasTyped = typeInEnabled && typedText.isNotEmpty;
+    final diff = hasTyped
+        ? TypeInDiffer.diff(expected: answerText, actual: typedText)
+        : null;
 
     return Card(
       elevation: 3,
@@ -364,51 +413,140 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
             const SizedBox(height: 12),
             Semantics(
               label:
-                  l10n?.cardAnswerSemantics(
-                    isCloze ? _answerText : widget.card.back,
-                  ) ??
-                  'Card Answer: ${isCloze ? _answerText : widget.card.back}',
+                  l10n?.cardAnswerSemantics(answerText) ??
+                  'Card Answer: $answerText',
               readOnly: true,
-              child: isCloze
-                  ? Text.rich(
-                      TextSpan(
-                        children: _answerSegments.map((s) {
-                          if (s.isActive) {
+              child: Directionality(
+                textDirection: answerDirection,
+                child: isCloze
+                    ? Text.rich(
+                        TextSpan(
+                          children: _answerSegments.map((s) {
+                            if (s.isActive) {
+                              return TextSpan(
+                                text: s.text,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 19,
+                                  backgroundColor: colorScheme.primaryContainer
+                                      .withValues(alpha: 0.45),
+                                ),
+                              );
+                            }
                             return TextSpan(
                               text: s.text,
                               style: theme.textTheme.titleMedium?.copyWith(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 19,
-                                backgroundColor: colorScheme.primaryContainer
-                                    .withValues(alpha: 0.45),
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18,
+                                height: 1.5,
                               ),
                             );
-                          }
-                          return TextSpan(
-                            text: s.text,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 18,
-                              height: 1.5,
-                            ),
-                          );
-                        }).toList(),
+                          }).toList(),
+                        ),
+                        key: const Key('card_back_text'),
+                      )
+                    : Text(
+                        widget.card.back,
+                        key: const Key('card_back_text'),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                          height: 1.5,
+                        ),
                       ),
-                      key: const Key('card_back_text'),
-                    )
-                  : Text(
-                      widget.card.back,
-                      key: const Key('card_back_text'),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18,
-                        height: 1.5,
+              ),
+            ),
+            if (diff != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                key: const Key('type_in_diff_box'),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: diff.isExactMatch
+                      ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+                      : colorScheme.errorContainer.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: diff.isExactMatch
+                        ? colorScheme.primary.withValues(alpha: 0.4)
+                        : colorScheme.error.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          diff.isExactMatch
+                              ? Icons.check_circle_rounded
+                              : Icons.cancel_rounded,
+                          size: 16,
+                          color: diff.isExactMatch
+                              ? colorScheme.primary
+                              : colorScheme.error,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n?.typeInAnswerYourInput ?? 'Your answer:',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: diff.isExactMatch
+                                ? colorScheme.primary
+                                : colorScheme.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Directionality(
+                      textDirection: TextDirectionUtils.getDirection(typedText),
+                      child: Text.rich(
+                        TextSpan(
+                          children: diff.segments.map((seg) {
+                            switch (seg.status) {
+                              case TypeInCharStatus.correct:
+                                return TextSpan(
+                                  text: seg.text,
+                                  style: TextStyle(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              case TypeInCharStatus.wrong:
+                                return TextSpan(
+                                  text: seg.text,
+                                  style: TextStyle(
+                                    color: colorScheme.error,
+                                    decoration: TextDecoration.lineThrough,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              case TypeInCharStatus.missing:
+                                return TextSpan(
+                                  text: seg.text,
+                                  style: TextStyle(
+                                    color: colorScheme.onSurfaceVariant
+                                        .withValues(alpha: 0.6),
+                                    decoration: TextDecoration.underline,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                );
+                            }
+                          }).toList(),
+                        ),
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-            ),
+                  ],
+                ),
+              ),
+            ],
             if (isCloze && widget.card.back.trim().isNotEmpty) ...[
               const SizedBox(height: 16),
               Container(

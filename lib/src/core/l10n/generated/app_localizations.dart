@@ -2072,6 +2072,12 @@ abstract class AppLocalizations {
   /// **'Type your answer here...'**
   String get typeInAnswerHint;
 
+  /// No description provided for @typeInAnswerYourInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Your answer:'**
+  String get typeInAnswerYourInput;
+
   /// No description provided for @typeInAnswerToggle.
   ///
   /// In en, this message translates to:

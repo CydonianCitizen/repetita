@@ -14,24 +14,103 @@ import '../../settings/presentation/controllers/animation_level_controller.dart'
 import '../../settings/presentation/controllers/haptic_controller.dart';
 import '../../../core/database/database_provider.dart';
 import '../domain/models/custom_study_config.dart';
+import 'controllers/auto_advance_controller.dart';
 import 'controllers/study_session_controller.dart';
+import 'controllers/timebox_controller.dart';
+import 'controllers/type_in_controller.dart';
 import 'widgets/flip_card_view.dart';
 import 'widgets/rating_bar.dart';
 
 import '../../cards/presentation/widgets/card_flag_color.dart';
 
-class StudyScreen extends ConsumerWidget {
+class StudyScreen extends ConsumerStatefulWidget {
   const StudyScreen({super.key, required this.deckId, this.customStudyConfig});
 
   final int deckId;
   final CustomStudyConfig? customStudyConfig;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StudyScreen> createState() => _StudyScreenState();
+}
+
+class _StudyScreenState extends ConsumerState<StudyScreen> {
+  Timer? _timeboxTimer;
+  Timer? _autoAdvanceTimer;
+  int? _lastAutoCardId;
+  bool _timeboxTriggered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initTimebox();
+    });
+  }
+
+  void _initTimebox() {
+    final minutes = ref.read(timeboxControllerProvider);
+    if (minutes > 0) {
+      _timeboxTimer = Timer(Duration(minutes: minutes), _onTimeboxReached);
+    }
+  }
+
+  void _onTimeboxReached() {
+    if (!mounted || _timeboxTriggered) return;
+    _timeboxTriggered = true;
+    final l10n = AppLocalizations.of(context);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => AlertDialog(
+        key: const Key('timebox_dialog'),
+        title: Row(
+          children: [
+            const Icon(Icons.timer_outlined, color: Colors.orange),
+            const SizedBox(width: 8),
+            Text(l10n?.timeboxReachedTitle ?? 'Timebox reached'),
+          ],
+        ),
+        content: Text(
+          l10n?.timeboxReachedMessage ??
+              'Your session time limit has expired. Would you like to wrap up or continue?',
+        ),
+        actions: [
+          TextButton(
+            key: const Key('timebox_continue_button'),
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(l10n?.continueStudying ?? 'Continue studying'),
+          ),
+          FilledButton(
+            key: const Key('timebox_finish_button'),
+            onPressed: () {
+              Navigator.of(dialogCtx).pop();
+              if (mounted) {
+                Navigator.of(context).pop();
+              }
+            },
+            child: Text(l10n?.finishSession ?? 'Finish session'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timeboxTimer?.cancel();
+    _autoAdvanceTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
-    final provider = studySessionControllerProvider(deckId, customStudyConfig);
+    final provider = studySessionControllerProvider(
+      widget.deckId,
+      widget.customStudyConfig,
+    );
 
     ref.listen(provider, (previous, next) {
       final prevLeech = previous?.value?.lastLeechDetected ?? false;
@@ -55,7 +134,9 @@ class StudyScreen extends ConsumerWidget {
           builder: (context, ref, _) {
             final isCram = ref.watch(
               provider.select(
-                (s) => s.value?.isCram ?? (customStudyConfig?.isCram ?? false),
+                (s) =>
+                    s.value?.isCram ??
+                    (widget.customStudyConfig?.isCram ?? false),
               ),
             );
             final titleText = isCram
@@ -110,6 +191,23 @@ class StudyScreen extends ConsumerWidget {
                     }
                   }
                 },
+              );
+            },
+          ),
+          Consumer(
+            builder: (context, ref, _) {
+              final isTypeIn = ref.watch(typeInPracticeControllerProvider);
+              return IconButton(
+                key: const Key('toggle_type_in_button'),
+                icon: Icon(
+                  isTypeIn
+                      ? Icons.keyboard_rounded
+                      : Icons.keyboard_alt_outlined,
+                ),
+                tooltip: l10n?.typeInAnswerToggle ?? 'Type-in answer practice',
+                onPressed: () => ref
+                    .read(typeInPracticeControllerProvider.notifier)
+                    .toggle(),
               );
             },
           ),
@@ -281,7 +379,10 @@ class StudyScreen extends ConsumerWidget {
                   'Error loading study session',
               error: error,
               onRetry: () => ref.invalidate(
-                studySessionControllerProvider(deckId, customStudyConfig),
+                studySessionControllerProvider(
+                  widget.deckId,
+                  widget.customStudyConfig,
+                ),
               ),
             ),
             data: (sessionState) {
@@ -459,6 +560,7 @@ class StudyScreen extends ConsumerWidget {
                 final progress = total > 0 ? currentNum / total : 0.0;
 
                 Future<void> submitRating(Rating rating) async {
+                  _autoAdvanceTimer?.cancel();
                   final haptic = ref.read(hapticServiceProvider);
                   final intensity = ref.read(hapticFeedbackControllerProvider);
                   unawaited(haptic.triggerRatingFeedback(rating, intensity));
@@ -473,9 +575,23 @@ class StudyScreen extends ConsumerWidget {
                 }
 
                 void revealAnswer() {
+                  _autoAdvanceTimer?.cancel();
                   final intensity = ref.read(hapticFeedbackControllerProvider);
                   ref.read(hapticServiceProvider).triggerSelection(intensity);
                   controller.revealAnswer();
+                }
+
+                if (!sessionState.isAnswerRevealed) {
+                  final seconds = ref.watch(autoAdvanceControllerProvider);
+                  if (seconds > 0 && (_lastAutoCardId != currentCard.id)) {
+                    _lastAutoCardId = currentCard.id;
+                    _autoAdvanceTimer?.cancel();
+                    _autoAdvanceTimer = Timer(Duration(seconds: seconds), () {
+                      if (mounted) revealAnswer();
+                    });
+                  }
+                } else {
+                  _autoAdvanceTimer?.cancel();
                 }
 
                 final isDesktop =

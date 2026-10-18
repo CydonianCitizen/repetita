@@ -380,5 +380,71 @@ void main() {
         await tester.pump(const Duration(milliseconds: 50));
       },
     );
+
+    testWidgets(
+      'type-in practice reveals typed input diff when card is revealed',
+      (tester) async {
+        await db.setSetting('type_in_answer_enabled', 'true');
+        await db.cardsDao.createCard(
+          deckId: testDeckId,
+          front: 'Capital of France',
+          back: 'Paris',
+        );
+
+        await tester.pumpWidget(buildSubject());
+        for (int i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        expect(find.byKey(const Key('type_in_answer_field')), findsOneWidget);
+        await tester.enterText(
+          find.byKey(const Key('type_in_answer_field')),
+          'Paris',
+        );
+        await tester.pump(const Duration(milliseconds: 50));
+
+        await tester.tap(find.byKey(const Key('show_answer_button')));
+        for (int i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        expect(find.text('Paris'), findsWidgets);
+        expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(milliseconds: 50));
+      },
+    );
+
+    testWidgets('auto-advance timer automatically reveals answer after delay', (
+      tester,
+    ) async {
+      await db.setSetting('study_auto_advance_seconds', '1');
+      await db.cardsDao.createCard(
+        deckId: testDeckId,
+        front: 'Auto Advance Front',
+        back: 'Auto Advance Back',
+      );
+
+      await tester.pumpWidget(buildSubject());
+      for (int i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      expect(find.text('Auto Advance Front'), findsOneWidget);
+      expect(find.text('Auto Advance Back'), findsNothing);
+
+      // Advance by 1 second to trigger auto advance timer
+      await tester.pump(const Duration(seconds: 1));
+      for (int i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      expect(find.text('Auto Advance Back'), findsOneWidget);
+      expect(find.byKey(const Key('rating_button_good')), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(milliseconds: 50));
+    });
   });
 }

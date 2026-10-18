@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/l10n/generated/app_localizations.dart';
 import '../../domain/srs_algorithm.dart';
+import '../../../study_session/presentation/controllers/auto_advance_controller.dart';
+import '../../../study_session/presentation/controllers/timebox_controller.dart';
+import '../../../study_session/presentation/controllers/type_in_controller.dart';
 import '../controllers/auto_bury_siblings_controller.dart';
 import '../controllers/fsrs_parameters_controller.dart';
 import '../controllers/reminder_controller.dart';
@@ -17,6 +20,94 @@ import '../widgets/settings_tile.dart';
 
 class StudyAlgorithmSettingsScreen extends ConsumerWidget {
   const StudyAlgorithmSettingsScreen({super.key});
+
+  void _showTimeboxDialog(BuildContext context, WidgetRef ref, int current) {
+    final l10n = AppLocalizations.of(context);
+    final options = [0, 5, 10, 15, 20, 25, 30];
+    showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text(l10n?.timeboxing ?? 'Session timeboxing'),
+        content: RadioGroup<int>(
+          groupValue: current,
+          onChanged: (val) {
+            if (val != null) {
+              ref.read(timeboxControllerProvider.notifier).setMinutes(val);
+              Navigator.of(dialogCtx).pop();
+            }
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: options.map((mins) {
+                return RadioListTile<int>(
+                  value: mins,
+                  title: Text(
+                    mins == 0
+                        ? (l10n?.timeboxMinutes(0) ?? 'Disabled')
+                        : (l10n?.timeboxMinutes(mins) ?? '$mins minutes'),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(l10n?.close ?? 'Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAutoAdvanceDialog(
+    BuildContext context,
+    WidgetRef ref,
+    int current,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final options = [0, 3, 5, 10, 15];
+    showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text(l10n?.autoAdvance ?? 'Auto-advance'),
+        content: RadioGroup<int>(
+          groupValue: current,
+          onChanged: (val) {
+            if (val != null) {
+              ref
+                  .read(autoAdvanceControllerProvider.notifier)
+                  .setSeconds(val);
+              Navigator.of(dialogCtx).pop();
+            }
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: options.map((secs) {
+                return RadioListTile<int>(
+                  value: secs,
+                  title: Text(
+                    secs == 0
+                        ? (l10n?.autoAdvanceSeconds(0) ?? 'Disabled')
+                        : (l10n?.autoAdvanceSeconds(secs) ?? '$secs seconds'),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(l10n?.close ?? 'Close'),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _showAlgorithmDialog(
     BuildContext context,
@@ -233,6 +324,80 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
                                 : (l10n?.studyRemindersSubtitle ??
                                       'Daily review alerts')),
                       onTap: () => ReminderDialog.show(context),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SectionHeader(
+              title: (l10n?.studySessionTitle ?? 'STUDY SESSION').toUpperCase(),
+            ),
+            SettingsCard(
+              children: [
+                Consumer(
+                  builder: (context, ref, _) {
+                    final timeboxMins = ref.watch(timeboxControllerProvider);
+                    return SettingsTile(
+                      key: const Key('setting_timebox_tile'),
+                      icon: Icons.timer_outlined,
+                      iconColor: Colors.deepOrange,
+                      title: l10n?.timeboxing ?? 'Session timeboxing',
+                      subtitle: timeboxMins == 0
+                          ? (l10n?.timeboxMinutes(0) ?? 'Disabled')
+                          : (l10n?.timeboxMinutes(timeboxMins) ??
+                                '$timeboxMins min'),
+                      onTap: () =>
+                          _showTimeboxDialog(context, ref, timeboxMins),
+                    );
+                  },
+                ),
+                const Divider(indent: 56, height: 1),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final advanceSecs = ref.watch(autoAdvanceControllerProvider);
+                    return SettingsTile(
+                      key: const Key('setting_auto_advance_tile'),
+                      icon: Icons.speed_rounded,
+                      iconColor: Colors.teal,
+                      title: l10n?.autoAdvance ?? 'Auto-advance',
+                      subtitle: advanceSecs == 0
+                          ? (l10n?.autoAdvanceSeconds(0) ?? 'Disabled')
+                          : (l10n?.autoAdvanceSeconds(advanceSecs) ??
+                                '$advanceSecs sec'),
+                      onTap: () =>
+                          _showAutoAdvanceDialog(context, ref, advanceSecs),
+                    );
+                  },
+                ),
+                const Divider(indent: 56, height: 1),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final typeIn = ref.watch(typeInPracticeControllerProvider);
+                    return SettingsTile(
+                      key: const Key('setting_type_in_tile'),
+                      icon: Icons.keyboard_alt_outlined,
+                      iconColor: colorScheme.primary,
+                      title:
+                          l10n?.typeInAnswerToggle ??
+                          'Type-in answer practice',
+                      subtitle:
+                          l10n?.typeInAnswerToggleSubtitle ??
+                          'Type your answer before revealing the card',
+                      trailing: Switch(
+                        value: typeIn,
+                        onChanged: (_) {
+                          ref
+                              .read(typeInPracticeControllerProvider.notifier)
+                              .toggle();
+                        },
+                      ),
+                      showChevron: false,
+                      onTap: () {
+                        ref
+                            .read(typeInPracticeControllerProvider.notifier)
+                            .toggle();
+                      },
                     );
                   },
                 ),
