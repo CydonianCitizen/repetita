@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:repetita/src/core/algorithms/fsrs/models/fsrs_models.dart';
 import 'package:repetita/src/core/database/app_database.dart';
 import 'package:repetita/src/core/database/database_provider.dart';
+import 'package:repetita/src/core/utils/clock_provider.dart';
 import 'package:repetita/src/features/settings/presentation/controllers/auto_bury_siblings_controller.dart';
 import 'package:repetita/src/features/study_session/domain/models/custom_study_config.dart';
 import 'package:repetita/src/features/study_session/presentation/controllers/study_session_controller.dart';
@@ -21,6 +22,9 @@ void main() {
       overrides: [
         databaseProvider.overrideWithValue(db),
         studySessionDaoProvider.overrideWithValue(db.studySessionDao),
+        clockProvider.overrideWithValue(
+          () => DateTime.utc(2026, 10, 18, 10, 0),
+        ),
       ],
     );
   });

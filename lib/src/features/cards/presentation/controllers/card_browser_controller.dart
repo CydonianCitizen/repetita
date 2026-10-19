@@ -53,10 +53,7 @@ class CardBrowserFilter {
 }
 
 class CardWithDeckInfo {
-  const CardWithDeckInfo({
-    required this.card,
-    required this.deckName,
-  });
+  const CardWithDeckInfo({required this.card, required this.deckName});
 
   final CardEntity card;
   final String deckName;
@@ -93,63 +90,69 @@ class CardBrowserFilterNotifier extends Notifier<CardBrowserFilter> {
 
 final cardBrowserFilterProvider =
     NotifierProvider<CardBrowserFilterNotifier, CardBrowserFilter>(
-  CardBrowserFilterNotifier.new,
-);
+      CardBrowserFilterNotifier.new,
+    );
 
 final globalCardsStreamProvider = StreamProvider<List<CardEntity>>((ref) {
   final dao = ref.watch(cardsDaoProvider);
-  return dao
-      .watchAllCards()
-      .map((cards) => cards.map((c) => c.toEntity()).toList());
-});
-
-final cardBrowserResultsProvider =
-    Provider<AsyncValue<List<CardWithDeckInfo>>>((ref) {
-  final allCardsAsync = ref.watch(globalCardsStreamProvider);
-  final decksAsync = ref.watch(deckListControllerProvider);
-  final filter = ref.watch(cardBrowserFilterProvider);
-  final now = ref.watch(clockProvider)().toUtc();
-
-  return allCardsAsync.when(
-    data: (cards) {
-      final decks = decksAsync.value ?? [];
-      final deckMap = {for (final d in decks) d.deck.id: d.deck.name};
-
-      final query = filter.query.toLowerCase().trim();
-      final filtered = cards.where((c) {
-        if (filter.deckId != null && c.deckId != filter.deckId) {
-          return false;
-        }
-        if (filter.flag != null && c.flag != filter.flag) {
-          return false;
-        }
-        if (filter.isSuspended != null && c.isSuspended != filter.isSuspended) {
-          return false;
-        }
-        if (filter.dueOnly) {
-          if (c.isSuspended) return false;
-          final isBuried = c.buriedUntil != null && c.buriedUntil!.isAfter(now);
-          if (isBuried) return false;
-          final isDue =
-              c.due.isBefore(now) || c.due.isAtSameMomentAs(now);
-          if (!isDue) return false;
-        }
-        if (query.isNotEmpty) {
-          final frontMatch = c.front.toLowerCase().contains(query);
-          final backMatch = c.back.toLowerCase().contains(query);
-          if (!frontMatch && !backMatch) return false;
-        }
-        return true;
-      }).map((c) {
-        return CardWithDeckInfo(
-          card: c,
-          deckName: deckMap[c.deckId] ?? 'Deck #${c.deckId}',
-        );
-      }).toList();
-
-      return AsyncData(filtered);
-    },
-    loading: () => const AsyncLoading(),
-    error: (err, st) => AsyncError(err, st),
+  return dao.watchAllCards().map(
+    (cards) => cards.map((c) => c.toEntity()).toList(),
   );
 });
+
+final cardBrowserResultsProvider = Provider<AsyncValue<List<CardWithDeckInfo>>>(
+  (ref) {
+    final allCardsAsync = ref.watch(globalCardsStreamProvider);
+    final decksAsync = ref.watch(deckListControllerProvider);
+    final filter = ref.watch(cardBrowserFilterProvider);
+    final now = ref.watch(clockProvider)().toUtc();
+
+    return allCardsAsync.when(
+      data: (cards) {
+        final decks = decksAsync.value ?? [];
+        final deckMap = {for (final d in decks) d.deck.id: d.deck.name};
+
+        final query = filter.query.toLowerCase().trim();
+        final filtered = cards
+            .where((c) {
+              if (filter.deckId != null && c.deckId != filter.deckId) {
+                return false;
+              }
+              if (filter.flag != null && c.flag != filter.flag) {
+                return false;
+              }
+              if (filter.isSuspended != null &&
+                  c.isSuspended != filter.isSuspended) {
+                return false;
+              }
+              if (filter.dueOnly) {
+                if (c.isSuspended) return false;
+                final isBuried =
+                    c.buriedUntil != null && c.buriedUntil!.isAfter(now);
+                if (isBuried) return false;
+                final isDue =
+                    c.due.isBefore(now) || c.due.isAtSameMomentAs(now);
+                if (!isDue) return false;
+              }
+              if (query.isNotEmpty) {
+                final frontMatch = c.front.toLowerCase().contains(query);
+                final backMatch = c.back.toLowerCase().contains(query);
+                if (!frontMatch && !backMatch) return false;
+              }
+              return true;
+            })
+            .map((c) {
+              return CardWithDeckInfo(
+                card: c,
+                deckName: deckMap[c.deckId] ?? 'Deck #${c.deckId}',
+              );
+            })
+            .toList();
+
+        return AsyncData(filtered);
+      },
+      loading: () => const AsyncLoading(),
+      error: (err, st) => AsyncError(err, st),
+    );
+  },
+);

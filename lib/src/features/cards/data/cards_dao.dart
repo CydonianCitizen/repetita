@@ -281,7 +281,8 @@ class CardsDao extends DatabaseAccessor<AppDatabase> with _$CardsDaoMixin {
       }
       if (isDueOnly == true) {
         final cutoffUtc = (dueCutoff ?? DateTime.now()).toUtc();
-        predicate = predicate &
+        predicate =
+            predicate &
             t.due.isSmallerOrEqualValue(cutoffUtc) &
             t.isSuspended.equals(false) &
             (t.buriedUntil.isNull() |
@@ -301,4 +302,3 @@ class CardsDao extends DatabaseAccessor<AppDatabase> with _$CardsDaoMixin {
     return q.get();
   }
 }
-

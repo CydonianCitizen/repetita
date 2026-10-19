@@ -385,7 +385,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                       key: const Key('export_all_anki_button'),
                       onPressed: isLoading ? null : _handleExportAllAnki,
                       icon: const Icon(Icons.file_upload_outlined),
-                      label: Text(l10n?.exportAllDecksAnki ?? 'Export All Decks (.apkg)'),
+                      label: Text(
+                        l10n?.exportAllDecksAnki ?? 'Export All Decks (.apkg)',
+                      ),
                     ),
                   ],
                 ),

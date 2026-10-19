@@ -6,12 +6,7 @@ import 'package:repetita/src/features/decks/domain/deck_hierarchy.dart';
 void main() {
   Deck makeDeck(int id, String name) {
     final now = DateTime.now().toUtc();
-    return Deck(
-      id: id,
-      name: name,
-      createdAt: now,
-      updatedAt: now,
-    );
+    return Deck(id: id, name: name, createdAt: now, updatedAt: now);
   }
 
   DeckWithCounts makeDeckCounts(int id, String name, int total, int due) {
@@ -43,41 +38,44 @@ void main() {
       expect(tree[1].aggregateDueCards, equals(8));
     });
 
-    test('builds nested tree for decks with :: delimiters and aggregates counts', () {
-      final decks = [
-        makeDeckCounts(1, 'Medicine', 5, 2),
-        makeDeckCounts(2, 'Medicine::Anatomy', 15, 6),
-        makeDeckCounts(3, 'Medicine::Anatomy::Heart', 30, 10),
-        makeDeckCounts(4, 'Languages', 12, 4),
-      ];
+    test(
+      'builds nested tree for decks with :: delimiters and aggregates counts',
+      () {
+        final decks = [
+          makeDeckCounts(1, 'Medicine', 5, 2),
+          makeDeckCounts(2, 'Medicine::Anatomy', 15, 6),
+          makeDeckCounts(3, 'Medicine::Anatomy::Heart', 30, 10),
+          makeDeckCounts(4, 'Languages', 12, 4),
+        ];
 
-      final tree = DeckHierarchyHelper.buildTree(decks);
+        final tree = DeckHierarchyHelper.buildTree(decks);
 
-      expect(tree.length, equals(2)); // Medicine and Languages
+        expect(tree.length, equals(2)); // Medicine and Languages
 
-      final medNode = tree.firstWhere((n) => n.shortName == 'Medicine');
-      expect(medNode.depth, equals(0));
-      // Medicine total = 5 + 15 + 30 = 50
-      expect(medNode.aggregateTotalCards, equals(50));
-      // Medicine due = 2 + 6 + 10 = 18
-      expect(medNode.aggregateDueCards, equals(18));
-      expect(medNode.children.length, equals(1)); // Anatomy
+        final medNode = tree.firstWhere((n) => n.shortName == 'Medicine');
+        expect(medNode.depth, equals(0));
+        // Medicine total = 5 + 15 + 30 = 50
+        expect(medNode.aggregateTotalCards, equals(50));
+        // Medicine due = 2 + 6 + 10 = 18
+        expect(medNode.aggregateDueCards, equals(18));
+        expect(medNode.children.length, equals(1)); // Anatomy
 
-      final anatomyNode = medNode.children.first;
-      expect(anatomyNode.shortName, equals('Anatomy'));
-      expect(anatomyNode.depth, equals(1));
-      // Anatomy total = 15 + 30 = 45
-      expect(anatomyNode.aggregateTotalCards, equals(45));
-      expect(anatomyNode.aggregateDueCards, equals(16));
-      expect(anatomyNode.children.length, equals(1)); // Heart
+        final anatomyNode = medNode.children.first;
+        expect(anatomyNode.shortName, equals('Anatomy'));
+        expect(anatomyNode.depth, equals(1));
+        // Anatomy total = 15 + 30 = 45
+        expect(anatomyNode.aggregateTotalCards, equals(45));
+        expect(anatomyNode.aggregateDueCards, equals(16));
+        expect(anatomyNode.children.length, equals(1)); // Heart
 
-      final heartNode = anatomyNode.children.first;
-      expect(heartNode.shortName, equals('Heart'));
-      expect(heartNode.depth, equals(2));
-      expect(heartNode.aggregateTotalCards, equals(30));
-      expect(heartNode.aggregateDueCards, equals(10));
-      expect(heartNode.children, isEmpty);
-    });
+        final heartNode = anatomyNode.children.first;
+        expect(heartNode.shortName, equals('Heart'));
+        expect(heartNode.depth, equals(2));
+        expect(heartNode.aggregateTotalCards, equals(30));
+        expect(heartNode.aggregateDueCards, equals(10));
+        expect(heartNode.children, isEmpty);
+      },
+    );
 
     test('handles missing intermediate parent decks by synthesizing virtual nodes or attaching cleanly', () {
       final decks = [

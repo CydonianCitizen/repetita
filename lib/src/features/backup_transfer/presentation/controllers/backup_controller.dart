@@ -145,7 +145,10 @@ class BackupController extends _$BackupController {
     );
   }
 
-  Future<List<int>> exportAnki({int? deckId, bool includeRevlog = false}) async {
+  Future<List<int>> exportAnki({
+    int? deckId,
+    bool includeRevlog = false,
+  }) async {
     state = const AsyncLoading();
     try {
       final service = ref.read(ankiExportServiceProvider);

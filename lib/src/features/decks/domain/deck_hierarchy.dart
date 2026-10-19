@@ -44,10 +44,7 @@ class DeckNode {
 
 /// A flattened representation of a DeckNode for sequential rendering in list views.
 class FlattenedDeckNode {
-  const FlattenedDeckNode({
-    required this.node,
-    required this.isCollapsed,
-  });
+  const FlattenedDeckNode({required this.node, required this.isCollapsed});
 
   final DeckNode node;
   final bool isCollapsed;
@@ -68,7 +65,11 @@ class DeckHierarchyHelper {
     // Build intermediate path structure
     final allPaths = <String>{};
     for (final name in deckMap.keys) {
-      final parts = name.split('::').map((p) => p.trim()).where((p) => p.isNotEmpty).toList();
+      final parts = name
+          .split('::')
+          .map((p) => p.trim())
+          .where((p) => p.isNotEmpty)
+          .toList();
       String current = '';
       for (int i = 0; i < parts.length; i++) {
         current = current.isEmpty ? parts[i] : '$current::${parts[i]}';
@@ -135,7 +136,10 @@ class DeckHierarchyHelper {
 
     // Sort children and roots alphabetically
     void sortNode(DeckNode n) {
-      n.children.sort((a, b) => a.shortName.toLowerCase().compareTo(b.shortName.toLowerCase()));
+      n.children.sort(
+        (a, b) =>
+            a.shortName.toLowerCase().compareTo(b.shortName.toLowerCase()),
+      );
       for (final child in n.children) {
         sortNode(child);
       }
@@ -147,7 +151,11 @@ class DeckHierarchyHelper {
       final rootPart = decks[i].deck.name.split('::').first.trim();
       rootOrder.putIfAbsent(rootPart, () => i);
     }
-    rootNodes.sort((a, b) => (rootOrder[a.shortName] ?? 9999).compareTo(rootOrder[b.shortName] ?? 9999));
+    rootNodes.sort(
+      (a, b) => (rootOrder[a.shortName] ?? 9999).compareTo(
+        rootOrder[b.shortName] ?? 9999,
+      ),
+    );
 
     for (final root in rootNodes) {
       sortNode(root);

@@ -47,7 +47,8 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
         ? decks.where((d) => d.deck.id == filter.deckId).firstOrNull?.deck.name
         : null;
 
-    final hasActiveFilters = filter.query.isNotEmpty ||
+    final hasActiveFilters =
+        filter.query.isNotEmpty ||
         filter.deckId != null ||
         filter.flag != null ||
         filter.isSuspended != null ||
@@ -77,7 +78,8 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
               key: const Key('card_browser_search_input'),
               controller: _searchController,
               hintText:
-                  l10n?.cardBrowserSearchHint ?? 'Search cards, tags, contents...',
+                  l10n?.cardBrowserSearchHint ??
+                  'Search cards, tags, contents...',
               leading: const Icon(Icons.search),
               trailing: [
                 if (_searchController.text.isNotEmpty)
@@ -85,9 +87,7 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
                     icon: const Icon(Icons.clear),
                     onPressed: () {
                       _searchController.clear();
-                      ref
-                          .read(cardBrowserFilterProvider.notifier)
-                          .setQuery('');
+                      ref.read(cardBrowserFilterProvider.notifier).setQuery('');
                     },
                   ),
               ],
@@ -167,7 +167,11 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
                       value: 1,
                       child: Row(
                         children: [
-                          Icon(Icons.flag, color: getCardFlagColor(1), size: 18),
+                          Icon(
+                            Icons.flag,
+                            color: getCardFlagColor(1),
+                            size: 18,
+                          ),
                           const SizedBox(width: 8),
                           const Text('Red Flag'),
                         ],
@@ -177,7 +181,11 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
                       value: 2,
                       child: Row(
                         children: [
-                          Icon(Icons.flag, color: getCardFlagColor(2), size: 18),
+                          Icon(
+                            Icons.flag,
+                            color: getCardFlagColor(2),
+                            size: 18,
+                          ),
                           const SizedBox(width: 8),
                           const Text('Orange Flag'),
                         ],
@@ -187,7 +195,11 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
                       value: 3,
                       child: Row(
                         children: [
-                          Icon(Icons.flag, color: getCardFlagColor(3), size: 18),
+                          Icon(
+                            Icons.flag,
+                            color: getCardFlagColor(3),
+                            size: 18,
+                          ),
                           const SizedBox(width: 8),
                           const Text('Green Flag'),
                         ],
@@ -197,7 +209,11 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
                       value: 4,
                       child: Row(
                         children: [
-                          Icon(Icons.flag, color: getCardFlagColor(4), size: 18),
+                          Icon(
+                            Icons.flag,
+                            color: getCardFlagColor(4),
+                            size: 18,
+                          ),
                           const SizedBox(width: 8),
                           const Text('Blue Flag'),
                         ],
@@ -370,15 +386,17 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: colorScheme.surfaceContainerHighest,
+                                      color:
+                                          colorScheme.surfaceContainerHighest,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
                                       item.deckName,
-                                      style: theme.textTheme.labelSmall?.copyWith(
-                                        color: colorScheme.onSurfaceVariant,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -395,12 +413,13 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
                                     ),
                                     child: Text(
                                       cardStateName(card.state, l10n),
-                                      style: theme.textTheme.labelSmall?.copyWith(
-                                        color: colorScheme.cardStateColor(
-                                          card.state,
-                                        ),
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: colorScheme.cardStateColor(
+                                              card.state,
+                                            ),
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                     ),
                                   ),
                                   if (card.isSuspended) ...[
@@ -416,10 +435,12 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
                                       ),
                                       child: Text(
                                         l10n?.filterSuspended ?? 'Suspended',
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          color: colorScheme.onErrorContainer,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                              color:
+                                                  colorScheme.onErrorContainer,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                       ),
                                     ),
                                   ],

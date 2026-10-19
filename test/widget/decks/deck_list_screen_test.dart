@@ -220,33 +220,34 @@ void main() {
       },
     );
 
-    testWidgets('renders hierarchical subdecks indented and collapses on toggle', (
-      tester,
-    ) async {
-      await db.decksDao.createDeck(name: 'Languages');
-      await db.decksDao.createDeck(name: 'Languages::Japanese');
+    testWidgets(
+      'renders hierarchical subdecks indented and collapses on toggle',
+      (tester) async {
+        await db.decksDao.createDeck(name: 'Languages');
+        await db.decksDao.createDeck(name: 'Languages::Japanese');
 
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildSubject());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Languages'), findsOneWidget);
-      expect(find.text('Japanese'), findsOneWidget);
+        expect(find.text('Languages'), findsOneWidget);
+        expect(find.text('Japanese'), findsOneWidget);
 
-      // Find collapse icon button and tap it
-      final collapseButton = find.byIcon(Icons.expand_more);
-      expect(collapseButton, findsOneWidget);
+        // Find collapse icon button and tap it
+        final collapseButton = find.byIcon(Icons.expand_more);
+        expect(collapseButton, findsOneWidget);
 
-      await tester.tap(collapseButton);
-      await tester.pumpAndSettle();
+        await tester.tap(collapseButton);
+        await tester.pumpAndSettle();
 
-      // Japanese is now collapsed/hidden
-      expect(find.text('Languages'), findsOneWidget);
-      expect(find.text('Japanese'), findsNothing);
-      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+        // Japanese is now collapsed/hidden
+        expect(find.text('Languages'), findsOneWidget);
+        expect(find.text('Japanese'), findsNothing);
+        expect(find.byIcon(Icons.chevron_right), findsOneWidget);
 
-      await tester.pumpWidget(const SizedBox());
-      await tester.pump(const Duration(milliseconds: 50));
-    });
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(milliseconds: 50));
+      },
+    );
 
     testWidgets('tapping card_browser_button navigates to CardBrowserScreen', (
       tester,

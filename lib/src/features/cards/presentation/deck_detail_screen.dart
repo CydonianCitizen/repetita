@@ -81,7 +81,9 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        l10n?.ankiExportSuccess(cardsAsync.value?.length ?? 0) ??
+                        l10n?.ankiExportSuccess(
+                              cardsAsync.value?.length ?? 0,
+                            ) ??
                             'Exported to $savedPath',
                       ),
                       behavior: SnackBarBehavior.floating,

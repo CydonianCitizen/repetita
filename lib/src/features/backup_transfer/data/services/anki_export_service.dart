@@ -20,8 +20,9 @@ class AnkiExportService {
     bool includeRevlog = false,
     bool includeSubdecks = true,
   }) async {
-    final deck = await (db.select(db.decks)..where((d) => d.id.equals(deckId)))
-        .getSingleOrNull();
+    final deck = await (db.select(
+      db.decks,
+    )..where((d) => d.id.equals(deckId))).getSingleOrNull();
     if (deck == null) {
       throw ArgumentError('Deck with ID $deckId not found.');
     }
@@ -55,9 +56,9 @@ class AnkiExportService {
     final targetDeckIds = targetDecks.map((d) => d.id).toSet();
 
     // Query cards
-    final cards = await (db.select(db.cards)
-          ..where((c) => c.deckId.isIn(targetDeckIds)))
-        .get();
+    final cards = await (db.select(
+      db.cards,
+    )..where((c) => c.deckId.isIn(targetDeckIds))).get();
 
     // Query tags per card
     final cardTagsQuery = (db.select(db.cardTags).join([
@@ -94,7 +95,11 @@ class AnkiExportService {
       // Package into ZIP
       final archive = Archive();
       archive.addFile(
-        ArchiveFile('collection.anki2', collectionBytes.length, collectionBytes),
+        ArchiveFile(
+          'collection.anki2',
+          collectionBytes.length,
+          collectionBytes,
+        ),
       );
       archive.addFile(ArchiveFile.string('media', '{}'));
 
@@ -201,11 +206,25 @@ class AnkiExportService {
             'bqfmt': '',
             'bafmt': '',
             'did': null,
-          }
+          },
         ],
         'flds': [
-          {'name': 'Front', 'ord': 0, 'sticky': false, 'rtl': false, 'font': 'Arial', 'size': 20},
-          {'name': 'Back', 'ord': 1, 'sticky': false, 'rtl': false, 'font': 'Arial', 'size': 20},
+          {
+            'name': 'Front',
+            'ord': 0,
+            'sticky': false,
+            'rtl': false,
+            'font': 'Arial',
+            'size': 20,
+          },
+          {
+            'name': 'Back',
+            'ord': 1,
+            'sticky': false,
+            'rtl': false,
+            'font': 'Arial',
+            'size': 20,
+          },
         ],
         'css': '.card { font-family: arial; font-size: 20px; text-align: center; color: black; background-color: white; }',
       },
@@ -226,11 +245,25 @@ class AnkiExportService {
             'bqfmt': '',
             'bafmt': '',
             'did': null,
-          }
+          },
         ],
         'flds': [
-          {'name': 'Text', 'ord': 0, 'sticky': false, 'rtl': false, 'font': 'Arial', 'size': 20},
-          {'name': 'Extra', 'ord': 1, 'sticky': false, 'rtl': false, 'font': 'Arial', 'size': 20},
+          {
+            'name': 'Text',
+            'ord': 0,
+            'sticky': false,
+            'rtl': false,
+            'font': 'Arial',
+            'size': 20,
+          },
+          {
+            'name': 'Extra',
+            'ord': 1,
+            'sticky': false,
+            'rtl': false,
+            'font': 'Arial',
+            'size': 20,
+          },
         ],
         'css': '.cloze { font-weight: bold; color: blue; }',
       },
@@ -258,10 +291,29 @@ class AnkiExportService {
         'autoplay': true,
         'timer': 0,
         'replayq': true,
-        'new': {'bury': false, 'delays': [1.0, 10.0], 'initialFactor': 2500, 'ints': [1, 4, 0], 'order': 1, 'perDay': 20},
-        'rev': {'bury': false, 'ease4': 1.3, 'ivlFctr': 1.0, 'maxIvl': 36500, 'perDay': 200},
-        'lapse': {'delays': [10.0], 'leechAction': 0, 'leechFails': 8, 'minInt': 1, 'mult': 0.0},
-      }
+        'new': {
+          'bury': false,
+          'delays': [1.0, 10.0],
+          'initialFactor': 2500,
+          'ints': [1, 4, 0],
+          'order': 1,
+          'perDay': 20,
+        },
+        'rev': {
+          'bury': false,
+          'ease4': 1.3,
+          'ivlFctr': 1.0,
+          'maxIvl': 36500,
+          'perDay': 200,
+        },
+        'lapse': {
+          'delays': [10.0],
+          'leechAction': 0,
+          'leechFails': 8,
+          'minInt': 1,
+          'mult': 0.0,
+        },
+      },
     };
 
     final conf = {
@@ -325,7 +377,8 @@ class AnkiExportService {
         final modelId = isCloze ? 1600000000001 : 1600000000000;
 
         int ankiNoteId;
-        if (card.noteId != null && noteIdToAnkiNoteId.containsKey(card.noteId)) {
+        if (card.noteId != null &&
+            noteIdToAnkiNoteId.containsKey(card.noteId)) {
           ankiNoteId = noteIdToAnkiNoteId[card.noteId]!;
         } else {
           autoNoteCounter++;
@@ -335,7 +388,9 @@ class AnkiExportService {
           }
 
           final flds = '${card.front}\x1f${card.back}';
-          final sfld = card.front.length > 50 ? card.front.substring(0, 50) : card.front;
+          final sfld = card.front.length > 50
+              ? card.front.substring(0, 50)
+              : card.front;
           final csum = _checksum(sfld);
           final guid = _generateGuid(card.id, ankiNoteId);
 
@@ -355,7 +410,9 @@ class AnkiExportService {
         }
 
         final factor = (card.easinessFactor * 1000).round();
-        final dueDays = card.due.difference(DateTime.fromMillisecondsSinceEpoch(0)).inDays;
+        final dueDays = card.due
+            .difference(DateTime.fromMillisecondsSinceEpoch(0))
+            .inDays;
         final ord = card.clozeIndex != null ? (card.clozeIndex! - 1) : 0;
         final cardAnkiId = autoNoteCounter * 10 + i;
 
@@ -367,7 +424,11 @@ class AnkiExportService {
           nowSeconds,
           -1,
           card.state, // type
-          card.isSuspended ? -1 : (card.state == 0 ? 0 : 2), // queue: -1 suspended, 0 new, 2 review
+          card.isSuspended
+              ? -1
+              : (card.state == 0
+                    ? 0
+                    : 2), // queue: -1 suspended, 0 new, 2 review
           card.state == 0 ? (i + 1) : dueDays, // due
           0, // ivl
           factor,
@@ -386,13 +447,10 @@ class AnkiExportService {
     }
   }
 
-  Future<void> _populateRevlog(
-    sqlite.Database ankiDb,
-    Set<int> cardIds,
-  ) async {
-    final logs = await (db.select(db.reviewLogs)
-          ..where((l) => l.cardId.isIn(cardIds)))
-        .get();
+  Future<void> _populateRevlog(sqlite.Database ankiDb, Set<int> cardIds) async {
+    final logs = await (db.select(
+      db.reviewLogs,
+    )..where((l) => l.cardId.isIn(cardIds))).get();
 
     final stmt = ankiDb.prepare(
       'INSERT INTO revlog VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -428,6 +486,9 @@ class AnkiExportService {
 
   String _generateGuid(int cardId, int noteId) {
     final raw = '$cardId:$noteId:${DateTime.now().microsecondsSinceEpoch}';
-    return base64Url.encode(utf8.encode(raw)).replaceAll('=', '').substring(0, 10);
+    return base64Url
+        .encode(utf8.encode(raw))
+        .replaceAll('=', '')
+        .substring(0, 10);
   }
 }

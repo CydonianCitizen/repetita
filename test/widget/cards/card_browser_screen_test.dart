@@ -42,90 +42,94 @@ void main() {
       await tester.pump(const Duration(milliseconds: 50));
     });
 
-    testWidgets('renders cards with front, back, deck badge and filters by text', (
-      tester,
-    ) async {
-      final deckId = await db.decksDao.createDeck(name: 'Neuroscience');
-      await db.cardsDao.createCard(
-        deckId: deckId,
-        front: 'Action Potential',
-        back: 'Rapid depolarization of membrane',
-      );
-      await db.cardsDao.createCard(
-        deckId: deckId,
-        front: 'Synapse',
-        back: 'Junction between two neurons',
-      );
+    testWidgets(
+      'renders cards with front, back, deck badge and filters by text',
+      (tester) async {
+        final deckId = await db.decksDao.createDeck(name: 'Neuroscience');
+        await db.cardsDao.createCard(
+          deckId: deckId,
+          front: 'Action Potential',
+          back: 'Rapid depolarization of membrane',
+        );
+        await db.cardsDao.createCard(
+          deckId: deckId,
+          front: 'Synapse',
+          back: 'Junction between two neurons',
+        );
 
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildSubject());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Action Potential'), findsOneWidget);
-      expect(find.text('Synapse'), findsOneWidget);
-      expect(find.text('Neuroscience'), findsNWidgets(2));
-      expect(find.text('2 cards found'), findsOneWidget);
+        expect(find.text('Action Potential'), findsOneWidget);
+        expect(find.text('Synapse'), findsOneWidget);
+        expect(find.text('Neuroscience'), findsNWidgets(2));
+        expect(find.text('2 cards found'), findsOneWidget);
 
-      // Type in search bar
-      final searchInput = find.byKey(const Key('card_browser_search_input'));
-      await tester.enterText(searchInput, 'Action');
-      await tester.pumpAndSettle();
+        // Type in search bar
+        final searchInput = find.byKey(const Key('card_browser_search_input'));
+        await tester.enterText(searchInput, 'Action');
+        await tester.pumpAndSettle();
 
-      expect(find.text('Action Potential'), findsOneWidget);
-      expect(find.text('Synapse'), findsNothing);
-      expect(find.text('1 card found'), findsOneWidget);
+        expect(find.text('Action Potential'), findsOneWidget);
+        expect(find.text('Synapse'), findsNothing);
+        expect(find.text('1 card found'), findsOneWidget);
 
-      // Clear search via clear button
-      final clearButton = find.byIcon(Icons.clear);
-      expect(clearButton, findsOneWidget);
-      await tester.tap(clearButton);
-      await tester.pumpAndSettle();
+        // Clear search via clear button
+        final clearButton = find.byIcon(Icons.clear);
+        expect(clearButton, findsOneWidget);
+        await tester.tap(clearButton);
+        await tester.pumpAndSettle();
 
-      expect(find.text('Action Potential'), findsOneWidget);
-      expect(find.text('Synapse'), findsOneWidget);
+        expect(find.text('Action Potential'), findsOneWidget);
+        expect(find.text('Synapse'), findsOneWidget);
 
-      await tester.pumpWidget(const SizedBox());
-      await tester.pump(const Duration(milliseconds: 50));
-    });
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(milliseconds: 50));
+      },
+    );
 
-    testWidgets('filters by suspended filter chip and opens editor on card tap', (
-      tester,
-    ) async {
-      final deckId = await db.decksDao.createDeck(name: 'Biology');
-      await db.cardsDao.createCard(
-        deckId: deckId,
-        front: 'Active Card',
-        back: 'Not suspended',
-      );
-      final c2 = await db.cardsDao.createCard(
-        deckId: deckId,
-        front: 'Suspended Card',
-        back: 'Suspended item',
-      );
-      await db.cardsDao.setCardSuspended(c2, true);
+    testWidgets(
+      'filters by suspended filter chip and opens editor on card tap',
+      (tester) async {
+        final deckId = await db.decksDao.createDeck(name: 'Biology');
+        await db.cardsDao.createCard(
+          deckId: deckId,
+          front: 'Active Card',
+          back: 'Not suspended',
+        );
+        final c2 = await db.cardsDao.createCard(
+          deckId: deckId,
+          front: 'Suspended Card',
+          back: 'Suspended item',
+        );
+        await db.cardsDao.setCardSuspended(c2, true);
 
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildSubject());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Active Card'), findsOneWidget);
-      expect(find.text('Suspended Card'), findsOneWidget);
+        expect(find.text('Active Card'), findsOneWidget);
+        expect(find.text('Suspended Card'), findsOneWidget);
 
-      // Tap Suspended chip
-      final suspendedChip = find.byKey(const Key('card_browser_suspended_chip'));
-      await tester.tap(suspendedChip);
-      await tester.pumpAndSettle();
+        // Tap Suspended chip
+        final suspendedChip = find.byKey(
+          const Key('card_browser_suspended_chip'),
+        );
+        await tester.tap(suspendedChip);
+        await tester.pumpAndSettle();
 
-      expect(find.text('Active Card'), findsNothing);
-      expect(find.text('Suspended Card'), findsOneWidget);
+        expect(find.text('Active Card'), findsNothing);
+        expect(find.text('Suspended Card'), findsOneWidget);
 
-      // Tap on Suspended Card to open CardEditorScreen
-      await tester.tap(find.text('Suspended Card'));
-      await tester.pumpAndSettle();
+        // Tap on Suspended Card to open CardEditorScreen
+        await tester.tap(find.text('Suspended Card'));
+        await tester.pumpAndSettle();
 
-      expect(find.byType(CardEditorScreen), findsOneWidget);
+        expect(find.byType(CardEditorScreen), findsOneWidget);
 
-      await tester.pumpWidget(const SizedBox());
-      await tester.pump(const Duration(milliseconds: 50));
-    });
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(milliseconds: 50));
+      },
+    );
 
     testWidgets('reset button appears when filter active and clears filter', (
       tester,

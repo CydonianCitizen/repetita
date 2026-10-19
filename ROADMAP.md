@@ -216,11 +216,11 @@ Documento di pianificazione tecnica basato sulle scelte funzionali definite per 
 ### 6. Architettura dei Rilasci Futuri (v0.9.0 -> v2.0.0)
 
 Il piano evolutivo nasce da un'analisi di benchmark sulle feature dei competitor (Anki Desktop, AnkiDroid, AnkiMobile, RemNote, Mochi, ecosistema FSRS) e assegna a ciascuna funzionalità una versione precisa:
-* **v0.9.0**: Study Controls, Revision Utilities & Exam Mastery (Set Due/Reset/Copy §7.3, Leech Detection §7.4, Flag colorate §7.2, Fuzz §8.1, Vacation mode §8.2, Rolling Backup §7.1, Exam Scheduler §12.1).
-* **v0.9.1**: Modello Note, Siblings & Input Attivo (Carte Reverse §10.1, Bury Siblings §10.2, Type-in-the-answer §10.3, RTL languages §13.3, Timeboxing §10.5, Auto-advance §10.6).
+* **v0.9.0**: Study Controls, Revision Utilities & Exam Mastery (Set Due/Reset/Copy §7.3, Leech Detection §7.4, Flag colorate §7.2, Fuzz §8.1, Vacation mode §8.2, Rolling Backup §7.1, Exam Scheduler §12.1) [COMPLETATO].
+* **v0.9.1**: Modello Note, Siblings & Input Attivo (Carte Reverse §10.1, Bury Siblings §10.2, Type-in-the-answer §10.3, RTL languages §13.3, Timeboxing §10.5, Auto-advance §10.6) [COMPLETATO].
+* **v0.9.2**: Interoperabilità & Navigazione (Export .apkg bidirezionale §11.1, Subdeck gerarchici `Parent::Child` §11.2, Card Browser multi-criterio §11.3) [COMPLETATO].
 * **v1.0.0**: Consolidamento, Migrazioni Drift blindate & Test Coverage completa.
 * **v1.2.0**: Media Pipeline & Image Occlusion (§9.1-9.3, §10.4).
-* **v1.3.0**: Ecosistema, Gerarchia & Card Browser (Export .apkg §11.1, Subdeck §11.2, Card Browser FTS5 §11.3).
 * **v1.4.0**: Audio & Ergonomia Mobile (Audio §9.4, Widget §13.1, Gestures §13.2, Whiteboard §15.1).
 * **v1.5.0**: Visual Analytics Avanzate (Grafici e curve di ritenzione §14.4).
 * **Spike / v2.0.0**: Sincronizzazione opzionale file-based (§14.5), FSRS Optimizer (§14.1), TTS offline (§14.2), Markdown avanzato + MathJax (§14.3).
@@ -368,30 +368,31 @@ Il piano evolutivo nasce da un'analisi di benchmark sulle feature dei competitor
 
 ---
 
-### 11. Interoperabilità & Organizzazione [v1.3.0]
+### 11. Interoperabilità & Organizzazione [v0.9.2 - COMPLETATO]
 
-#### 11.1 Export .apkg (Deck Package)
+#### 11.1 Export .apkg (Deck Package) [COMPLETATO in v0.9.2]
 * **Obiettivo**: Interoperabilità bidirezionale con l'ecosistema Anki. Oggi Repetita importa ma non esporta: senza export la data ownership è incompleta (lock-in in entrata).
 * **Specifiche**:
   * Generazione archivio `.apkg` (ZIP): `collection.anki2` con schema SQLite di Anki (notes, cards, revlog, media mapping) via package `sqlite3` già in bundle — zero nuove dipendenze.
   * Mappatura modelli: Basic, Basic (and reversed), Cloze nativi `{{c1::}}`; preservazione del fattore EF per SM-2 e dello storico `ReviewLogs`.
-  * Opzioni export: "includi storico revisioni" e "includi media" (default: senza scheduling, per condivisione pulita come Anki).
-  * Estensione speculare di `AnkiPackageService` (oggi solo reader → anche writer).
+  * Opzioni export: "includi storico revisioni" (con flag toggle) per condivisione pulita come Anki.
+  * Implementato con `AnkiExportService`, unit test round-trip con re-import Anki e trigger UI da `DeckDetailScreen` e `BackupScreen`.
 
-#### 11.2 Subdeck Gerarchici (`PARENT::CHILD`)
+#### 11.2 Subdeck Gerarchici (`PARENT::CHILD`) [COMPLETATO in v0.9.2]
 * **Obiettivo**: Organizzazione a albero stile Anki per corsi, libri e lingue.
 * **Specifiche**:
-  * Schema: campo `parentId` in `Decks` con display path derivato; convenzione `::` retrocompatibile con i nomi esistenti e migrazione automatica.
-  * UI: albero espandibile con indentazione in `DeckListScreen`, conteggi aggregati (somma figli) per i nodi padre.
-  * Studio di un deck padre include tutti i sottodeck (semantica Anki).
-  * Import `.apkg`: ricostituzione della gerarchia originale del mazzo.
+  * Convenzione `::` retrocompatibile (`Parent::Child`), parsing e albero gerarchico ricorsivo (`DeckHierarchyHelper`, `DeckNode`).
+  * UI: albero espandibile con chevron animato e indentazione in `DeckListScreen`, conteggi aggregati (somma ricorsiva figli) per i nodi padre.
+  * Studio ricorsivo supportato a livello database (`StudySessionDao.fetchDueCardsForDecks`).
+  * Badge sottodeck reattivo e supporto a nodi virtuali intermedi.
 
-#### 11.3 Ricerca Globale Flashcard (Card Browser) [ex-differita]
+#### 11.3 Ricerca Globale Flashcard (Card Browser) [COMPLETATO in v0.9.2]
 * **Obiettivo**: Cercare e filtrare istantaneamente tra migliaia di carte di tutti i mazzi contemporaneamente.
 * **Specifiche**:
-  * FTS5 SQLite per la ricerca full-text con indici virtuali dedicati.
-  * Sintassi filtri stile Anki (`tag:`, `deck:`, `flag:`, `is:due`, `is:suspended`) e ricerche salvate.
-  * Azioni bulk: cambio mazzo, sospensione, ri-schedulazione, flag, eliminazione con conferma.
+  * Metodo `searchCardsGlobal` in `CardsDao` e stream reattivo globale in `CardBrowserController`.
+  * UI `CardBrowserScreen` Material 3: SearchBar con clear rapido, FilterChips orizzontali (Mazzo, Flag colorata 1..4, Sospese, In scadenza oggi).
+  * Preview delle schede con badge mazzo, stato FSRS/SM-2, stato sospesa, flag colorata, fronte e retro con tap-to-edit in `CardEditorScreen`.
+  * Accesso rapido da icona di ricerca nell'AppBar di `DeckListScreen` (`card_browser_button`).
 
 ---
 

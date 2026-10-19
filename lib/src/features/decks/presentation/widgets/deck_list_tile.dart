@@ -78,8 +78,12 @@ class DeckListTile extends StatelessWidget {
     final isSubdeck = depth > 0;
     final displayName = node != null ? node!.shortName : deck.name;
     final hasSubdecks = node?.hasSubdecks ?? false;
-    final dueCount = hasSubdecks ? node!.aggregateDueCards : deckWithCounts.dueCards;
-    final totalCount = hasSubdecks ? node!.aggregateTotalCards : deckWithCounts.totalCards;
+    final dueCount = hasSubdecks
+        ? node!.aggregateDueCards
+        : deckWithCounts.dueCards;
+    final totalCount = hasSubdecks
+        ? node!.aggregateTotalCards
+        : deckWithCounts.totalCards;
 
     return Card(
       margin: EdgeInsets.only(

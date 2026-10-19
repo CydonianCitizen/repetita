@@ -1,7 +1,7 @@
 # Repetita 🧠⚡
 
 [![CI](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml/badge.svg)](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-0.9.1-blue.svg)
+![Version](https://img.shields.io/badge/version-0.9.2-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** and **SuperMemo SM-2** algorithms with an extensible multi-engine architecture.
@@ -12,6 +12,10 @@ Repetita is crafted for privacy, mathematical precision, and high performance. I
 
 ## 🌟 Key Features
 
+* **Interoperability, Hierarchy & Global Navigation (v0.9.2):**
+  * Full bidirectional **Anki `.apkg` package export**: generates valid Anki SQLite schemas (`collection.anki2` with notes, cards, revlogs, and media mapping) for individual decks or all decks simultaneously via pure Dart.
+  * **Hierarchical Subdecks (`Parent::Child` notation)**: recursive tree hierarchy in `DeckListScreen` with expandable/collapsible nodes, indentation levels, and recursive aggregation of due and total cards.
+  * **Global Card Browser (`CardBrowserScreen`)**: instantaneous multi-criteria search across all decks, real-time query filtering, and filter chips for Deck, Color Flag (1..4), Suspended status, and Due today. Tap-to-edit with immediate reactive refresh.
 * **Multi-Algorithm SRS Scheduling (FSRS & SM-2):**
   * Pluggable `SrsScheduler` strategy architecture isolating domain mathematics from UI controllers.
   * Pure Dart zero-dependency implementation of **FSRS** (Free Spaced Repetition Scheduler v4/v5) calculating stability ($S$), difficulty ($D$), and retrievability ($R$) with pure mathematical determinism.
