@@ -1,5 +1,8 @@
 # Audit codebase — Repetita
 
+> [!NOTE]
+> **Stato (v0.9.1):** Documento di audit storico relativo a v0.3.0 (2026-10-12). I punti ancora aperti in questo testo (query LIMIT, modularizzazione di `settings_screen.dart`, pre-rendering e ottimizzazioni flip card) sono stati risolti nelle versioni v0.7.0 -> v0.9.1. Consultare [ROADMAP.md](file:///c:/Users/thoma/Documents/Projects/repetita/ROADMAP.md) per lo stato attuale.
+
 Data: 2026-10-12 (aggiornato con seconda passata: audit codice morto/over-engineering + audit reattività UI). Scope: `lib/`, `pubspec.yaml`, `integration_test/`, repo root. Metodo: `flutter analyze` (pulito, 0 issue) + revisione manuale incrociata agenti (backend/architettura + UI/UX/performance). Ogni "codice morto" verificato con grep sui call site.
 
 Verdetto generale: codice disciplinato (l10n quasi ovunque, `select()` nei watch, `ListView.builder`, transazioni su `recordReview`, niente superficie di path-injection). I problemi veri: versione hardcoded che rompe l'update-check, assenza totale di indici DB, query senza LIMIT, impostazioni utente non persistite, ~400 righe duplicate in settings, gestione SafeArea quasi assente.

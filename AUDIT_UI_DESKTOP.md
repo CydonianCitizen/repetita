@@ -1,5 +1,8 @@
 # Audit UI desktop — Repetita
 
+> [!NOTE]
+> **Stato (v0.9.1):** Documento di audit storico relativo a v0.7.5. I principali rilievi prioritari P1 (D01: runner Linux assente; D02: entitlement macOS mancanti in sandbox; D04: overflow schermata di completamento con text scaling a 200%) sono stati risolti nelle versioni v0.8.0 -> v0.9.1. Consultare [ROADMAP.md](file:///c:/Users/thoma/Documents/Projects/repetita/ROADMAP.md) per lo stato corrente delle piattaforme desktop.
+
 **Data:** 14 ottobre 2026 · **Revisione esaminata:** `870872a` · **Versione:** `0.7.5+0`.
 
 Documento unico ricavato da `AUDIT_UI_DESKTOP_2026-10-14.md` e dai risultati delle prove `desktop_confirmation_test.dart` e `desktop_audit_probe_test.dart`. I due file Dart erano strumenti diagnostici temporanei, non audit separati; sono stati rimossi dopo le verifiche. Questo consolidamento modifica soltanto la documentazione.

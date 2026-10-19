@@ -1,10 +1,10 @@
 # Repetita 🧠⚡
 
 [![CI](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml/badge.svg)](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-0.7.5-blue.svg)
+![Version](https://img.shields.io/badge/version-0.9.1-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** algorithm with an extensible multi-engine architecture.
+An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** and **SuperMemo SM-2** algorithms with an extensible multi-engine architecture.
 
 Repetita is crafted for privacy, mathematical precision, and high performance. It operates completely disconnected from remote servers and cloud backends—your study data, retention history, and decks remain 100% on your device.
 
@@ -12,35 +12,46 @@ Repetita is crafted for privacy, mathematical precision, and high performance. I
 
 ## 🌟 Key Features
 
-* **Deterministic SRS Scheduling (FSRS Engine & Multi-Algorithm Abstraction):**
+* **Multi-Algorithm SRS Scheduling (FSRS & SM-2):**
   * Pluggable `SrsScheduler` strategy architecture isolating domain mathematics from UI controllers.
-  * Zero-dependency implementation of FSRS (Free Spaced Repetition Scheduler v4/v5) calculating stability ($S$), difficulty ($D$), and retrievability ($R$) with pure mathematical determinism.
-  * Preview interval calculations on rating buttons (`Again`, `Hard`, `Good`, `Easy`) before confirming.
-  * Architecture prepared for upcoming SM-2 (SuperMemo) algorithm integration.
-* **Desktop Edition (Windows x64 & macOS Universal):**
-  * Native desktop performance on Windows (Win32 runner with MSVC ATL shim) and macOS (Universal 2 binary for both Apple Silicon and Intel).
+  * Pure Dart zero-dependency implementation of **FSRS** (Free Spaced Repetition Scheduler v4/v5) calculating stability ($S$), difficulty ($D$), and retrievability ($R$) with pure mathematical determinism.
+  * Pure Dart implementation of **SuperMemo SM-2** calculating Easiness Factor ($EF$) and repetition intervals, selectable via Settings.
+  * Real-time preview interval calculations on rating buttons (`Again`, `Hard`, `Good`, `Easy`) before confirming.
+  * Anti-clustering interval fuzz factor and Vacation Mode (scheduler pause with non-destructive due date shifting).
+* **Multi-Platform Desktop & Mobile Edition:**
+  * Multi-platform native performance on Android, iOS, Windows (Win32 runner with MSVC ATL shim), macOS (Universal 2 binary for both Apple Silicon and Intel), and Linux.
   * Ergonomic keyboard shortcuts: `Space`/`Enter` to flip card, `1`–`4` for rating submission, `Ctrl+Z`/`Cmd+Z` for 1-step undo, `Ctrl+Enter`/`Cmd+Enter` to save cards.
   * Responsive Material 3 layout: auto-adapting between `NavigationRail` (>= 640px) and bottom `NavigationBar`.
-* **Flexible Study Modes & Card Types:**
+* **Note Model, Card Types & Active Recall:**
+  * Note model with automatic **Reverse Card** creation and linked sibling cards (`noteId`).
+  * Automatic sibling burying during study sessions to prevent short-term recall interference, with deck unbury action.
+  * **Type-in-the-Answer** mode with character-by-character real-time diffing (`match`, `wrong`, `missing`, `extra`).
+  * Dynamic bidirectional text and native RTL script support (Arabic, Hebrew, Persian).
+  * Session pacing: Timeboxing duration limits and auto-advance card flip timers.
   * Cloze deletions (`{{c1::answer}}` and `{{c1::answer::hint}}`) with atomic card batching.
   * Custom Study (Cram Mode / Free Review) for exam prep and non-destructive reviews.
-  * 1-step Undo Review, card suspension (Suspend), and daily postponement (Bury).
-* **Comprehensive Ecosystem & Data Ownership:**
+  * Fine-grained card actions: 1-step Undo Review, Suspend, Bury, Set Due Date, Reset progress, Duplicate card.
+  * Automated **Leech Detection** (configurable lapse threshold with auto-tagging or auto-suspension).
+  * 4-color card flags (Red, Orange, Green, Blue) with deck-level filtering.
+  * **Exam Scheduler**: target exam date study planner calculating required daily retention and review capacity.
+* **Comprehensive Ecosystem & Data Sovereignty:**
+  * Automatic rolling backups (configurable FIFO retention of up to 8 snapshots).
+  * Full database backup and restore via standard JSON payloads with integrity checks.
   * Native Anki package (`.apkg`) import with media extraction, HTML-to-markdown sanitation, and model mapping.
-  * Native file picker and system saver integration for `.apkg`, `.json`, and `.csv`.
-  * Full database backup and restore via standard JSON payloads.
   * CSV export and import support for quick card sharing and tabular migration.
-* **100% Offline-First & Private:**
-  * Zero analytics, telemetry, crash reporting SDKs, cloud databases (no Firebase, no Supabase), or user accounts.
-  * Complete data sovereignty with zero latency and full offline functionality.
+  * Native file picker and system saver integration across all desktop and mobile platforms.
   * Onboarding deck seeder (`SampleDeckSeeder`) providing beginner cards on first run without external network assets.
+  * 100% Offline-First: zero analytics, telemetry, crash reporting SDKs, cloud databases (no Firebase, no Supabase), or user accounts.
+* **Display, Performance & Accessibility:**
+  * AMOLED Pure Black theme (`#000000`) for zero-power display pixels on OLED screens, alongside adaptive M3 light and dark themes.
+  * Native Android haptic feedback channel (`repetita/haptics`) with vibration fallbacks.
+  * High-throughput SQLite tuning via optimized PRAGMAs (WAL journal, 64MB cache, memory temp store, 256MB mmap).
+  * Pre-rendered flip card architecture for 60/120 FPS transitions and Android 13+ predictive back gesture support.
+  * Semantic screen-reader annotations and accessible touch targets (>= 48×48 dp).
 * **Retention Metrics & Visual Analytics:**
   * 15-week activity heatmap and study streak tracking.
   * Real-time retention accuracy percentage and maturity distribution (New, Learning, Review, Relearning).
   * 7-day workload forecast chart.
-* **Material 3 Design & Accessibility:**
-  * Adaptive Material 3 light and dark themes.
-  * Semantic screen-reader annotations and accessible touch targets (>= 48×48 dp).
 
 ---
 
@@ -55,29 +66,33 @@ lib/
     ├── app.dart                          # Root MaterialApp, AppTheme & routing
     ├── core/                             # Cross-cutting foundational modules
     │   ├── algorithms/
-    │   │   ├── srs/                      # Pure Dart SrsScheduler interface & contracts
+    │   │   ├── srs/                      # Pure Dart SrsScheduler interface & strategy
     │   │   ├── fsrs/                     # Pure Dart FSRS model, formulas, and math engine
+    │   │   ├── sm2/                      # Pure Dart SM-2 algorithm & Easiness Factor math
+    │   │   ├── type_in/                  # Pure Dart type-in differ and character comparison
     │   │   └── cloze/                    # Pure Dart cloze deletion text parser
-    │   ├── database/                     # Drift central database definition & connection
-    │   └── theme/                        # Material 3 light/dark themes
+    │   ├── database/                     # Drift central database definition, DAOs & migrations
+    │   ├── theme/                        # Material 3 light, dark & AMOLED pure black themes
+    │   └── utils/                        # RTL detection, text direction & platform helpers
     └── features/
-        ├── decks/                        # Deck management (CRUD, deck tiles, sample seeder)
-        ├── cards/                        # Card management, search & dual-pane content editor
-        ├── study_session/                # Review loop, flip card, active recall UI & scheduler provider
+        ├── decks/                        # Deck management, exam planner & sample seeder
+        ├── cards/                        # Cards DAO, reverse cards, sibling linking & editor
+        ├── study_session/                # Review loop, flip card, active recall UI & timers
         ├── stats/                        # Aggregated analytics, retention rate & forecast
-        ├── settings/                     # App settings, reminders, and algorithm selection
-        └── backup_transfer/              # Anki (.apkg), JSON/CSV local backup & export services
+        ├── settings/                     # Modular settings screens, reminders & algorithm selection
+        ├── tags/                         # Tag CRUD, filters & card tagging
+        └── backup_transfer/              # Rolling backup, Anki (.apkg), JSON/CSV export/import
 ```
 
 ### Core Technologies
 
 | Component | Choice | Purpose |
 | :--- | :--- | :--- |
-| **Framework** | **Flutter & Dart 3.x** | Multi-platform UI (Android, iOS, Windows, macOS) |
-| **State Management** | **Riverpod 2.x** | Reactive dependency injection & code generation (`@riverpod`) |
+| **Framework** | **Flutter & Dart 3.x** | Multi-platform UI (Android, iOS, Windows, macOS, Linux) |
+| **State Management** | **Riverpod 3.x** | Reactive dependency injection & code generation (`@riverpod`) |
 | **Persistence** | **Drift (SQLite)** | High-performance, reactive local SQL with migrations |
-| **Spaced Repetition** | **SrsScheduler Strategy** | Extensible pure Dart scheduling engine (FSRS v4/v5 + upcoming SM-2) |
-| **Design System** | **Material 3** | Adaptive dynamic theming, NavigationRail (desktop) & accessible contrast |
+| **Spaced Repetition** | **SrsScheduler Strategy** | Extensible pure Dart scheduling engines (FSRS v4/v5 & SuperMemo SM-2) |
+| **Design System** | **Material 3** | Adaptive dynamic theming, AMOLED Pure Black, NavigationRail (desktop) & accessible contrast |
 | **Serialization** | **Immutable Value Classes** | Hand-written `final`-field classes with manual `toJson`/`fromJson` |
 
 ---
@@ -90,6 +105,7 @@ lib/
 * **Android:** Android Studio / Android SDK (API 30+)
 * **Windows:** Visual Studio 2022 with C++ desktop workload
 * **macOS:** Xcode 15+ (macOS 12.0+ deployment target)
+* **Linux:** Clang, CMake, GTK development libraries
 * **iOS:** Xcode (simulator / sideloading)
 
 ### Installation
@@ -118,13 +134,14 @@ lib/
    # Run on desktop target
    flutter run -d windows
    flutter run -d macos
+   flutter run -d linux
    ```
 
 ---
 
 ## 🧪 Testing & Verification
 
-Repetita maintains a comprehensive test suite including 100% unit test coverage for the FSRS math engine, Drift DAO database tests, widget tests, and full end-to-end user journeys:
+Repetita maintains a comprehensive test suite including 100% unit test coverage for the FSRS and SM-2 math engines, Drift DAO database tests, widget tests, and full end-to-end user journeys:
 
 ```bash
 # Run all tests (unit, widget, integration)
@@ -140,6 +157,7 @@ flutter analyze --fatal-infos --fatal-warnings
 flutter build apk --release --split-per-abi  # Android split APKs
 flutter build windows --release              # Windows x64 executable
 flutter build macos --release                # macOS Universal 2 app
+flutter build linux --release                # Linux desktop executable
 ```
 
 ---

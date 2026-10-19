@@ -1,5 +1,8 @@
 # Checklist Ottimizzazioni & Prossimi Passi v1.0.0
 
+> [!NOTE]
+> **Stato (v0.9.1):** Checklist di consolidamento iniziale (v0.2.1 -> v0.3.0). I successivi avanzamenti architetturali e di ottimizzazione (motori FSRS/SM-2, AMOLED, PRAGMA SQLite, modularizzazione settings, note/siblings, type-in, RTL, rolling backup) sono stati completati nelle versioni v0.7.0 -> v0.9.1 e sono tracciati in [ROADMAP.md](file:///c:/Users/thoma/Documents/Projects/repetita/ROADMAP.md).
+
 Checklist operativa generata dall'audit del codice (Caveman, Ponytail, Impeccable) per preparare Repetita al rilascio v1.0.0.
 
 ---
