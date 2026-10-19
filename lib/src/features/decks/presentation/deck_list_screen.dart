@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/database/database_provider.dart';
 import '../../../core/l10n/generated/app_localizations.dart';
 import '../../../core/widgets/error_view.dart';
+import '../../cards/presentation/card_browser_screen.dart';
 import '../../cards/presentation/deck_detail_screen.dart';
 import '../data/sample_deck_seeder.dart';
 import '../domain/deck_hierarchy.dart';
@@ -82,6 +83,18 @@ class _DeckListScreenState extends ConsumerState<DeckListScreen> {
       appBar: AppBar(
         title: Text(l10n?.appTitle ?? 'repetita'),
         actions: [
+          IconButton(
+            key: const Key('card_browser_button'),
+            tooltip: l10n?.cardBrowserTitle ?? 'Card Browser',
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const CardBrowserScreen(),
+                ),
+              );
+            },
+          ),
           if (isDesktop) ...[
             IconButton(
               key: const Key('load_sample_deck_appbar_button'),

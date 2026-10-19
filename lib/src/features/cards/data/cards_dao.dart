@@ -240,4 +240,65 @@ class CardsDao extends DatabaseAccessor<AppDatabase> with _$CardsDaoMixin {
   Future<int> deleteCard(int id) {
     return (delete(cards)..where((t) => t.id.equals(id))).go();
   }
+
+  Stream<List<Card>> watchAllCards({int? limit, int? offset}) {
+    final query = select(cards)
+      ..orderBy([
+        (t) => OrderingTerm.desc(t.createdAt),
+        (t) => OrderingTerm.desc(t.id),
+      ]);
+    if (limit != null) {
+      query.limit(limit, offset: offset);
+    }
+    return query.watch();
+  }
+
+  Future<List<Card>> searchCardsGlobal({
+    String? query,
+    int? deckId,
+    int? flag,
+    bool? isSuspended,
+    bool? isDueOnly,
+    DateTime? dueCutoff,
+    int? limit,
+    int? offset,
+  }) {
+    final q = select(cards);
+    q.where((t) {
+      Expression<bool> predicate = const Constant(true);
+      if (query != null && query.trim().isNotEmpty) {
+        final pattern = '%${query.trim()}%';
+        predicate = predicate & (t.front.like(pattern) | t.back.like(pattern));
+      }
+      if (deckId != null) {
+        predicate = predicate & t.deckId.equals(deckId);
+      }
+      if (flag != null) {
+        predicate = predicate & t.flag.equals(flag);
+      }
+      if (isSuspended != null) {
+        predicate = predicate & t.isSuspended.equals(isSuspended);
+      }
+      if (isDueOnly == true) {
+        final cutoffUtc = (dueCutoff ?? DateTime.now()).toUtc();
+        predicate = predicate &
+            t.due.isSmallerOrEqualValue(cutoffUtc) &
+            t.isSuspended.equals(false) &
+            (t.buriedUntil.isNull() |
+                t.buriedUntil.isSmallerOrEqualValue(cutoffUtc));
+      }
+      return predicate;
+    });
+
+    q.orderBy([
+      (t) => OrderingTerm.desc(t.createdAt),
+      (t) => OrderingTerm.desc(t.id),
+    ]);
+
+    if (limit != null) {
+      q.limit(limit, offset: offset);
+    }
+    return q.get();
+  }
 }
+

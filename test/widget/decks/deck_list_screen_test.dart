@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repetita/src/core/database/app_database.dart';
 import 'package:repetita/src/core/database/database_provider.dart';
+import 'package:repetita/src/features/cards/presentation/card_browser_screen.dart';
 import 'package:repetita/src/features/decks/presentation/deck_list_screen.dart';
 
 void main() {
@@ -242,6 +243,24 @@ void main() {
       expect(find.text('Languages'), findsOneWidget);
       expect(find.text('Japanese'), findsNothing);
       expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(milliseconds: 50));
+    });
+
+    testWidgets('tapping card_browser_button navigates to CardBrowserScreen', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      final searchButton = find.byKey(const Key('card_browser_button'));
+      expect(searchButton, findsOneWidget);
+
+      await tester.tap(searchButton);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CardBrowserScreen), findsOneWidget);
 
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(milliseconds: 50));
