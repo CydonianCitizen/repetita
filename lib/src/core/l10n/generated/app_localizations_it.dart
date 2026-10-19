@@ -1196,4 +1196,63 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get finishSession => 'Concludi sessione';
+
+  @override
+  String get exportAnki => 'Esporta Anki (.apkg)';
+
+  @override
+  String get exportAnkiDescription =>
+      'Esporta i mazzi in un pacchetto Anki (.apkg) compatibile con Anki Desktop e AnkiDroid.';
+
+  @override
+  String get exportAllDecksAnki => 'Esporta tutti i mazzi (.apkg)';
+
+  @override
+  String get exportDeckAnki => 'Esporta mazzo (.apkg)';
+
+  @override
+  String ankiExportSuccess(int count) {
+    return 'Esportate $count carte nel pacchetto Anki.';
+  }
+
+  @override
+  String get cardBrowserTitle => 'Navigatore Carte';
+
+  @override
+  String get cardBrowserSearchHint => 'Cerca carte, tag, contenuti...';
+
+  @override
+  String get filterAllDecks => 'Tutti i mazzi';
+
+  @override
+  String get filterSuspended => 'Sospese';
+
+  @override
+  String get filterDue => 'In scadenza';
+
+  @override
+  String cardsFoundCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count carte trovate',
+      one: '1 carta trovata',
+      zero: 'Nessuna carta trovata',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subdecksCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sottomazzi',
+      one: '1 sottomazzo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get studyDeckAndSubdecks => 'Studia mazzo + sottomazzi';
 }

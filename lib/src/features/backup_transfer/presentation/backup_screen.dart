@@ -264,6 +264,26 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     }
   }
 
+  Future<void> _handleExportAllAnki() async {
+    try {
+      final savedPath = await ref
+          .read(backupControllerProvider.notifier)
+          .exportAnkiToFile();
+      if (savedPath != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Exported to $savedPath'),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorSnackBar('Export failed: $e');
+      }
+    }
+  }
+
   void _showResultDialog({
     required String title,
     required String content,
@@ -359,6 +379,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                       onPressed: isLoading ? null : _handleImportAnki,
                       icon: const Icon(Icons.file_download_outlined),
                       label: Text(l10n?.importAnki ?? 'Import Anki (.apkg)'),
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      key: const Key('export_all_anki_button'),
+                      onPressed: isLoading ? null : _handleExportAllAnki,
+                      icon: const Icon(Icons.file_upload_outlined),
+                      label: Text(l10n?.exportAllDecksAnki ?? 'Export All Decks (.apkg)'),
                     ),
                   ],
                 ),

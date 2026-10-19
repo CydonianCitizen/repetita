@@ -589,5 +589,40 @@
     }
   },
   "continueStudying": "Continue studying",
-  "finishSession": "Finish session"
+  "finishSession": "Finish session",
+  "exportAnki": "Export Anki (.apkg)",
+  "exportAnkiDescription": "Export decks to an Anki package (.apkg) compatible with Anki Desktop and AnkiDroid.",
+  "exportAllDecksAnki": "Export All Decks (.apkg)",
+  "exportDeckAnki": "Export Deck (.apkg)",
+  "ankiExportSuccess": "Exported {count} cards to Anki package.",
+  "@ankiExportSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cardBrowserTitle": "Card Browser",
+  "cardBrowserSearchHint": "Search cards, tags, contents...",
+  "filterAllDecks": "All Decks",
+  "filterFlag": "Flag",
+  "filterSuspended": "Suspended",
+  "filterDue": "Due",
+  "cardsFoundCount": "{count, plural, =0{No cards found} =1{1 card found} other{{count} cards found}}",
+  "@cardsFoundCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subdecksCount": "{count, plural, =1{1 subdeck} other{{count} subdecks}}",
+  "@subdecksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studyDeckAndSubdecks": "Study Deck + Subdecks"
 }

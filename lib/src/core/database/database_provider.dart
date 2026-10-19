@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../features/backup_transfer/data/services/anki_export_service.dart';
 import '../../features/backup_transfer/data/services/anki_package_service.dart';
 import '../../features/backup_transfer/data/services/backup_service.dart';
 import '../../features/backup_transfer/data/services/rolling_backup_service.dart';
@@ -12,6 +13,10 @@ import '../../features/settings/domain/vacation_mode_service.dart';
 import 'app_database.dart';
 
 part 'database_provider.g.dart';
+
+@Riverpod(keepAlive: true)
+AnkiExportService ankiExportService(Ref ref) =>
+    AnkiExportService(ref.watch(databaseProvider));
 
 @Riverpod(keepAlive: true)
 AppDatabase database(Ref ref) {

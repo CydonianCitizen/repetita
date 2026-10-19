@@ -1185,4 +1185,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finishSession => 'Finish session';
+
+  @override
+  String get exportAnki => 'Export Anki (.apkg)';
+
+  @override
+  String get exportAnkiDescription =>
+      'Export decks to an Anki package (.apkg) compatible with Anki Desktop and AnkiDroid.';
+
+  @override
+  String get exportAllDecksAnki => 'Export All Decks (.apkg)';
+
+  @override
+  String get exportDeckAnki => 'Export Deck (.apkg)';
+
+  @override
+  String ankiExportSuccess(int count) {
+    return 'Exported $count cards to Anki package.';
+  }
+
+  @override
+  String get cardBrowserTitle => 'Card Browser';
+
+  @override
+  String get cardBrowserSearchHint => 'Search cards, tags, contents...';
+
+  @override
+  String get filterAllDecks => 'All Decks';
+
+  @override
+  String get filterSuspended => 'Suspended';
+
+  @override
+  String get filterDue => 'Due';
+
+  @override
+  String cardsFoundCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cards found',
+      one: '1 card found',
+      zero: 'No cards found',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subdecksCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count subdecks',
+      one: '1 subdeck',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get studyDeckAndSubdecks => 'Study Deck + Subdecks';
 }

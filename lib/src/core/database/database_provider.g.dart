@@ -9,6 +9,53 @@ part of 'database_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(ankiExportService)
+final ankiExportServiceProvider = AnkiExportServiceProvider._();
+
+final class AnkiExportServiceProvider
+    extends
+        $FunctionalProvider<
+          AnkiExportService,
+          AnkiExportService,
+          AnkiExportService
+        >
+    with $Provider<AnkiExportService> {
+  AnkiExportServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'ankiExportServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$ankiExportServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<AnkiExportService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AnkiExportService create(Ref ref) {
+    return ankiExportService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AnkiExportService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AnkiExportService>(value),
+    );
+  }
+}
+
+String _$ankiExportServiceHash() => r'0650200cbe8122492eedc68b20f27ce64d2c0c25';
+
 @ProviderFor(database)
 final databaseProvider = DatabaseProvider._();
 

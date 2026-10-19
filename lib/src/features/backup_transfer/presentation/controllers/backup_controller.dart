@@ -144,4 +144,40 @@ class BackupController extends _$BackupController {
       bytes: Uint8List.fromList(utf8.encode(csvStr)),
     );
   }
+
+  Future<List<int>> exportAnki({int? deckId, bool includeRevlog = false}) async {
+    state = const AsyncLoading();
+    try {
+      final service = ref.read(ankiExportServiceProvider);
+      final result = deckId != null
+          ? await service.exportDeckToApkg(deckId, includeRevlog: includeRevlog)
+          : await service.exportAllToApkg(includeRevlog: includeRevlog);
+      state = const AsyncData(null);
+      return result;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
+  Future<String?> exportAnkiToFile({
+    int? deckId,
+    String? deckName,
+    bool includeRevlog = false,
+  }) async {
+    final bytes = await exportAnki(
+      deckId: deckId,
+      includeRevlog: includeRevlog,
+    );
+    final picker = ref.read(filePickerServiceProvider);
+    final dateStr = DateTime.now().toIso8601String().split('T').first;
+    final cleanName = deckName != null
+        ? 'repetita_${deckName.replaceAll(RegExp(r'[^\w]+'), '_')}'
+        : 'repetita_collection';
+    return picker.saveFile(
+      dialogTitle: 'Save Anki Package (.apkg)',
+      fileName: '${cleanName}_$dateStr.apkg',
+      bytes: Uint8List.fromList(bytes),
+    );
+  }
 }

@@ -7,8 +7,8 @@ import '../../../core/database/app_database.dart' show Deck;
 import '../../../core/database/database_provider.dart';
 import '../../../core/l10n/generated/app_localizations.dart';
 import '../../../core/theme/card_state_colors.dart';
-import '../../../core/utils/clock_provider.dart';
 import '../../../core/widgets/error_view.dart';
+import '../../backup_transfer/presentation/controllers/backup_controller.dart';
 import '../../decks/presentation/widgets/exam_plan_card.dart';
 import '../../study_session/presentation/study_screen.dart';
 import '../../study_session/presentation/widgets/custom_study_dialog.dart';
@@ -64,6 +64,41 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
       appBar: AppBar(
         title: Text(widget.deck.name),
         actions: [
+          IconButton(
+            key: const Key('export_deck_anki_button'),
+            icon: const Icon(Icons.file_upload_outlined),
+            tooltip: l10n?.exportDeckAnki ?? 'Export Deck (.apkg)',
+            onPressed: () async {
+              try {
+                final savedPath = await ref
+                    .read(backupControllerProvider.notifier)
+                    .exportAnkiToFile(
+                      deckId: widget.deck.id,
+                      deckName: widget.deck.name,
+                    );
+                if (savedPath != null && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        l10n?.ankiExportSuccess(cardsAsync.value?.length ?? 0) ??
+                            'Exported to $savedPath',
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Export failed: $e'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  );
+                }
+              }
+            },
+          ),
           IconButton(
             key: const Key('unbury_deck_cards_button'),
             icon: const Icon(Icons.wb_sunny_outlined),

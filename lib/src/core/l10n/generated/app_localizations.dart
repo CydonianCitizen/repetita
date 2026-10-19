@@ -2149,6 +2149,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finish session'**
   String get finishSession;
+
+  /// No description provided for @exportAnki.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Anki (.apkg)'**
+  String get exportAnki;
+
+  /// No description provided for @exportAnkiDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Export decks to an Anki package (.apkg) compatible with Anki Desktop and AnkiDroid.'**
+  String get exportAnkiDescription;
+
+  /// No description provided for @exportAllDecksAnki.
+  ///
+  /// In en, this message translates to:
+  /// **'Export All Decks (.apkg)'**
+  String get exportAllDecksAnki;
+
+  /// No description provided for @exportDeckAnki.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Deck (.apkg)'**
+  String get exportDeckAnki;
+
+  /// No description provided for @ankiExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Exported {count} cards to Anki package.'**
+  String ankiExportSuccess(int count);
+
+  /// No description provided for @cardBrowserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Browser'**
+  String get cardBrowserTitle;
+
+  /// No description provided for @cardBrowserSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search cards, tags, contents...'**
+  String get cardBrowserSearchHint;
+
+  /// No description provided for @filterAllDecks.
+  ///
+  /// In en, this message translates to:
+  /// **'All Decks'**
+  String get filterAllDecks;
+
+  /// No description provided for @filterSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get filterSuspended;
+
+  /// No description provided for @filterDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get filterDue;
+
+  /// No description provided for @cardsFoundCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No cards found} =1{1 card found} other{{count} cards found}}'**
+  String cardsFoundCount(int count);
+
+  /// No description provided for @subdecksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 subdeck} other{{count} subdecks}}'**
+  String subdecksCount(int count);
+
+  /// No description provided for @studyDeckAndSubdecks.
+  ///
+  /// In en, this message translates to:
+  /// **'Study Deck + Subdecks'**
+  String get studyDeckAndSubdecks;
 }
 
 class _AppLocalizationsDelegate

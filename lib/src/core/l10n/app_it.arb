@@ -502,5 +502,19 @@
   "autoAdvanceSubtitle": "Mostra automaticamente la risposta dopo un intervallo",
   "autoAdvanceSeconds": "{seconds, plural, =0{Disabilitato} =1{1 secondo} other{{seconds} secondi}}",
   "continueStudying": "Continua a studiare",
-  "finishSession": "Concludi sessione"
+  "finishSession": "Concludi sessione",
+  "exportAnki": "Esporta Anki (.apkg)",
+  "exportAnkiDescription": "Esporta i mazzi in un pacchetto Anki (.apkg) compatibile con Anki Desktop e AnkiDroid.",
+  "exportAllDecksAnki": "Esporta tutti i mazzi (.apkg)",
+  "exportDeckAnki": "Esporta mazzo (.apkg)",
+  "ankiExportSuccess": "Esportate {count} carte nel pacchetto Anki.",
+  "cardBrowserTitle": "Navigatore Carte",
+  "cardBrowserSearchHint": "Cerca carte, tag, contenuti...",
+  "filterAllDecks": "Tutti i mazzi",
+  "filterFlag": "Contrassegno",
+  "filterSuspended": "Sospese",
+  "filterDue": "In scadenza",
+  "cardsFoundCount": "{count, plural, =0{Nessuna carta trovata} =1{1 carta trovata} other{{count} carte trovate}}",
+  "subdecksCount": "{count, plural, =1{1 sottomazzo} other{{count} sottomazzi}}",
+  "studyDeckAndSubdecks": "Studia mazzo + sottomazzi"
 }
