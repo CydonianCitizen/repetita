@@ -60,7 +60,7 @@ class AnkiExportService {
         .get();
 
     // Query tags per card
-    final cardTagsQuery = await (db.select(db.cardTags).join([
+    final cardTagsQuery = (db.select(db.cardTags).join([
       innerJoin(db.tags, db.tags.id.equalsExp(db.cardTags.tagId)),
     ]))..where(db.cardTags.cardId.isIn(cards.map((c) => c.id).toSet()));
 
@@ -86,7 +86,7 @@ class AnkiExportService {
           await _populateRevlog(ankiDb, cards.map((c) => c.id).toSet());
         }
       } finally {
-        ankiDb.dispose();
+        ankiDb.close();
       }
 
       final collectionBytes = await tempDbFile.readAsBytes();
@@ -99,7 +99,7 @@ class AnkiExportService {
       archive.addFile(ArchiveFile.string('media', '{}'));
 
       final zipData = ZipEncoder().encode(archive);
-      return zipData ?? <int>[];
+      return zipData;
     } finally {
       try {
         if (tempDir.existsSync()) {
@@ -354,7 +354,7 @@ class AnkiExportService {
           ]);
         }
 
-        final factor = ((card.easinessFactor ?? 2.5) * 1000).round();
+        final factor = (card.easinessFactor * 1000).round();
         final dueDays = card.due.difference(DateTime.fromMillisecondsSinceEpoch(0)).inDays;
         final ord = card.clozeIndex != null ? (card.clozeIndex! - 1) : 0;
         final cardAnkiId = autoNoteCounter * 10 + i;
@@ -381,8 +381,8 @@ class AnkiExportService {
         ]);
       }
     } finally {
-      noteStmt.dispose();
-      cardStmt.dispose();
+      noteStmt.close();
+      cardStmt.close();
     }
   }
 
@@ -414,7 +414,7 @@ class AnkiExportService {
         ]);
       }
     } finally {
-      stmt.dispose();
+      stmt.close();
     }
   }
 

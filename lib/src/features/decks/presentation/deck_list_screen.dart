@@ -7,14 +7,22 @@ import '../../../core/l10n/generated/app_localizations.dart';
 import '../../../core/widgets/error_view.dart';
 import '../../cards/presentation/deck_detail_screen.dart';
 import '../data/sample_deck_seeder.dart';
+import '../domain/deck_hierarchy.dart';
 import 'controllers/deck_list_controller.dart';
 import 'widgets/deck_form_dialog.dart';
 import 'widgets/deck_list_tile.dart';
 
-class DeckListScreen extends ConsumerWidget {
+class DeckListScreen extends ConsumerStatefulWidget {
   const DeckListScreen({super.key});
 
-  Future<void> _handleCreateDeck(BuildContext context, WidgetRef ref) async {
+  @override
+  ConsumerState<DeckListScreen> createState() => _DeckListScreenState();
+}
+
+class _DeckListScreenState extends ConsumerState<DeckListScreen> {
+  final Set<String> _collapsedDeckNames = {};
+
+  Future<void> _handleCreateDeck(BuildContext context) async {
     final result = await DeckFormDialog.show(context);
     if (result != null) {
       try {
@@ -34,7 +42,7 @@ class DeckListScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _seedSampleDeck(BuildContext context, WidgetRef ref) async {
+  Future<void> _seedSampleDeck(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     try {
       final db = ref.read(databaseProvider);
@@ -62,7 +70,7 @@ class DeckListScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final decksAsync = ref.watch(deckListControllerProvider);
     final l10n = AppLocalizations.of(context);
     final isDesktop =
@@ -79,7 +87,7 @@ class DeckListScreen extends ConsumerWidget {
               key: const Key('load_sample_deck_appbar_button'),
               tooltip: l10n?.loadSampleDeck ?? 'Load Sample Deck',
               icon: const Icon(Icons.school_outlined),
-              onPressed: () => _seedSampleDeck(context, ref),
+              onPressed: () => _seedSampleDeck(context),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -87,7 +95,7 @@ class DeckListScreen extends ConsumerWidget {
                 key: const Key('create_deck_desktop_button'),
                 icon: const Icon(Icons.add_rounded, size: 18),
                 label: Text(l10n?.newDeck ?? 'New Deck'),
-                onPressed: () => _handleCreateDeck(context, ref),
+                onPressed: () => _handleCreateDeck(context),
               ),
             ),
           ],
@@ -146,14 +154,14 @@ class DeckListScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 24),
                       FilledButton.icon(
-                        onPressed: () => _handleCreateDeck(context, ref),
+                        onPressed: () => _handleCreateDeck(context),
                         icon: const Icon(Icons.add),
                         label: Text(l10n?.newDeck ?? 'New Deck'),
                       ),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         key: const Key('seed_sample_deck_button'),
-                        onPressed: () => _seedSampleDeck(context, ref),
+                        onPressed: () => _seedSampleDeck(context),
                         icon: const Icon(Icons.school_outlined),
                         label: Text(l10n?.loadSampleDeck ?? 'Load Sample Deck'),
                       ),
@@ -163,15 +171,45 @@ class DeckListScreen extends ConsumerWidget {
               );
             }
 
+            final tree = DeckHierarchyHelper.buildTree(decks);
+            final flattened = DeckHierarchyHelper.flatten(
+              tree,
+              collapsedDeckNames: _collapsedDeckNames,
+            );
+
             return ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: decks.length,
+              itemCount: flattened.length,
               itemBuilder: (context, index) {
-                final deckWithCounts = decks[index];
+                final item = flattened[index];
+                final node = item.node;
+                final deckWithCounts = node.deckWithCounts;
+
                 return DeckListTile(
                   key: ValueKey(deckWithCounts.deck.id),
                   deckWithCounts: deckWithCounts,
+                  node: node,
+                  isCollapsed: item.isCollapsed,
+                  onToggleCollapse: () {
+                    setState(() {
+                      if (item.isCollapsed) {
+                        _collapsedDeckNames.remove(node.fullPath);
+                      } else {
+                        _collapsedDeckNames.add(node.fullPath);
+                      }
+                    });
+                  },
                   onTap: () {
+                    if (node.isVirtual) {
+                      setState(() {
+                        if (item.isCollapsed) {
+                          _collapsedDeckNames.remove(node.fullPath);
+                        } else {
+                          _collapsedDeckNames.add(node.fullPath);
+                        }
+                      });
+                      return;
+                    }
                     Navigator.of(context).push(
                       MaterialPageRoute<void>(
                         builder: (_) =>
@@ -230,7 +268,7 @@ class DeckListScreen extends ConsumerWidget {
           : FloatingActionButton(
               key: const Key('create_deck_fab'),
               tooltip: l10n?.createDeck ?? 'Create Deck',
-              onPressed: () => _handleCreateDeck(context, ref),
+              onPressed: () => _handleCreateDeck(context),
               child: const Icon(Icons.add),
             ),
     );

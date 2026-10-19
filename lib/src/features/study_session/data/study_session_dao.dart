@@ -17,12 +17,18 @@ class StudySessionDao extends DatabaseAccessor<AppDatabase>
     int deckId, {
     required DateTime cutoff,
     int limit = 200,
+  }) => fetchDueCardsForDecks([deckId], cutoff: cutoff, limit: limit);
+
+  Future<List<Card>> fetchDueCardsForDecks(
+    List<int> deckIds, {
+    required DateTime cutoff,
+    int limit = 200,
   }) {
     final cutoffUtc = cutoff.toUtc();
     return (select(cards)
           ..where(
             (t) =>
-                t.deckId.equals(deckId) &
+                t.deckId.isIn(deckIds) &
                 t.isSuspended.equals(false) &
                 (t.buriedUntil.isNull() |
                     t.buriedUntil.isSmallerOrEqualValue(cutoffUtc)) &

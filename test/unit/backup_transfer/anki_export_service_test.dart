@@ -7,12 +7,10 @@ import 'package:repetita/src/features/backup_transfer/data/services/anki_package
 void main() {
   late AppDatabase db;
   late AnkiExportService exportService;
-  late AnkiPackageService importService;
 
   setUp(() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     exportService = AnkiExportService(db);
-    importService = AnkiPackageService(db);
   });
 
   tearDown(() async {

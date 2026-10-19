@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/l10n/generated/app_localizations.dart';
 import '../../data/decks_dao.dart';
+import '../../domain/deck_hierarchy.dart';
 import 'deck_form_dialog.dart';
 
 class DeckListTile extends StatelessWidget {
@@ -11,12 +12,18 @@ class DeckListTile extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     this.onTap,
+    this.node,
+    this.isCollapsed = false,
+    this.onToggleCollapse,
   });
 
   final DeckWithCounts deckWithCounts;
   final void Function(String name, String? description) onEdit;
   final VoidCallback onDelete;
   final VoidCallback? onTap;
+  final DeckNode? node;
+  final bool isCollapsed;
+  final VoidCallback? onToggleCollapse;
 
   Future<void> _showDeleteConfirmation(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
@@ -67,10 +74,24 @@ class DeckListTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final deck = deckWithCounts.deck;
 
+    final depth = node?.depth ?? 0;
+    final isSubdeck = depth > 0;
+    final displayName = node != null ? node!.shortName : deck.name;
+    final hasSubdecks = node?.hasSubdecks ?? false;
+    final dueCount = hasSubdecks ? node!.aggregateDueCards : deckWithCounts.dueCards;
+    final totalCount = hasSubdecks ? node!.aggregateTotalCards : deckWithCounts.totalCards;
+
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: EdgeInsets.only(
+        left: 16.0 + (depth * 16.0),
+        right: 16,
+        top: 4,
+        bottom: 4,
+      ),
       elevation: 0,
-      color: colorScheme.surfaceContainerLow,
+      color: isSubdeck
+          ? colorScheme.surfaceContainer
+          : colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
@@ -92,11 +113,39 @@ class DeckListTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          deck.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        Row(
+                          children: [
+                            if (isSubdeck) ...[
+                              Icon(
+                                Icons.subdirectory_arrow_right,
+                                size: 16,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 6),
+                            ],
+                            Expanded(
+                              child: Text(
+                                displayName,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            if (hasSubdecks) ...[
+                              IconButton(
+                                icon: Icon(
+                                  isCollapsed
+                                      ? Icons.chevron_right
+                                      : Icons.expand_more,
+                                  size: 20,
+                                ),
+                                onPressed: onToggleCollapse,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                              ),
+                              const SizedBox(width: 4),
+                            ],
+                          ],
                         ),
                         if (deck.description != null &&
                             deck.description!.isNotEmpty) ...[
@@ -113,51 +162,52 @@ class DeckListTile extends StatelessWidget {
                       ],
                     ),
                   ),
-                  PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: colorScheme.onSurfaceVariant,
+                  if (!deck.id.isNegative)
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          _showEditDialog(context);
+                        } else if (value == 'delete') {
+                          _showDeleteConfirmation(context);
+                        }
+                      },
+                      itemBuilder: (context) {
+                        final itemL10n = AppLocalizations.of(context);
+                        return [
+                          PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.edit_outlined, size: 20),
+                                const SizedBox(width: 8),
+                                Text(itemL10n?.edit ?? 'Edit'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.delete_outline,
+                                  size: 20,
+                                  color: colorScheme.error,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  itemL10n?.delete ?? 'Delete',
+                                  style: TextStyle(color: colorScheme.error),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ];
+                      },
                     ),
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        _showEditDialog(context);
-                      } else if (value == 'delete') {
-                        _showDeleteConfirmation(context);
-                      }
-                    },
-                    itemBuilder: (context) {
-                      final itemL10n = AppLocalizations.of(context);
-                      return [
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              const Icon(Icons.edit_outlined, size: 20),
-                              const SizedBox(width: 8),
-                              Text(itemL10n?.edit ?? 'Edit'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.delete_outline,
-                                size: 20,
-                                color: colorScheme.error,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                itemL10n?.delete ?? 'Delete',
-                                style: TextStyle(color: colorScheme.error),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ];
-                    },
-                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -165,21 +215,44 @@ class DeckListTile extends StatelessWidget {
                 children: [
                   _Badge(
                     label: l10n?.dueBadge ?? 'Due',
-                    count: deckWithCounts.dueCards,
-                    backgroundColor: deckWithCounts.dueCards > 0
+                    count: dueCount,
+                    backgroundColor: dueCount > 0
                         ? colorScheme.primaryContainer
                         : colorScheme.surfaceContainerHighest,
-                    textColor: deckWithCounts.dueCards > 0
+                    textColor: dueCount > 0
                         ? colorScheme.onPrimaryContainer
                         : colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 8),
                   _Badge(
                     label: l10n?.totalBadge ?? 'Total',
-                    count: deckWithCounts.totalCards,
+                    count: totalCount,
                     backgroundColor: colorScheme.surfaceContainerHighest,
                     textColor: colorScheme.onSurfaceVariant,
                   ),
+                  if (hasSubdecks) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer.withValues(
+                          alpha: 0.5,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        l10n?.subdecksCount(node!.children.length) ??
+                            '${node!.children.length} subdecks',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSecondaryContainer,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ],
