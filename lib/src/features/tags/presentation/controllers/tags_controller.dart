@@ -49,3 +49,17 @@ class DeckTagFilter extends _$DeckTagFilter {
     state = tagId;
   }
 }
+
+/// Memoized list of unique, sorted tags across all cards in [deckId].
+@riverpod
+List<TagEntity> distinctDeckTags(Ref ref, int deckId) {
+  final tagsMap = ref.watch(deckTagsProvider(deckId)).value;
+  if (tagsMap == null || tagsMap.isEmpty) return const [];
+  final unique = <int, TagEntity>{};
+  for (final tagList in tagsMap.values) {
+    for (final tag in tagList) {
+      unique[tag.id] = tag;
+    }
+  }
+  return unique.values.toList()..sort((a, b) => a.name.compareTo(b.name));
+}

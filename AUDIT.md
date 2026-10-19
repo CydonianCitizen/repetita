@@ -30,11 +30,12 @@ Rimossa la costante `SettingsScreen.appVersion = 'v0.3.0'`. Ora la versione arri
 ### 1.6 ~~Race FSRS all'avvio a freddo~~ ✅ RISOLTO (2026-10-12)
 Aggiunto metodo `ensureLoaded()` in `fsrs_parameters_controller.dart` e chiamata awaited in `build()` di `study_session_controller.dart`.
 
-### 1.7 Rebuild eccessivi lato UI
-- `deck_detail_screen.dart:71–105`: l'intero subtree `data:` si ricostruisce a ogni cambio carta/tag; aggregazione tag e scan `dueCount` ricalcolati a ogni emissione.
+### 1.7 Rebuild eccessivi lato UI — RISOLTO ✅ (2026-10-19)
+- ~~`deck_detail_screen.dart:41–48` listener di ricerca~~ ✅: rimosso `_searchController.addListener(_onSearchChanged)` che forzava `setState()` a ogni battuta; l'aggiornamento è ora delegato al watch puntuale di `deckCardSearchQueryProvider` in `_DeckCardsSection`.
+- ~~`deck_detail_screen.dart:71–105` aggregazione tag in build~~ ✅: rimosso folding/sorting inline su ogni frame di build in favore del provider memoizzato `distinctDeckTagsProvider(deckId)` con test di unità dedicati.
+- ~~`deck_detail_screen.dart` allocazione `cardIndexMap`~~ ✅: resa pigra (`cardIndexMap ??= ...`) dentro `findChildIndexCallback`, eliminando le allocazioni di mappe hash a ogni frame di scroll e rebuild.
 - ~~`deck_detail_screen.dart:560–568`: filtro in memoria in `build`~~ ✅ (2026-10-12) nuovo `filteredDeckCardsProvider(deckId)` memoized: ricomputa solo su cambio carte/tag/filtro.
-- `study_screen.dart`: ~~Consumer radice~~ ✅ AppBar con `select` (Gemini); il `body` resta un unico `Consumer` sull'intero stato sessione (parziale, jank residuo possibile).
-- Restante: provider family per header deck (✅ Gemini `cardListControllerProvider(deckId)`).
+- `study_screen.dart`: ~~Consumer radice~~ ✅ AppBar con `select` (Gemini); il `body` resta un unico `Consumer` sull'intero stato sessione.
 
 ### 1.8 Animazione flip — PARZIALE ✅ (2026-10-12)
 ~~`ClozeParser` chiamato 4–6 volte per build~~ ✅ parsing cachato in `State` (`_promptSegments`, `_answerText`, ecc.) con recompute in `didUpdateWidget`; `RepaintBoundary` su entrambi i volti (Gemini). Restante: `TweenAnimationBuilder` implicito (nessun `AnimationController` esplicito) — flicker mitigato ma non eliminato alla radice.
@@ -94,6 +95,7 @@ Concurrency sicura: nessun file `.g.dart` duplicato; generati drift coerenti.
 
 | Tag | Simbolo | Posizione | Azione |
 |---|---|---|---|
+| delete | ~~`LanguageSelectorDialog` (120 righe)~~ ✅ | `settings/presentation/dialogs/language_selector_dialog.dart` | Risolto (2026-10-19): rimosso file orfano dopo sostituzione con `LanguageSettingsScreen` |
 | delete | `LicenseDialog` (90 righe) | `settings/presentation/dialogs/license_dialog.dart:7-90` | Wrapper custom attorno a `showLicensePage`: allineato con `appVersionProvider` |
 | delete | ~~`integration_test/app_test.dart`~~ ✅ | intero file | Risolto: rimosso stub TODO, E2E testato in `test/widget/app_e2e_flow_test.dart` |
 | yagni | 5 provider DAO keepAlive | `core/database/database_provider.dart:24-41` | Pure deleghe a `databaseProvider`. Usare `ref.watch(databaseProvider).cardsDao` diretto: −5 provider codegen |

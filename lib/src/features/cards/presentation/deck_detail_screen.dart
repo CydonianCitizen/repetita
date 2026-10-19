@@ -38,18 +38,10 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
     super.initState();
     _searchController = TextEditingController();
     _searchFocusNode = FocusNode();
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  void _onSearchChanged() {
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   @override
   void dispose() {
-    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -136,16 +128,9 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
           ),
           data: (cards) {
             final cardTagsMap = deckTagsAsync.value ?? <int, List<TagEntity>>{};
-            final allDeckTags =
-                cardTagsMap.values
-                    .expand((tags) => tags)
-                    .fold<Map<int, TagEntity>>({}, (map, tag) {
-                      map[tag.id] = tag;
-                      return map;
-                    })
-                    .values
-                    .toList()
-                  ..sort((a, b) => a.name.compareTo(b.name));
+            final allDeckTags = ref.watch(
+              distinctDeckTagsProvider(widget.deck.id),
+            );
 
             final now = ref.watch(clockProvider)();
             final dueCount = cards.where((c) => c.isDue(now)).length;
@@ -899,11 +884,10 @@ class _DeckCardsSection extends ConsumerWidget {
     final selectedTagId = ref.watch(deckTagFilterProvider);
     final selectedFlag = ref.watch(deckCardFlagFilterProvider);
     final displayedCards = ref.watch(filteredDeckCardsProvider(deck.id));
+    final searchQuery = ref.watch(deckCardSearchQueryProvider);
     final now = ref.watch(clockProvider)();
 
-    final cardIndexMap = <int, int>{
-      for (int i = 0; i < displayedCards.length; i++) displayedCards[i].id: i,
-    };
+    Map<int, int>? cardIndexMap;
 
     Future<void> runCardAction(
       Future<void> Function() action,
@@ -941,7 +925,7 @@ class _DeckCardsSection extends ConsumerWidget {
                 padding: EdgeInsets.zero,
                 onPressed: () => searchFocusNode.requestFocus(),
               ),
-              suffixIcon: searchController.text.isNotEmpty
+              suffixIcon: searchQuery.isNotEmpty
                   ? IconButton(
                       key: const Key('clear_search_button'),
                       icon: const Icon(Icons.clear, size: 20),
@@ -1231,7 +1215,11 @@ class _DeckCardsSection extends ConsumerWidget {
                   padding: const EdgeInsets.only(bottom: 80),
                   findChildIndexCallback: (Key key) {
                     if (key is ValueKey<int>) {
-                      return cardIndexMap[key.value];
+                      cardIndexMap ??= {
+                        for (int i = 0; i < displayedCards.length; i++)
+                          displayedCards[i].id: i,
+                      };
+                      return cardIndexMap![key.value];
                     }
                     return null;
                   },

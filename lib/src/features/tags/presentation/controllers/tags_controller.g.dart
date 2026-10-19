@@ -181,3 +181,90 @@ abstract class _$DeckTagFilter extends $Notifier<int?> {
     return element.handleCreate(ref, build);
   }
 }
+
+/// Memoized list of unique, sorted tags across all cards in [deckId].
+
+@ProviderFor(distinctDeckTags)
+final distinctDeckTagsProvider = DistinctDeckTagsFamily._();
+
+/// Memoized list of unique, sorted tags across all cards in [deckId].
+
+final class DistinctDeckTagsProvider
+    extends
+        $FunctionalProvider<List<TagEntity>, List<TagEntity>, List<TagEntity>>
+    with $Provider<List<TagEntity>> {
+  /// Memoized list of unique, sorted tags across all cards in [deckId].
+  DistinctDeckTagsProvider._({
+    required DistinctDeckTagsFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'distinctDeckTagsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$distinctDeckTagsHash();
+
+  @override
+  String toString() {
+    return r'distinctDeckTagsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<List<TagEntity>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  List<TagEntity> create(Ref ref) {
+    final argument = this.argument as int;
+    return distinctDeckTags(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<TagEntity> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<TagEntity>>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is DistinctDeckTagsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$distinctDeckTagsHash() => r'a9f9bb0aa3ce9d2d1480cddf287ba2576d8dd1f4';
+
+/// Memoized list of unique, sorted tags across all cards in [deckId].
+
+final class DistinctDeckTagsFamily extends $Family
+    with $FunctionalFamilyOverride<List<TagEntity>, int> {
+  DistinctDeckTagsFamily._()
+    : super(
+        retry: null,
+        name: r'distinctDeckTagsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Memoized list of unique, sorted tags across all cards in [deckId].
+
+  DistinctDeckTagsProvider call(int deckId) =>
+      DistinctDeckTagsProvider._(argument: deckId, from: this);
+
+  @override
+  String toString() => r'distinctDeckTagsProvider';
+}
