@@ -591,7 +591,10 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                         },
                       ),
                       const SizedBox(height: 8),
-                      Row(
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           ActionChip(
                             key: const Key('insert_cloze_button'),
@@ -605,7 +608,6 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                                 'Wrap selection with Cloze deletion',
                             onPressed: _insertCloze,
                           ),
-                          const SizedBox(width: 8),
                           ActionChip(
                             key: const Key('insert_image_button'),
                             avatar: const Icon(Icons.image_outlined, size: 16),
@@ -614,7 +616,6 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                             onPressed: () =>
                                 _pickAndInsertImage(_frontController),
                           ),
-                          const SizedBox(width: 8),
                           ActionChip(
                             key: const Key('image_occlusion_button'),
                             avatar: const Icon(Icons.crop_rounded, size: 16),
@@ -634,18 +635,15 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                               final count = ClozeParser.extractClozeIndices(
                                 value.text,
                               ).length;
-                              return Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: Chip(
-                                  visualDensity: VisualDensity.compact,
-                                  backgroundColor: colorScheme.primaryContainer,
-                                  label: Text(
-                                    '$count Cloze',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: colorScheme.onPrimaryContainer,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                              return Chip(
+                                visualDensity: VisualDensity.compact,
+                                backgroundColor: colorScheme.primaryContainer,
+                                label: Text(
+                                  '$count Cloze',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               );

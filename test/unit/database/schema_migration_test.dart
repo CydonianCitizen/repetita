@@ -69,7 +69,7 @@ void main() {
     ''');
   }
 
-  group('Drift Schema Migration Tests (v1 -> v8)', () {
+  group('Drift Schema Migration Tests (v1 -> v9)', () {
     test(
       'upgrades from v1 directly to v8 preserving all data and column defaults',
       () async {
@@ -150,7 +150,7 @@ void main() {
         final versionResult = await appDb
             .customSelect('PRAGMA user_version;')
             .getSingle();
-        expect(versionResult.read<int>('user_version'), 8);
+        expect(versionResult.read<int>('user_version'), 9);
 
         await appDb.close();
       },
@@ -176,6 +176,7 @@ void main() {
       expect(indexNames, contains('idx_review_logs_card_id'));
       expect(indexNames, contains('idx_review_logs_reviewed_at'));
       expect(indexNames, contains('idx_card_tags_tag_id'));
+      expect(indexNames, contains('idx_media_checksum'));
 
       await appDb.close();
     });
@@ -331,7 +332,7 @@ void main() {
       final versionResult = await appDb
           .customSelect('PRAGMA user_version;')
           .getSingle();
-      expect(versionResult.read<int>('user_version'), 8);
+      expect(versionResult.read<int>('user_version'), 9);
 
       await appDb.close();
     });
@@ -387,7 +388,7 @@ void main() {
       final versionResult = await appDb
           .customSelect('PRAGMA user_version;')
           .getSingle();
-      expect(versionResult.read<int>('user_version'), 8);
+      expect(versionResult.read<int>('user_version'), 9);
 
       // Verify creating card with noteId on v8 works
       final newCardId = await appDb.cardsDao.createCard(
@@ -398,6 +399,68 @@ void main() {
       );
       final newCard = await appDb.cardsDao.getCardById(newCardId);
       expect(newCard?.noteId, equals(999));
+
+      await appDb.close();
+    });
+
+    test('upgrades from schema v8 to v9 seamlessly', () async {
+      final dbFile = getNextDbFile();
+      final raw = sqlite.sqlite3.open(dbFile.path);
+      setupV1Schema(raw);
+
+      // Apply up to v8
+      raw.execute('''
+        ALTER TABLE cards ADD COLUMN is_suspended INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE cards ADD COLUMN buried_until INTEGER;
+        ALTER TABLE cards ADD COLUMN cloze_index INTEGER;
+        CREATE TABLE tags (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          color INTEGER NOT NULL DEFAULT 0,
+          created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+        );
+        CREATE TABLE card_tags (
+          card_id INTEGER NOT NULL REFERENCES cards (id) ON DELETE CASCADE,
+          tag_id INTEGER NOT NULL REFERENCES tags (id) ON DELETE CASCADE,
+          PRIMARY KEY (card_id, tag_id)
+        );
+        CREATE TABLE app_settings (
+          key TEXT NOT NULL PRIMARY KEY,
+          value TEXT NOT NULL
+        );
+        CREATE INDEX idx_cards_deck_id ON cards (deck_id);
+        CREATE INDEX idx_cards_due ON cards (due);
+        CREATE INDEX idx_review_logs_card_id ON review_logs (card_id);
+        CREATE INDEX idx_review_logs_reviewed_at ON review_logs (reviewed_at);
+        CREATE INDEX idx_card_tags_tag_id ON card_tags (tag_id);
+        ALTER TABLE cards ADD COLUMN easiness_factor REAL NOT NULL DEFAULT 2.5;
+        ALTER TABLE review_logs ADD COLUMN easiness_factor REAL NOT NULL DEFAULT 2.5;
+        ALTER TABLE cards ADD COLUMN flag INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE decks ADD COLUMN exam_date INTEGER;
+        ALTER TABLE decks ADD COLUMN target_retention REAL;
+        ALTER TABLE cards ADD COLUMN note_id INTEGER;
+        CREATE INDEX idx_cards_note_id ON cards (note_id);
+
+        PRAGMA user_version = 8;
+      ''');
+      raw.close();
+
+      final appDb = AppDatabase.forTesting(NativeDatabase(dbFile));
+      final versionResult = await appDb
+          .customSelect('PRAGMA user_version;')
+          .getSingle();
+      expect(versionResult.read<int>('user_version'), 9);
+
+      // Verify creating media on v9 works
+      final newMediaId = await appDb.mediaDao.insertMedia(
+        MediaCompanion.insert(
+          fileName: 'v9_img.png',
+          checksum: '0000000000000000000000000000000000000000000000000000000000000000',
+          sizeBytes: 2048,
+        ),
+      );
+      final media = await appDb.mediaDao.getMediaById(newMediaId);
+      expect(media?.fileName, equals('v9_img.png'));
 
       await appDb.close();
     });
@@ -427,7 +490,7 @@ void main() {
         final versionResult = await appDb
             .customSelect('PRAGMA user_version;')
             .getSingle();
-        expect(versionResult.read<int>('user_version'), 8);
+        expect(versionResult.read<int>('user_version'), 9);
         await appDb.close();
       },
     );

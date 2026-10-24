@@ -67,6 +67,11 @@ void main() {
 
       // Tap Add Tag
       final addTagBtn = find.byKey(const Key('add_tag_button'));
+      await tester.scrollUntilVisible(
+        addTagBtn,
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(addTagBtn, findsOneWidget);
       await tester.tap(addTagBtn);
       await tester.pumpAndSettle();

@@ -1,7 +1,7 @@
 # Repetita 🧠⚡
 
 [![CI](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml/badge.svg)](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-0.9.2-blue.svg)
+![Version](https://img.shields.io/badge/version-0.9.3-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** and **SuperMemo SM-2** algorithms with an extensible multi-engine architecture.
@@ -12,6 +12,12 @@ Repetita is crafted for privacy, mathematical precision, and high performance. I
 
 ## 🌟 Key Features
 
+* **Media Pipeline & Image Occlusion (v0.9.3):**
+  * **Media Storage & Deduplication**: Dedicated Drift `Media` table with indexed SHA-256 checksums, local file storage in application documents, and automatic deduplication of identical images.
+  * **Interactive Media Viewer**: Pinch-to-zoom, double-tap, and pan modal viewer (`ImageViewerDialog`) for detailed examination of anatomical diagrams, maps, and technical schematics.
+  * **Direct Image Insertion & Thumbnails**: Insert images in card front and back prompts via native file picker (`![alt](media://filename)`), with live thumbnail previews and remove actions in `CardEditorScreen`.
+  * **Interactive Image Occlusion Editor**: Drag-to-draw rectangular masks on any image, add per-mask answer labels/hints, and atomically batch-generate $N$ sibling cards with shared `noteId`.
+  * **Hide-All Reveal-One Study Session**: Reviewing Image Occlusion cards conceals all sibling masks with the active target highlighted; flipping the card reveals the target answer while keeping other masks occluded.
 * **Interoperability, Hierarchy & Global Navigation (v0.9.2):**
   * Full bidirectional **Anki `.apkg` package export**: generates valid Anki SQLite schemas (`collection.anki2` with notes, cards, revlogs, and media mapping) for individual decks or all decks simultaneously via pure Dart.
   * **Hierarchical Subdecks (`Parent::Child` notation)**: recursive tree hierarchy in `DeckListScreen` with expandable/collapsible nodes, indentation levels, and recursive aggregation of due and total cards.
