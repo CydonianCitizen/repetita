@@ -16,6 +16,7 @@ import '../../../core/database/database_provider.dart';
 import '../../tags/domain/tag_entity.dart';
 import '../../tags/presentation/controllers/tags_controller.dart';
 import 'controllers/card_list_controller.dart';
+import 'image_occlusion_editor_screen.dart';
 
 class CardEditorScreen extends ConsumerStatefulWidget {
   const CardEditorScreen({
@@ -254,6 +255,34 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
         );
       },
     );
+  }
+
+  Future<void> _openImageOcclusionEditor() async {
+    final picker = ref.read(filePickerServiceProvider);
+    final picked = await picker.pickImage();
+    if (picked == null) return;
+    final bytes = await picked.readBytes();
+    if (bytes.isEmpty) return;
+
+    final mediaService = ref.read(mediaServiceProvider);
+    final media = await mediaService.saveImageBytes(
+      bytes,
+      originalFileName: picked.name,
+    );
+
+    if (!mounted) return;
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => ImageOcclusionEditorScreen(
+          deckId: widget.deckId,
+          mediaReference: media.fileName,
+        ),
+      ),
+    );
+
+    if (result == true && mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _showAddTagDialog(BuildContext context) async {
@@ -584,6 +613,18 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                             tooltip: l10n?.insertImage ?? 'Insert Image',
                             onPressed: () =>
                                 _pickAndInsertImage(_frontController),
+                          ),
+                          const SizedBox(width: 8),
+                          ActionChip(
+                            key: const Key('image_occlusion_button'),
+                            avatar: const Icon(Icons.crop_rounded, size: 16),
+                            label: Text(
+                              l10n?.imageOcclusion ?? 'Image Occlusion',
+                            ),
+                            tooltip:
+                                l10n?.imageOcclusionSubtitle ??
+                                'Create cards by covering parts of an image',
+                            onPressed: _openImageOcclusionEditor,
                           ),
                           ValueListenableBuilder<TextEditingValue>(
                             valueListenable: _frontController,
