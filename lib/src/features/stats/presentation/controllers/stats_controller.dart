@@ -12,24 +12,45 @@ class StatsController extends _$StatsController {
     final dao = ref.watch(statsDaoProvider);
     final now = DateTime.now().toUtc();
 
-    final results = await (
+    final (
+      stateCounts,
+      retentionRate,
+      totalReviews,
+      forecast,
+      dailyReviewCounts,
+    ) = await (
       dao.getCardStateCounts(deckId: deckId),
       dao.getRetentionRate(deckId: deckId),
       dao.getTotalReviewsCount(deckId: deckId),
       dao.getDueForecast(deckId: deckId, days: 7, fromDate: now),
       dao.getDailyReviewCounts(deckId: deckId, days: 105, toDate: now),
+    ).wait;
+
+    final (
+      currentStreak,
+      leechCardsCount,
+      trueRetention,
+      intervalDistribution,
+      ratingBreakdown,
+    ) = await (
       dao.getCurrentStreak(deckId: deckId, today: now),
       dao.getLeechCardsCount(deckId: deckId),
+      dao.getTrueRetention(deckId: deckId),
+      dao.getIntervalDistribution(deckId: deckId),
+      dao.getRatingBreakdown(deckId: deckId),
     ).wait;
 
     return StatsData(
-      stateCounts: results.$1,
-      retentionRate: results.$2,
-      totalReviews: results.$3,
-      forecast: results.$4,
-      dailyReviewCounts: results.$5,
-      currentStreak: results.$6,
-      leechCardsCount: results.$7,
+      stateCounts: stateCounts,
+      retentionRate: retentionRate,
+      totalReviews: totalReviews,
+      forecast: forecast,
+      dailyReviewCounts: dailyReviewCounts,
+      currentStreak: currentStreak,
+      leechCardsCount: leechCardsCount,
+      trueRetention: trueRetention,
+      intervalDistribution: intervalDistribution,
+      ratingBreakdown: ratingBreakdown,
     );
   }
 }

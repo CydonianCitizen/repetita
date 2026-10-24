@@ -8,9 +8,12 @@ import '../../../core/widgets/error_view.dart';
 import '../domain/stats_models.dart';
 import 'controllers/stats_controller.dart';
 import 'widgets/forecast_list_tile.dart';
+import 'widgets/interval_distribution_widget.dart';
 import 'widgets/metric_summary_card.dart';
+import 'widgets/rating_breakdown_widget.dart';
 import 'widgets/review_heatmap_widget.dart';
 import 'widgets/state_distribution_bar.dart';
+import 'widgets/true_retention_card.dart';
 
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({
@@ -199,6 +202,25 @@ class StatsScreen extends ConsumerWidget {
                       const SizedBox(height: 16),
                       // State Distribution Bar (Deck breakdown)
                       StateDistributionBar(counts: stats.stateCounts),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TrueRetentionCard(data: stats.trueRetention),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: RatingBreakdownWidget(
+                              data: stats.ratingBreakdown,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      IntervalDistributionWidget(
+                        data: stats.intervalDistribution,
+                      ),
                     ] else ...[
                       // Mobile single-column stacked layout
                       ReviewHeatmapWidget(
@@ -207,6 +229,14 @@ class StatsScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       StateDistributionBar(counts: stats.stateCounts),
+                      const SizedBox(height: 16),
+                      TrueRetentionCard(data: stats.trueRetention),
+                      const SizedBox(height: 16),
+                      RatingBreakdownWidget(data: stats.ratingBreakdown),
+                      const SizedBox(height: 16),
+                      IntervalDistributionWidget(
+                        data: stats.intervalDistribution,
+                      ),
                       const SizedBox(height: 16),
                       _buildForecastCard(
                         context,

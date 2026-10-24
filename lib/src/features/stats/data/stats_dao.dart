@@ -223,4 +223,166 @@ class StatsDao extends DatabaseAccessor<AppDatabase> with _$StatsDaoMixin {
     final row = await query.getSingleOrNull();
     return row?.read(countCol) ?? 0;
   }
+
+  Future<TrueRetentionData> getTrueRetention({int? deckId}) async {
+    final youngPassedExp = reviewLogs.id.count(
+      filter:
+          reviewLogs.lastElapsedDays.isSmallerThanValue(21) &
+          reviewLogs.rating.isBiggerOrEqualValue(2),
+    );
+    final youngTotalExp = reviewLogs.id.count(
+      filter: reviewLogs.lastElapsedDays.isSmallerThanValue(21),
+    );
+    final maturePassedExp = reviewLogs.id.count(
+      filter:
+          reviewLogs.lastElapsedDays.isBiggerOrEqualValue(21) &
+          reviewLogs.rating.isBiggerOrEqualValue(2),
+    );
+    final matureTotalExp = reviewLogs.id.count(
+      filter: reviewLogs.lastElapsedDays.isBiggerOrEqualValue(21),
+    );
+
+    final query = selectOnly(reviewLogs)
+      ..addColumns([
+        youngPassedExp,
+        youngTotalExp,
+        maturePassedExp,
+        matureTotalExp,
+      ]);
+
+    if (deckId != null) {
+      query.join([innerJoin(cards, cards.id.equalsExp(reviewLogs.cardId))]);
+      query.where(cards.deckId.equals(deckId));
+    }
+
+    final row = await query.getSingleOrNull();
+    if (row == null) {
+      return const TrueRetentionData(
+        youngPassed: 0,
+        youngTotal: 0,
+        maturePassed: 0,
+        matureTotal: 0,
+      );
+    }
+
+    return TrueRetentionData(
+      youngPassed: row.read(youngPassedExp) ?? 0,
+      youngTotal: row.read(youngTotalExp) ?? 0,
+      maturePassed: row.read(maturePassedExp) ?? 0,
+      matureTotal: row.read(matureTotalExp) ?? 0,
+    );
+  }
+
+  Future<IntervalDistributionData> getIntervalDistribution({
+    int? deckId,
+  }) async {
+    final query = select(cards)..where((c) => c.state.equals(2));
+    if (deckId != null) {
+      query.where((c) => c.deckId.equals(deckId));
+    }
+    final reviewCards = await query.get();
+    if (reviewCards.isEmpty) {
+      return const IntervalDistributionData(
+        buckets: [
+          IntervalBucket(label: '1-7 d', count: 0, percentage: 0),
+          IntervalBucket(label: '8-30 d', count: 0, percentage: 0),
+          IntervalBucket(label: '31-90 d', count: 0, percentage: 0),
+          IntervalBucket(label: '91-365 d', count: 0, percentage: 0),
+          IntervalBucket(label: '365+ d', count: 0, percentage: 0),
+        ],
+        totalCards: 0,
+        averageIntervalDays: 0,
+      );
+    }
+
+    int b1 = 0; // 1-7d
+    int b2 = 0; // 8-30d
+    int b3 = 0; // 31-90d
+    int b4 = 0; // 91-365d
+    int b5 = 0; // 365+d
+    int totalIntervalDays = 0;
+
+    for (final card in reviewCards) {
+      int intervalDays = 1;
+      if (card.lastReview != null) {
+        intervalDays = card.due.difference(card.lastReview!).inDays;
+        if (intervalDays < 1) intervalDays = 1;
+      }
+      totalIntervalDays += intervalDays;
+
+      if (intervalDays <= 7) {
+        b1++;
+      } else if (intervalDays <= 30) {
+        b2++;
+      } else if (intervalDays <= 90) {
+        b3++;
+      } else if (intervalDays <= 365) {
+        b4++;
+      } else {
+        b5++;
+      }
+    }
+
+    final total = reviewCards.length;
+    final avg = total > 0 ? (totalIntervalDays / total) : 0.0;
+
+    return IntervalDistributionData(
+      buckets: [
+        IntervalBucket(
+          label: '1-7 d',
+          count: b1,
+          percentage: total > 0 ? b1 / total : 0,
+        ),
+        IntervalBucket(
+          label: '8-30 d',
+          count: b2,
+          percentage: total > 0 ? b2 / total : 0,
+        ),
+        IntervalBucket(
+          label: '31-90 d',
+          count: b3,
+          percentage: total > 0 ? b3 / total : 0,
+        ),
+        IntervalBucket(
+          label: '91-365 d',
+          count: b4,
+          percentage: total > 0 ? b4 / total : 0,
+        ),
+        IntervalBucket(
+          label: '365+ d',
+          count: b5,
+          percentage: total > 0 ? b5 / total : 0,
+        ),
+      ],
+      totalCards: total,
+      averageIntervalDays: avg,
+    );
+  }
+
+  Future<RatingBreakdownData> getRatingBreakdown({int? deckId}) async {
+    final againExp = reviewLogs.id.count(filter: reviewLogs.rating.equals(1));
+    final hardExp = reviewLogs.id.count(filter: reviewLogs.rating.equals(2));
+    final goodExp = reviewLogs.id.count(filter: reviewLogs.rating.equals(3));
+    final easyExp = reviewLogs.id.count(filter: reviewLogs.rating.equals(4));
+
+    final query = selectOnly(reviewLogs)
+      ..addColumns([againExp, hardExp, goodExp, easyExp]);
+
+    if (deckId != null) {
+      query.join([innerJoin(cards, cards.id.equalsExp(reviewLogs.cardId))]);
+      query.where(cards.deckId.equals(deckId));
+    }
+
+    final row = await query.getSingleOrNull();
+    if (row == null) {
+      return const RatingBreakdownData();
+    }
+
+    return RatingBreakdownData(
+      againCount: row.read(againExp) ?? 0,
+      hardCount: row.read(hardExp) ?? 0,
+      goodCount: row.read(goodExp) ?? 0,
+      easyCount: row.read(easyExp) ?? 0,
+    );
+  }
 }
