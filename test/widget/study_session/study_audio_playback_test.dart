@@ -34,9 +34,7 @@ void main() {
         const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
-              body: AudioPlayerChip(
-                audioReference: 'test_sound.m4a',
-              ),
+              body: AudioPlayerChip(audioReference: 'test_sound.m4a'),
             ),
           ),
         ),

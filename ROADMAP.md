@@ -22,7 +22,8 @@ Documento di pianificazione tecnica basato sulle scelte funzionali definite per 
 | **v0.9.2** <br>*(Completato)* | Interoperabilità & Navigazione | • Subdeck gerarchici (`PARENT::CHILD`) [x]<br>• Card Browser globale & filtri [x]<br>• Export `.apkg` con note e scheduler [x] | Media |
 | **v0.9.3** <br>*(Completato)* | Media Pipeline & Image Occlusion | • Tabella Drift Media & deduplica SHA-256 [x]<br>• Visualizzatore immagini con zoom pinch-to-zoom [x]<br>• Inserimento immagini in CardEditorScreen [x]<br>• Image Occlusion Editor interattivo con canvas [x]<br>• Hide-all reveal-one studio rendering [x] | Alta |
 | **v0.9.4** <br>*(Completato)* | Advanced Analytics, FSRS Optimizer, Math & Gestures | • Statistiche estese (True retention & istogramma intervalli) [x]<br>• Card Info & curve di stabilità S/D/R [x]<br>• FSRS Optimizer on-device in background Isolate [x]<br>• Rendering Markdown & KaTeX LaTeX offline [x]<br>• Gesture personalizzabili in Studio (swipe & double tap) [x]<br>• Widget Home Screen nativo Android (conteggio dovute/nuove) [x] | Alta |
-| **v1.0.0** | Consolidamento & Stabilità Finale | • Migrazioni Drift blindate (test suite automatica) [x]<br>• Zero bug, zero warning, 100% test coverage motori SRS [x] | Bassa |
+| **v0.9.5** <br>*(Completato)* | Audio Pipeline, Ephemeral Whiteboard & SRS Hardening | • 100% test coverage motori SRS (FSRS / SM-2) [x]<br>• Registrazione audio da microfono in Card Editor [x]<br>• Playback audio, autoplay & hotkey 'R' in Studio [x]<br>• Import/Export Anki .apkg con pacchettizzazione audio/media [x]<br>• Whiteboard effimera in Studio per richiamo attivo motorio [x] | Media |
+| **v1.0.0** | Consolidamento & Stabilità Finale | • Migrazioni Drift blindate (test suite automatica) [x]<br>• Zero bug, zero warning, release finale F-Droid e desktop [x] | Bassa |
 
 | **v1.3.0** | Ecosistema, Gerarchia & Card Browser | • Export `.apkg` completo compatibile Anki<br>• Subdeck gerarchici (`PARENT::CHILD`)<br>• Ricerca Globale Flashcard (Card Browser FTS5) | Media |
 | **v1.4.0** | Audio & Ergonomia Mobile | • Audio nelle carte (registrazione/playback open-source)<br>• Widget home screen + quick study<br>• Gesture personalizzabili in Studio<br>• Whiteboard effimera in Studio (recall motorio) | Media |
@@ -462,7 +463,7 @@ Output atteso per ciascuno spike: documento tecnico, PoC prototipale e decisione
 
 ### 15. Funzionalità Candidate (in valutazione — decisione pendente) [DA DECIDERE]
 
-#### 15.1 Whiteboard in Studio
+#### 15.1 Whiteboard in Studio [COMPLETATO in v0.9.5]
 * Canvas trasparente sovrapposto alla carta durante la sessione per scrittura a mano (dito/stylus). Il tratto è **effimero**: cancellato alla carta successiva, mai persistito.
 * Caso d'uso primario (comportamento AnkiDroid): **recall attivo motorio** — scrivere l'ideogramma, etichettare l'anatomia, abbozzare la formula *prima* del flip. Non è una funzione di note-taking: nulla viene salvato sulla carta.
 * Domanda aperta (2026-10-17): la destinazione d'uso è la scrittura della risposta come esercizio (recall attivo) oppure l'appunto di lavoro temporaneo? Per appunti persistenti servirebbe una feature distinta (annotazioni per carta), da valutare separatamente.

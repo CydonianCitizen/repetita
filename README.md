@@ -1,7 +1,7 @@
 # Repetita 🧠⚡
 
 [![CI](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml/badge.svg)](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-0.9.4-blue.svg)
+![Version](https://img.shields.io/badge/version-0.9.5-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** and **SuperMemo SM-2** algorithms with an extensible multi-engine architecture.
@@ -12,6 +12,12 @@ Repetita is crafted for privacy, mathematical precision, and high performance. I
 
 ## 🌟 Key Features
 
+* **Audio Pipeline, Ephemeral Whiteboard & SRS Hardening (v0.9.5):**
+  * **100% Line Coverage on SRS Engines**: Exhaustive test suites reaching 100% test coverage across FSRS parameter encoders, stability curve calculators, Adam optimizer models, and SM-2 scheduling algorithms.
+  * **In-App Microphone Audio Recording**: One-tap recording dialog in `CardEditorScreen` with waveform animation, live playback preview, and automated tagging (`[sound:filename.m4a]`) for card front and back.
+  * **Card Audio Playback & Replay Shortcuts**: Integrated audio chips (`AudioPlayerChip`) in card reviews, customizable autoplay upon flip, and instantaneous replay via hotkey `R`.
+  * **Full Anki Audio Packaging & Interoperability**: Bidirectional `.apkg` audio support packaging sound files and media maps on export, and extracting audio into the local media library on import.
+  * **Ephemeral Motor Recall Whiteboard**: In-session drawing canvas overlay for handwriting answers, ideograms, and diagrams before revealing answers, with multi-color palette, undo, and auto-clearing upon card advancement.
 * **Advanced Analytics, FSRS Optimizer, Math & Ergonomics (v0.9.4):**
   * **Extended Visual Analytics & True Retention**: Measured true retention card ($\% \text{ remembered}$ on mature cards $\ge 21\text{d}$), review interval histogram with logarithmic grouping, and 4-tier rating distribution chips.
   * **Card Info Dialog & S/D/R Stability Curves**: Dedicated dialog inspecting card stability, difficulty, retrievability, reps, lapses, review history, and an interactive retrievability decay curve plotted over time ($R(t) = (1 + F \cdot t / S)^{-w}$).
