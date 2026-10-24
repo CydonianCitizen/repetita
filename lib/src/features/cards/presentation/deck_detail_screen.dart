@@ -88,7 +88,9 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('${l10n?.exportFailed ?? "Export failed"}: $e'),
+                      content: Text(
+                        '${l10n?.exportFailed ?? "Export failed"}: $e',
+                      ),
                       backgroundColor: Theme.of(context).colorScheme.error,
                     ),
                   );
@@ -137,63 +139,62 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
             final now = ref.watch(clockProvider)();
             final dueCount = cards.where((c) => c.isDue(now)).length;
 
-            final currentDeck = ref
-                    .watch(watchDeckProvider(widget.deck.id))
-                    .value ??
+            final currentDeck =
+                ref.watch(watchDeckProvider(widget.deck.id)).value ??
                 widget.deck;
 
             return Column(
-                  children: [
-                    _DeckStudyHeader(
-                      deck: currentDeck,
-                      cards: cards,
-                      dueCount: dueCount,
-                      allDeckTags: allDeckTags,
-                    ),
-                    ExamPlanCard(
-                      deck: currentDeck,
-                      cards: cards,
-                      now: now,
-                      onSetExamDate: () async {
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate:
-                              currentDeck.examDate ??
-                              now.add(const Duration(days: 30)),
-                          firstDate: now,
-                          lastDate: now.add(const Duration(days: 3650)),
+              children: [
+                _DeckStudyHeader(
+                  deck: currentDeck,
+                  cards: cards,
+                  dueCount: dueCount,
+                  allDeckTags: allDeckTags,
+                ),
+                ExamPlanCard(
+                  deck: currentDeck,
+                  cards: cards,
+                  now: now,
+                  onSetExamDate: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate:
+                          currentDeck.examDate ??
+                          now.add(const Duration(days: 30)),
+                      firstDate: now,
+                      lastDate: now.add(const Duration(days: 3650)),
+                    );
+                    if (picked != null) {
+                      await ref
+                          .read(decksDaoProvider)
+                          .setDeckExamDate(
+                            deckId: currentDeck.id,
+                            examDate: picked,
+                          );
+                    }
+                  },
+                  onClearExamDate: () async {
+                    await ref
+                        .read(decksDaoProvider)
+                        .setDeckExamDate(
+                          deckId: currentDeck.id,
+                          examDate: null,
+                          targetRetention: null,
                         );
-                        if (picked != null) {
-                          await ref
-                              .read(decksDaoProvider)
-                              .setDeckExamDate(
-                                deckId: currentDeck.id,
-                                examDate: picked,
-                              );
-                        }
-                      },
-                      onClearExamDate: () async {
-                        await ref
-                            .read(decksDaoProvider)
-                            .setDeckExamDate(
-                              deckId: currentDeck.id,
-                              examDate: null,
-                              targetRetention: null,
-                            );
-                      },
-                    ),
-                    Expanded(
-                      child: _DeckCardsSection(
-                        deck: currentDeck,
-                        cards: cards,
-                        allDeckTags: allDeckTags,
-                        cardTagsMap: cardTagsMap,
-                        searchController: _searchController,
-                        searchFocusNode: _searchFocusNode,
-                      ),
-                    ),
-                  ],
-                );
+                  },
+                ),
+                Expanded(
+                  child: _DeckCardsSection(
+                    deck: currentDeck,
+                    cards: cards,
+                    allDeckTags: allDeckTags,
+                    cardTagsMap: cardTagsMap,
+                    searchController: _searchController,
+                    searchFocusNode: _searchFocusNode,
+                  ),
+                ),
+              ],
+            );
           },
         ),
       ),

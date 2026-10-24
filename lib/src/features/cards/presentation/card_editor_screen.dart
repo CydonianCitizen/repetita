@@ -156,10 +156,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
     if (bytes.isEmpty) return null;
 
     final mediaService = ref.read(mediaServiceProvider);
-    return mediaService.saveImageBytes(
-      bytes,
-      originalFileName: picked.name,
-    );
+    return mediaService.saveImageBytes(bytes, originalFileName: picked.name);
   }
 
   Future<void> _pickAndInsertImage(TextEditingController controller) async {
@@ -542,8 +539,9 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                 ),
                 const SizedBox(height: 6),
                 CardContentRenderer(
-                  content:
-                      front.isEmpty ? (l10n?.emptyField ?? '(Empty)') : front,
+                  content: front.isEmpty
+                      ? (l10n?.emptyField ?? '(Empty)')
+                      : front,
                   textStyle: Theme.of(ctx).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 16),
@@ -558,8 +556,9 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                 ),
                 const SizedBox(height: 6),
                 CardContentRenderer(
-                  content:
-                      back.isEmpty ? (l10n?.emptyField ?? '(Empty)') : back,
+                  content: back.isEmpty
+                      ? (l10n?.emptyField ?? '(Empty)')
+                      : back,
                   textStyle: Theme.of(ctx).textTheme.bodyLarge,
                 ),
               ],
@@ -616,7 +615,9 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
               IconButton(
                 key: const Key('preview_card_button'),
                 icon: const Icon(Icons.visibility_outlined),
-                tooltip: l10n?.previewMathMarkdownTooltip ?? 'Preview Math & Markdown',
+                tooltip:
+                    l10n?.previewMathMarkdownTooltip ??
+                    'Preview Math & Markdown',
                 onPressed: () => _showPreview(context),
               ),
             ],
