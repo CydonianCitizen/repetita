@@ -18,9 +18,7 @@ class CurvePoint {
   int get hashCode => Object.hash(day, retrievability);
 }
 
-class StabilityCurveCalculator {
-  const StabilityCurveCalculator._();
-
+abstract final class StabilityCurveCalculator {
   static const double factor = 19.0 / 81.0;
 
   static double retrievability(double elapsedDays, double stability) {
