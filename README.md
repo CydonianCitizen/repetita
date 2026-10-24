@@ -1,7 +1,7 @@
 # Repetita 🧠⚡
 
 [![CI](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml/badge.svg)](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-0.9.3-blue.svg)
+![Version](https://img.shields.io/badge/version-0.9.4-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** and **SuperMemo SM-2** algorithms with an extensible multi-engine architecture.
@@ -12,6 +12,13 @@ Repetita is crafted for privacy, mathematical precision, and high performance. I
 
 ## 🌟 Key Features
 
+* **Advanced Analytics, FSRS Optimizer, Math & Ergonomics (v0.9.4):**
+  * **Extended Visual Analytics & True Retention**: Measured true retention card ($\% \text{ remembered}$ on mature cards $\ge 21\text{d}$), review interval histogram with logarithmic grouping, and 4-tier rating distribution chips.
+  * **Card Info Dialog & S/D/R Stability Curves**: Dedicated dialog inspecting card stability, difficulty, retrievability, reps, lapses, review history, and an interactive retrievability decay curve plotted over time ($R(t) = (1 + F \cdot t / S)^{-w}$).
+  * **On-Device FSRS Optimizer**: Pure Dart optimization engine running asynchronously in a dedicated background `Isolate`. Employs Adam gradient descent with BCE loss directly on local review logs ($\ge 500$ reviews), tuning all 19 FSRS parameters to the user's personal memory characteristics with instant scheduler hot-reloading.
+  * **Offline Markdown & LaTeX/KaTeX Math Rendering**: Full support for inline LaTeX math (`$...$` and `\(...\)`), display formulas (`$$...$$` and `\[...\]`), and rich Markdown formatting on front and back prompts with zero network requests and live editor preview.
+  * **Customizable Study Gestures**: Full ergonomic mobile gestures during reviews: directional swipes (Left, Right, Up, Down) mapped to rating actions (Again, Hard, Good, Easy) with tactile haptic confirmations and double-tap to flip or undo.
+  * **Native Android Home Screen Widget**: At-a-glance due cards count and new card badge directly on your Android launcher with tap-to-study launch intent.
 * **Media Pipeline & Image Occlusion (v0.9.3):**
   * **Media Storage & Deduplication**: Dedicated Drift `Media` table with indexed SHA-256 checksums, local file storage in application documents, and automatic deduplication of identical images.
   * **Interactive Media Viewer**: Pinch-to-zoom, double-tap, and pan modal viewer (`ImageViewerDialog`) for detailed examination of anatomical diagrams, maps, and technical schematics.

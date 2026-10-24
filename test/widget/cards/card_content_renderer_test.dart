@@ -9,22 +9,22 @@ void main() {
       return MaterialApp(
         home: Scaffold(
           body: Center(
-            child: CardContentRenderer(
-              content: content,
-              textStyle: style,
-            ),
+            child: CardContentRenderer(content: content, textStyle: style),
           ),
         ),
       );
     }
 
-    testWidgets('renders plain text as standard Text widget with matching string', (tester) async {
-      const text = 'Capital of France is Paris';
-      await tester.pumpWidget(buildSubject(text));
+    testWidgets(
+      'renders plain text as standard Text widget with matching string',
+      (tester) async {
+        const text = 'Capital of France is Paris';
+        await tester.pumpWidget(buildSubject(text));
 
-      expect(find.text(text), findsOneWidget);
-      expect(find.byType(Math), findsNothing);
-    });
+        expect(find.text(text), findsOneWidget);
+        expect(find.byType(Math), findsNothing);
+      },
+    );
 
     testWidgets('renders inline LaTeX math with Math widget', (tester) async {
       const text = r'Formula for energy is $E=mc^2$ according to Einstein.';
@@ -36,7 +36,9 @@ void main() {
       expect(mathWidget.ast, isNotNull);
     });
 
-    testWidgets(r'renders alternate inline LaTeX syntax \( ... \)', (tester) async {
+    testWidgets(r'renders alternate inline LaTeX syntax \( ... \)', (
+      tester,
+    ) async {
       const text = r'Pythagorean theorem: \(a^2 + b^2 = c^2\)';
       await tester.pumpWidget(buildSubject(text));
 
@@ -46,17 +48,22 @@ void main() {
       expect(mathWidget.ast, isNotNull);
     });
 
-    testWidgets(r'renders display block LaTeX math $$\int x dx$$ with display style', (tester) async {
-      const text = r'Integral: $$\int_0^\infty e^{-x} dx = 1$$';
-      await tester.pumpWidget(buildSubject(text));
+    testWidgets(
+      r'renders display block LaTeX math $$\int x dx$$ with display style',
+      (tester) async {
+        const text = r'Integral: $$\int_0^\infty e^{-x} dx = 1$$';
+        await tester.pumpWidget(buildSubject(text));
 
-      expect(find.byType(Math), findsOneWidget);
-      final mathWidget = tester.widget<Math>(find.byType(Math));
-      expect(mathWidget.mathStyle, MathStyle.display);
-      expect(mathWidget.ast, isNotNull);
-    });
+        expect(find.byType(Math), findsOneWidget);
+        final mathWidget = tester.widget<Math>(find.byType(Math));
+        expect(mathWidget.mathStyle, MathStyle.display);
+        expect(mathWidget.ast, isNotNull);
+      },
+    );
 
-    testWidgets(r'renders alternate display block LaTeX syntax \[ ... \]', (tester) async {
+    testWidgets(r'renders alternate display block LaTeX syntax \[ ... \]', (
+      tester,
+    ) async {
       const text = r'Summation: \[\sum_{i=1}^n i = \frac{n(n+1)}{2}\]';
       await tester.pumpWidget(buildSubject(text));
 
@@ -66,7 +73,9 @@ void main() {
       expect(mathWidget.ast, isNotNull);
     });
 
-    testWidgets('handles malformed LaTeX safely using fallback text', (tester) async {
+    testWidgets('handles malformed LaTeX safely using fallback text', (
+      tester,
+    ) async {
       const text = r'Broken formula: $\frac{invalid$';
       await tester.pumpWidget(buildSubject(text));
 

@@ -11,7 +11,7 @@ final homeWidgetServiceProvider = Provider<HomeWidgetService>((ref) {
 
 class HomeWidgetService {
   const HomeWidgetService({MethodChannel? channel})
-      : _channel = channel ?? const MethodChannel('com.example.repetita/widget');
+    : _channel = channel ?? const MethodChannel('com.example.repetita/widget');
 
   final MethodChannel _channel;
 
@@ -37,7 +37,8 @@ class HomeWidgetService {
     try {
       final now = DateTime.now().toUtc();
 
-      final activeFilter = db.cards.isSuspended.equals(false) &
+      final activeFilter =
+          db.cards.isSuspended.equals(false) &
           (db.cards.buriedUntil.isNull() |
               db.cards.buriedUntil.isSmallerOrEqualValue(now));
 
@@ -51,13 +52,15 @@ class HomeWidgetService {
               db.cards.due.isSmallerOrEqualValue(now),
         );
       final dueCount =
-          await dueQuery.map((row) => row.read(countExpr)).getSingleOrNull() ?? 0;
+          await dueQuery.map((row) => row.read(countExpr)).getSingleOrNull() ??
+          0;
 
       final newQuery = db.selectOnly(db.cards)
         ..addColumns([countExpr])
         ..where(activeFilter & db.cards.state.equals(0));
       final newCount =
-          await newQuery.map((row) => row.read(countExpr)).getSingleOrNull() ?? 0;
+          await newQuery.map((row) => row.read(countExpr)).getSingleOrNull() ??
+          0;
 
       await updateWidget(dueCount: dueCount, newCount: newCount);
     } catch (_) {

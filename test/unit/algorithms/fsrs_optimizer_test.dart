@@ -55,32 +55,32 @@ void main() {
       expect(loss, lessThan(2.0));
     });
 
-    test('clampWeights enforces physiologically valid bounds and monotonicity', () {
-      const optimizer = FsrsOptimizer();
-      final invalidWeights = List<double>.filled(17, -5.0);
+    test(
+      'clampWeights enforces physiologically valid bounds and monotonicity',
+      () {
+        const optimizer = FsrsOptimizer();
+        final invalidWeights = List<double>.filled(17, -5.0);
 
-      final clamped = optimizer.clampWeights(invalidWeights);
+        final clamped = optimizer.clampWeights(invalidWeights);
 
-      expect(clamped.length, 17);
-      // Monotonicity of initial stabilities
-      expect(clamped[0], greaterThanOrEqualTo(0.1));
-      expect(clamped[1], greaterThanOrEqualTo(clamped[0]));
-      expect(clamped[2], greaterThanOrEqualTo(clamped[1]));
-      expect(clamped[3], greaterThanOrEqualTo(clamped[2]));
+        expect(clamped.length, 17);
+        // Monotonicity of initial stabilities
+        expect(clamped[0], greaterThanOrEqualTo(0.1));
+        expect(clamped[1], greaterThanOrEqualTo(clamped[0]));
+        expect(clamped[2], greaterThanOrEqualTo(clamped[1]));
+        expect(clamped[3], greaterThanOrEqualTo(clamped[2]));
 
-      // Check bounds
-      for (var i = 0; i < 17; i++) {
-        final (minB, maxB) = FsrsOptimizer.bounds[i];
-        expect(clamped[i], greaterThanOrEqualTo(minB));
-        expect(clamped[i], lessThanOrEqualTo(maxB));
-      }
-    });
+        // Check bounds
+        for (var i = 0; i < 17; i++) {
+          final (minB, maxB) = FsrsOptimizer.bounds[i];
+          expect(clamped[i], greaterThanOrEqualTo(minB));
+          expect(clamped[i], lessThanOrEqualTo(maxB));
+        }
+      },
+    );
 
     test('optimize reduces or maintains binary cross-entropy loss', () {
-      const optimizer = FsrsOptimizer(
-        maxIterations: 15,
-        learningRate: 0.04,
-      );
+      const optimizer = FsrsOptimizer(maxIterations: 15, learningRate: 0.04);
 
       final result = optimizer.optimize(
         sampleHistories,
@@ -88,7 +88,10 @@ void main() {
       );
 
       expect(result.weights.length, 17);
-      expect(result.sampleCount, 8); // (4-1) + (4-1) + (3-1) = 8 evaluable review transitions
+      expect(
+        result.sampleCount,
+        8,
+      ); // (4-1) + (4-1) + (3-1) = 8 evaluable review transitions
       expect(result.finalLoss, lessThanOrEqualTo(result.initialLoss + 1e-6));
       expect(result.improvementPercentage, greaterThanOrEqualTo(0.0));
     });

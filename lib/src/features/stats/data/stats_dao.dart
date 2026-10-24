@@ -388,16 +388,18 @@ class StatsDao extends DatabaseAccessor<AppDatabase> with _$StatsDaoMixin {
   }
 
   Future<List<CardReviewHistory>> getCardReviewHistories() async {
-    final rows = await (select(reviewLogs)
-          ..orderBy([
-            (t) => OrderingTerm.asc(t.cardId),
-            (t) => OrderingTerm.asc(t.reviewedAt),
-          ]))
-        .get();
+    final rows =
+        await (select(reviewLogs)..orderBy([
+              (t) => OrderingTerm.asc(t.cardId),
+              (t) => OrderingTerm.asc(t.reviewedAt),
+            ]))
+            .get();
 
     final grouped = <int, List<ReviewHistoryItem>>{};
     for (final row in rows) {
-      grouped.putIfAbsent(row.cardId, () => []).add(
+      grouped
+          .putIfAbsent(row.cardId, () => [])
+          .add(
             ReviewHistoryItem(
               rating: row.rating,
               elapsedDays: row.elapsedDays.toDouble(),

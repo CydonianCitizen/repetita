@@ -717,8 +717,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                                       gestureConfig.doubleTap,
                                     ),
                                     onHorizontalDragEnd: (details) {
-                                      final vx =
-                                          details.primaryVelocity ?? 0.0;
+                                      final vx = details.primaryVelocity ?? 0.0;
                                       if (vx < -200) {
                                         handleGestureAction(
                                           gestureConfig.swipeLeft,
@@ -730,8 +729,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                                       }
                                     },
                                     onVerticalDragEnd: (details) {
-                                      final vy =
-                                          details.primaryVelocity ?? 0.0;
+                                      final vy = details.primaryVelocity ?? 0.0;
                                       if (vy < -200) {
                                         handleGestureAction(
                                           gestureConfig.swipeUp,

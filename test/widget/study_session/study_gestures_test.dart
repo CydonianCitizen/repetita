@@ -71,7 +71,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 50));
     });
 
-    testWidgets('swipe right on revealed card submits Good rating', (tester) async {
+    testWidgets('swipe right on revealed card submits Good rating', (
+      tester,
+    ) async {
       await db.cardsDao.createCard(
         deckId: testDeckId,
         front: 'Front Q1',
@@ -103,73 +105,77 @@ void main() {
       await tester.pump(const Duration(milliseconds: 50));
     });
 
-    testWidgets('disabling gestures disables detector and swipe has no effect', (tester) async {
-      await db.cardsDao.createCard(
-        deckId: testDeckId,
-        front: 'Front No Gesture',
-        back: 'Back No Gesture',
-      );
+    testWidgets(
+      'disabling gestures disables detector and swipe has no effect',
+      (tester) async {
+        await db.cardsDao.createCard(
+          deckId: testDeckId,
+          front: 'Front No Gesture',
+          back: 'Back No Gesture',
+        );
 
-      final container = ProviderContainer(
-        overrides: [
-          databaseProvider.overrideWithValue(db),
-          studyGestureControllerProvider.overrideWith(
-            () => _DisabledGestureController(),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
+        final container = ProviderContainer(
+          overrides: [
+            databaseProvider.overrideWithValue(db),
+            studyGestureControllerProvider.overrideWith(
+              () => _DisabledGestureController(),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      await tester.pumpWidget(buildSubject(container: container));
-      await pumpFrames(tester);
+        await tester.pumpWidget(buildSubject(container: container));
+        await pumpFrames(tester);
 
-      // study_gesture_detector should not be in widget tree
-      expect(find.byKey(const Key('study_gesture_detector')), findsNothing);
+        // study_gesture_detector should not be in widget tree
+        expect(find.byKey(const Key('study_gesture_detector')), findsNothing);
 
-      await tester.pumpWidget(const SizedBox());
-      await tester.pump(const Duration(milliseconds: 50));
-    });
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(milliseconds: 50));
+      },
+    );
 
-    testWidgets('StudyGesturesDialog allows toggling and setting custom gestures', (tester) async {
-      final container = ProviderContainer(
-        overrides: [databaseProvider.overrideWithValue(db)],
-      );
-      addTearDown(container.dispose);
+    testWidgets(
+      'StudyGesturesDialog allows toggling and setting custom gestures',
+      (tester) async {
+        final container = ProviderContainer(
+          overrides: [databaseProvider.overrideWithValue(db)],
+        );
+        addTearDown(container.dispose);
 
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: const MaterialApp(
-            home: Scaffold(
-              body: StudyGesturesDialog(),
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(
+              home: Scaffold(body: StudyGesturesDialog()),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Gesti Touch Studio'), findsOneWidget);
-      expect(find.text('Abilita gesti touch'), findsOneWidget);
-      expect(find.text('Swipe Sinistra'), findsOneWidget);
+        expect(find.text('Gesti Touch Studio'), findsOneWidget);
+        expect(find.text('Abilita gesti touch'), findsOneWidget);
+        expect(find.text('Swipe Sinistra'), findsOneWidget);
 
-      // Toggle switch
-      await tester.tap(find.byType(SwitchListTile));
-      await tester.pumpAndSettle();
+        // Toggle switch
+        await tester.tap(find.byType(SwitchListTile));
+        await tester.pumpAndSettle();
 
-      expect(
-        container.read(studyGestureControllerProvider).enableGestures,
-        isFalse,
-      );
+        expect(
+          container.read(studyGestureControllerProvider).enableGestures,
+          isFalse,
+        );
 
-      // Reset to defaults
-      await tester.tap(find.text('Predefiniti'));
-      await tester.pumpAndSettle();
+        // Reset to defaults
+        await tester.tap(find.text('Predefiniti'));
+        await tester.pumpAndSettle();
 
-      expect(
-        container.read(studyGestureControllerProvider).enableGestures,
-        isTrue,
-      );
-    });
+        expect(
+          container.read(studyGestureControllerProvider).enableGestures,
+          isTrue,
+        );
+      },
+    );
   });
 }
 

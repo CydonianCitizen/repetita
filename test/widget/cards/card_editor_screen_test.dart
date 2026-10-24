@@ -262,10 +262,12 @@ void main() {
     testWidgets('tapping preview button shows rendered card preview dialog', (
       tester,
     ) async {
-      await tester.pumpWidget(buildSubject(
-        initialFront: r'Formula $E=mc^2$',
-        initialBack: '**Energy** is mass times speed of light squared',
-      ));
+      await tester.pumpWidget(
+        buildSubject(
+          initialFront: r'Formula $E=mc^2$',
+          initialBack: '**Energy** is mass times speed of light squared',
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('open_editor_button')));

@@ -63,21 +63,24 @@ Future<OptimizationResult> optimizeInIsolate(
   );
 
   StreamSubscription<dynamic>? sub;
-  sub = receivePort.listen((message) {
-    if (message is OptimizationProgress) {
-      onProgress?.call(message);
-    } else if (message is OptimizationResult) {
+  sub = receivePort.listen(
+    (message) {
+      if (message is OptimizationProgress) {
+        onProgress?.call(message);
+      } else if (message is OptimizationResult) {
+        sub?.cancel();
+        receivePort.close();
+        isolate.kill(priority: Isolate.immediate);
+        completer.complete(message);
+      }
+    },
+    onError: (Object error, StackTrace stackTrace) {
       sub?.cancel();
       receivePort.close();
       isolate.kill(priority: Isolate.immediate);
-      completer.complete(message);
-    }
-  }, onError: (Object error, StackTrace stackTrace) {
-    sub?.cancel();
-    receivePort.close();
-    isolate.kill(priority: Isolate.immediate);
-    completer.completeError(error, stackTrace);
-  });
+      completer.completeError(error, stackTrace);
+    },
+  );
 
   return completer.future;
 }

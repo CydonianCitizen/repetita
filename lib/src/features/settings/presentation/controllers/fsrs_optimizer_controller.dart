@@ -71,9 +71,7 @@ class FsrsOptimizerController extends _$FsrsOptimizerController {
 
     if (histories.isEmpty) {
       state = AsyncData(
-        current.copyWith(
-          error: 'No review history found for optimization',
-        ),
+        current.copyWith(error: 'No review history found for optimization'),
       );
       return null;
     }
@@ -81,11 +79,7 @@ class FsrsOptimizerController extends _$FsrsOptimizerController {
     final currentWeights = ref.read(fsrsParametersControllerProvider).w;
 
     state = AsyncData(
-      current.copyWith(
-        isOptimizing: true,
-        progress: 0.0,
-        error: null,
-      ),
+      current.copyWith(isOptimizing: true, progress: 0.0, error: null),
     );
 
     try {
@@ -97,11 +91,7 @@ class FsrsOptimizerController extends _$FsrsOptimizerController {
         onProgress: (p) {
           if (ref.mounted) {
             final val = state.value ?? current;
-            state = AsyncData(
-              val.copyWith(
-                progress: p.progressPercentage,
-              ),
-            );
+            state = AsyncData(val.copyWith(progress: p.progressPercentage));
           }
         },
       );
@@ -126,10 +116,7 @@ class FsrsOptimizerController extends _$FsrsOptimizerController {
       if (ref.mounted) {
         final val = state.value ?? current;
         state = AsyncData(
-          val.copyWith(
-            isOptimizing: false,
-            error: e.toString(),
-          ),
+          val.copyWith(isOptimizing: false, error: e.toString()),
         );
       }
       return null;

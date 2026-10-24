@@ -540,9 +540,9 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                 Text(
                   'FRONTE',
                   style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(ctx).colorScheme.primary,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(ctx).colorScheme.primary,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 CardContentRenderer(
@@ -555,9 +555,9 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                 Text(
                   'RETRO',
                   style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(ctx).colorScheme.secondary,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(ctx).colorScheme.secondary,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 CardContentRenderer(

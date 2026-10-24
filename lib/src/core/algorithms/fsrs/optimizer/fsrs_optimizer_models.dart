@@ -2,10 +2,7 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class ReviewHistoryItem {
-  const ReviewHistoryItem({
-    required this.rating,
-    required this.elapsedDays,
-  });
+  const ReviewHistoryItem({required this.rating, required this.elapsedDays});
 
   /// Rating given by user: 1 = Again, 2 = Hard, 3 = Good, 4 = Easy.
   final int rating;
@@ -14,9 +11,9 @@ class ReviewHistoryItem {
   final double elapsedDays;
 
   Map<String, dynamic> toJson() => {
-        'rating': rating,
-        'elapsedDays': elapsedDays,
-      };
+    'rating': rating,
+    'elapsedDays': elapsedDays,
+  };
 
   factory ReviewHistoryItem.fromJson(Map<String, dynamic> json) =>
       ReviewHistoryItem(
@@ -27,18 +24,15 @@ class ReviewHistoryItem {
 
 @immutable
 class CardReviewHistory {
-  const CardReviewHistory({
-    required this.cardId,
-    required this.reviews,
-  });
+  const CardReviewHistory({required this.cardId, required this.reviews});
 
   final int cardId;
   final List<ReviewHistoryItem> reviews;
 
   Map<String, dynamic> toJson() => {
-        'cardId': cardId,
-        'reviews': reviews.map((r) => r.toJson()).toList(),
-      };
+    'cardId': cardId,
+    'reviews': reviews.map((r) => r.toJson()).toList(),
+  };
 
   factory CardReviewHistory.fromJson(Map<String, dynamic> json) =>
       CardReviewHistory(
@@ -86,13 +80,13 @@ class OptimizationResult {
   final int iterationCount;
 
   Map<String, dynamic> toJson() => {
-        'weights': weights,
-        'initialLoss': initialLoss,
-        'finalLoss': finalLoss,
-        'improvementPercentage': improvementPercentage,
-        'sampleCount': sampleCount,
-        'iterationCount': iterationCount,
-      };
+    'weights': weights,
+    'initialLoss': initialLoss,
+    'finalLoss': finalLoss,
+    'improvementPercentage': improvementPercentage,
+    'sampleCount': sampleCount,
+    'iterationCount': iterationCount,
+  };
 
   factory OptimizationResult.fromJson(Map<String, dynamic> json) =>
       OptimizationResult(
@@ -101,8 +95,8 @@ class OptimizationResult {
             .toList(),
         initialLoss: (json['initialLoss'] as num).toDouble(),
         finalLoss: (json['finalLoss'] as num).toDouble(),
-        improvementPercentage:
-            (json['improvementPercentage'] as num).toDouble(),
+        improvementPercentage: (json['improvementPercentage'] as num)
+            .toDouble(),
         sampleCount: json['sampleCount'] as int,
         iterationCount: json['iterationCount'] as int,
       );

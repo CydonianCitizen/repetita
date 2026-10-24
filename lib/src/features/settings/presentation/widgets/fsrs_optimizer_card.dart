@@ -23,7 +23,9 @@ class FsrsOptimizerCard extends ConsumerWidget {
           FilledButton(
             key: const Key('btn_confirm_reset_weights'),
             onPressed: () {
-              ref.read(fsrsOptimizerControllerProvider.notifier).resetToDefaults();
+              ref
+                  .read(fsrsOptimizerControllerProvider.notifier)
+                  .resetToDefaults();
               Navigator.of(dialogCtx).pop();
             },
             child: const Text('Ripristina'),
@@ -97,7 +99,10 @@ class FsrsOptimizerCard extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: fsrsParams.hasCustomWeights
                         ? colorScheme.primary.withValues(alpha: 0.15)
@@ -227,8 +232,8 @@ class FsrsOptimizerCard extends ConsumerWidget {
                     ),
                     onPressed: canOptimize
                         ? () => ref
-                            .read(fsrsOptimizerControllerProvider.notifier)
-                            .startOptimization()
+                              .read(fsrsOptimizerControllerProvider.notifier)
+                              .startOptimization()
                         : null,
                   ),
                 ),

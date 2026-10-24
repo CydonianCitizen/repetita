@@ -20,8 +20,12 @@ class CardContentRenderer extends StatelessWidget {
   final bool highlightActiveCloze;
 
   static final _hasMathOrMarkdown = RegExp(r'(\$|\\\(|\\\[|\*\*|\*|`|~~)');
-  static final _displayMathRegex = RegExp(r'(\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\])');
-  static final _inlineMathRegex = RegExp(r'(\\\(([\s\S]*?)\\\)|\$([^\$\n]+?)\$)');
+  static final _displayMathRegex = RegExp(
+    r'(\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\])',
+  );
+  static final _inlineMathRegex = RegExp(
+    r'(\\\(([\s\S]*?)\\\)|\$([^\$\n]+?)\$)',
+  );
   static final _markdownInlineRegex = RegExp(
     r'(\*\*([^*]+)\*\*|\*([^*]+)\*|`([^`]+)`|~~([^~]+)~~)',
   );
@@ -34,29 +38,28 @@ class CardContentRenderer extends StatelessWidget {
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final baseStyle = textStyle ?? theme.textTheme.bodyLarge ?? const TextStyle();
+    final baseStyle =
+        textStyle ?? theme.textTheme.bodyLarge ?? const TextStyle();
 
     // Fast path: pure plain text without math or markdown
     if (!_hasMathOrMarkdown.hasMatch(content)) {
-      return Text(
-        content,
-        style: baseStyle,
-        textAlign: textAlign,
-      );
+      return Text(content, style: baseStyle, textAlign: textAlign);
     }
 
     // Check if content contains display math blocks
     final displayMatches = _displayMathRegex.allMatches(content).toList();
     if (displayMatches.isNotEmpty) {
-      return _buildDisplayLayout(context, baseStyle, colorScheme, displayMatches);
+      return _buildDisplayLayout(
+        context,
+        baseStyle,
+        colorScheme,
+        displayMatches,
+      );
     }
 
     // Only inline math / markdown
     final spans = _buildInlineSpans(content, baseStyle, colorScheme);
-    return Text.rich(
-      TextSpan(children: spans),
-      textAlign: textAlign,
-    );
+    return Text.rich(TextSpan(children: spans), textAlign: textAlign);
   }
 
   Widget _buildDisplayLayout(
@@ -74,10 +77,7 @@ class CardContentRenderer extends StatelessWidget {
         if (textBefore.isNotEmpty) {
           final spans = _buildInlineSpans(textBefore, baseStyle, colorScheme);
           widgets.add(
-            Text.rich(
-              TextSpan(children: spans),
-              textAlign: textAlign,
-            ),
+            Text.rich(TextSpan(children: spans), textAlign: textAlign),
           );
         }
       }
@@ -111,12 +111,7 @@ class CardContentRenderer extends StatelessWidget {
       final textAfter = content.substring(lastIndex).trim();
       if (textAfter.isNotEmpty) {
         final spans = _buildInlineSpans(textAfter, baseStyle, colorScheme);
-        widgets.add(
-          Text.rich(
-            TextSpan(children: spans),
-            textAlign: textAlign,
-          ),
-        );
+        widgets.add(Text.rich(TextSpan(children: spans), textAlign: textAlign));
       }
     }
 
@@ -215,7 +210,9 @@ class CardContentRenderer extends StatelessWidget {
             text: match.group(4),
             style: baseStyle.copyWith(
               fontFamily: 'monospace',
-              backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
+              backgroundColor: colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.7,
+              ),
             ),
           ),
         );
@@ -233,12 +230,7 @@ class CardContentRenderer extends StatelessWidget {
     }
 
     if (lastIndex < text.length) {
-      spans.add(
-        TextSpan(
-          text: text.substring(lastIndex),
-          style: baseStyle,
-        ),
-      );
+      spans.add(TextSpan(text: text.substring(lastIndex), style: baseStyle));
     }
 
     return spans;

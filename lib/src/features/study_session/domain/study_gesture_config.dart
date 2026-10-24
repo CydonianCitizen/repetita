@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 enum StudyGestureAction {
@@ -55,25 +56,29 @@ class StudyGestureConfig {
   final StudyGestureAction doubleTap;
 
   Map<String, dynamic> toJson() => {
-        'enableGestures': enableGestures,
-        'swipeLeft': swipeLeft.name,
-        'swipeRight': swipeRight.name,
-        'swipeUp': swipeUp.name,
-        'swipeDown': swipeDown.name,
-        'doubleTap': doubleTap.name,
-      };
+    'enableGestures': enableGestures,
+    'swipeLeft': swipeLeft.name,
+    'swipeRight': swipeRight.name,
+    'swipeUp': swipeUp.name,
+    'swipeDown': swipeDown.name,
+    'doubleTap': doubleTap.name,
+  };
 
-  factory StudyGestureConfig.fromJson(Map<String, dynamic> json) =>
-      StudyGestureConfig(
-        enableGestures: json['enableGestures'] as bool? ?? true,
-        swipeLeft: _parseAction(json['swipeLeft'], StudyGestureAction.rateAgain),
-        swipeRight: _parseAction(json['swipeRight'], StudyGestureAction.rateGood),
-        swipeUp: _parseAction(json['swipeUp'], StudyGestureAction.rateEasy),
-        swipeDown: _parseAction(json['swipeDown'], StudyGestureAction.flipCard),
-        doubleTap: _parseAction(json['doubleTap'], StudyGestureAction.flipCard),
-      );
+  factory StudyGestureConfig.fromJson(
+    Map<String, dynamic> json,
+  ) => StudyGestureConfig(
+    enableGestures: json['enableGestures'] as bool? ?? true,
+    swipeLeft: _parseAction(json['swipeLeft'], StudyGestureAction.rateAgain),
+    swipeRight: _parseAction(json['swipeRight'], StudyGestureAction.rateGood),
+    swipeUp: _parseAction(json['swipeUp'], StudyGestureAction.rateEasy),
+    swipeDown: _parseAction(json['swipeDown'], StudyGestureAction.flipCard),
+    doubleTap: _parseAction(json['doubleTap'], StudyGestureAction.flipCard),
+  );
 
-  static StudyGestureAction _parseAction(dynamic val, StudyGestureAction fallback) {
+  static StudyGestureAction _parseAction(
+    dynamic val,
+    StudyGestureAction fallback,
+  ) {
     if (val is! String) return fallback;
     try {
       return StudyGestureAction.values.byName(val);

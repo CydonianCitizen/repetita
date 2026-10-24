@@ -35,9 +35,7 @@ class FsrsParametersController extends _$FsrsParametersController {
         : 36500;
     final customWeights = FsrsParameters.decodeWeights(customWeightsStr);
 
-    if (retention != 0.9 ||
-        maxInterval != 36500 ||
-        customWeights != null) {
+    if (retention != 0.9 || maxInterval != 36500 || customWeights != null) {
       if (ref.mounted) {
         state = FsrsParameters(
           requestRetention: retention,
@@ -73,10 +71,9 @@ class FsrsParametersController extends _$FsrsParametersController {
   Future<void> setCustomWeights(List<double> weights) async {
     state = state.copyWith(w: weights);
     try {
-      await ref.read(databaseProvider).setSetting(
-            _customWeightsKey,
-            FsrsParameters.encodeWeights(weights),
-          );
+      await ref
+          .read(databaseProvider)
+          .setSetting(_customWeightsKey, FsrsParameters.encodeWeights(weights));
     } catch (e) {
       // ignore
     }

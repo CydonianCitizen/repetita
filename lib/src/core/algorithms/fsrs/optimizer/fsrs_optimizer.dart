@@ -121,7 +121,8 @@ class FsrsOptimizer {
           final easyBonus = rating == 4 ? w[16] : 1.0;
           final sPower = pow(s, -w[9]).toDouble();
           final rFactor = exp(w[10] * (1.0 - r)) - 1.0;
-          final nextS = s *
+          final nextS =
+              s *
               (1.0 +
                   exp(w[8]) *
                       (11.0 - d) *

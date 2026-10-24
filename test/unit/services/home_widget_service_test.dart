@@ -36,10 +36,7 @@ void main() {
 
       expect(methodCalls, hasLength(1));
       expect(methodCalls.first.method, 'updateWidget');
-      expect(methodCalls.first.arguments, {
-        'dueCount': 5,
-        'newCount': 3,
-      });
+      expect(methodCalls.first.arguments, {'dueCount': 5, 'newCount': 3});
     });
 
     test('does not invoke channel on non-Android platforms', () async {
@@ -66,12 +63,14 @@ void main() {
 
     test('accurately counts due review cards and new cards', () async {
       final now = DateTime.now().toUtc();
-      final deckId = await db.into(db.decks).insert(
-            DecksCompanion.insert(name: 'Test Deck'),
-          );
+      final deckId = await db
+          .into(db.decks)
+          .insert(DecksCompanion.insert(name: 'Test Deck'));
 
       // 1. New card (state = 0)
-      await db.into(db.cards).insert(
+      await db
+          .into(db.cards)
+          .insert(
             CardsCompanion.insert(
               deckId: deckId,
               front: 'New Q',
@@ -82,7 +81,9 @@ void main() {
           );
 
       // 2. Due review card (state = 2, due in past)
-      await db.into(db.cards).insert(
+      await db
+          .into(db.cards)
+          .insert(
             CardsCompanion.insert(
               deckId: deckId,
               front: 'Due Review Q',
@@ -93,7 +94,9 @@ void main() {
           );
 
       // 3. Future review card (state = 2, due in future)
-      await db.into(db.cards).insert(
+      await db
+          .into(db.cards)
+          .insert(
             CardsCompanion.insert(
               deckId: deckId,
               front: 'Future Review Q',
@@ -104,7 +107,9 @@ void main() {
           );
 
       // 4. Suspended review card (should be ignored)
-      await db.into(db.cards).insert(
+      await db
+          .into(db.cards)
+          .insert(
             CardsCompanion.insert(
               deckId: deckId,
               front: 'Suspended Q',
@@ -116,7 +121,9 @@ void main() {
           );
 
       // 5. Buried review card (should be ignored)
-      await db.into(db.cards).insert(
+      await db
+          .into(db.cards)
+          .insert(
             CardsCompanion.insert(
               deckId: deckId,
               front: 'Buried Q',
@@ -132,10 +139,7 @@ void main() {
 
       expect(methodCalls, hasLength(1));
       expect(methodCalls.first.method, 'updateWidget');
-      expect(methodCalls.first.arguments, {
-        'dueCount': 1,
-        'newCount': 1,
-      });
+      expect(methodCalls.first.arguments, {'dueCount': 1, 'newCount': 1});
     });
   });
 }

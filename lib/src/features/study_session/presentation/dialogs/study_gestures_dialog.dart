@@ -86,7 +86,9 @@ class StudyGesturesDialog extends ConsumerWidget {
                 subtitle: const Text('Scorri o tocca due volte per interagire'),
                 value: config.enableGestures,
                 onChanged: (_) {
-                  ref.read(studyGestureControllerProvider.notifier).toggleEnabled();
+                  ref
+                      .read(studyGestureControllerProvider.notifier)
+                      .toggleEnabled();
                 },
               ),
               const Divider(),
