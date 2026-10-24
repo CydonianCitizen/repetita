@@ -17,6 +17,7 @@ import '../../tags/domain/tag_entity.dart';
 import '../../tags/presentation/controllers/tags_controller.dart';
 import '../domain/card_entity.dart';
 import 'card_editor_screen.dart';
+import 'dialogs/card_info_dialog.dart';
 import 'controllers/card_list_controller.dart';
 import 'widgets/card_flag_color.dart';
 
@@ -415,6 +416,14 @@ class _CardTile extends StatelessWidget {
                         color: scheme.onSurfaceVariant,
                       ),
                       onSelected: (value) async {
+                        if (value == 'info') {
+                          if (!context.mounted) return;
+                          await showDialog<void>(
+                            context: context,
+                            builder: (ctx) => CardInfoDialog(card: card),
+                          );
+                          return;
+                        }
                         if (value == 'edit') onEdit();
                         if (value == 'setDueDate') {
                           final picked = await showDatePicker(
@@ -544,6 +553,16 @@ class _CardTile extends StatelessWidget {
                         final itemL10n = AppLocalizations.of(context);
                         final isBuried = card.isBuried(now);
                         return [
+                          const PopupMenuItem(
+                            value: 'info',
+                            child: Row(
+                              children: [
+                                Icon(Icons.analytics_outlined, size: 18),
+                                SizedBox(width: 8),
+                                Text('Card Info'),
+                              ],
+                            ),
+                          ),
                           PopupMenuItem(
                             value: 'edit',
                             child: Row(

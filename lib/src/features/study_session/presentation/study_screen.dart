@@ -21,6 +21,7 @@ import 'controllers/type_in_controller.dart';
 import 'widgets/flip_card_view.dart';
 import 'widgets/rating_bar.dart';
 
+import '../../cards/presentation/dialogs/card_info_dialog.dart';
 import '../../cards/presentation/widgets/card_flag_color.dart';
 
 class StudyScreen extends ConsumerStatefulWidget {
@@ -243,7 +244,16 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                 onSelected: (value) async {
                   final controller = ref.read(provider.notifier);
                   try {
-                    if (value == 'suspend') {
+                    if (value == 'info') {
+                      final current = ref.read(provider).value?.currentCard;
+                      if (current != null && context.mounted) {
+                        await showDialog<void>(
+                          context: context,
+                          builder: (_) => CardInfoDialog(card: current),
+                        );
+                        return;
+                      }
+                    } else if (value == 'suspend') {
                       await controller.suspendCurrentCard();
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -276,6 +286,16 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                 itemBuilder: (context) {
                   final itemL10n = AppLocalizations.of(context);
                   return [
+                    const PopupMenuItem(
+                      value: 'info',
+                      child: Row(
+                        children: [
+                          Icon(Icons.analytics_outlined, size: 20),
+                          SizedBox(width: 8),
+                          Text('Card Info'),
+                        ],
+                      ),
+                    ),
                     PopupMenuItem(
                       value: 'bury',
                       child: Row(

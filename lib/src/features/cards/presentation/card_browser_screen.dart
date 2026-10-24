@@ -6,6 +6,7 @@ import '../../../core/theme/card_state_colors.dart';
 import '../../../core/widgets/error_view.dart';
 import '../../decks/presentation/controllers/deck_list_controller.dart';
 import 'card_editor_screen.dart';
+import 'dialogs/card_info_dialog.dart';
 import 'controllers/card_browser_controller.dart';
 import 'widgets/card_flag_color.dart';
 
@@ -445,12 +446,33 @@ class _CardBrowserScreenState extends ConsumerState<CardBrowserScreen> {
                                     ),
                                   ],
                                   const Spacer(),
-                                  if (card.flag > 0)
+                                  if (card.flag > 0) ...[
                                     Icon(
                                       Icons.flag,
                                       size: 16,
                                       color: getCardFlagColor(card.flag),
                                     ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.analytics_outlined,
+                                      size: 18,
+                                    ),
+                                    visualDensity: VisualDensity.compact,
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    tooltip: 'Card info',
+                                    onPressed: () {
+                                      showDialog<void>(
+                                        context: context,
+                                        builder: (_) => CardInfoDialog(
+                                          card: card,
+                                          deckName: item.deckName,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
