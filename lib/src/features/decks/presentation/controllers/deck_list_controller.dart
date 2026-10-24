@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/decks_dao.dart';
 import '../../../../core/database/database_provider.dart';
+import '../../../../core/services/home_widget_service.dart';
 
 part 'deck_list_controller.g.dart';
 
@@ -10,7 +11,11 @@ class DeckListController extends _$DeckListController {
   @override
   Stream<List<DeckWithCounts>> build() {
     final dao = ref.watch(decksDaoProvider);
-    return dao.watchAllDecksWithCounts();
+    return dao.watchAllDecksWithCounts().map((decks) {
+      final db = ref.read(databaseProvider);
+      ref.read(homeWidgetServiceProvider).syncWithDatabase(db);
+      return decks;
+    });
   }
 
   Future<void> createDeck({required String name, String? description}) async {

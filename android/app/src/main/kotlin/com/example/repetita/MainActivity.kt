@@ -14,6 +14,7 @@ import kotlin.math.abs
 class MainActivity : FlutterActivity() {
     private val displayChannelName = "com.example.repetita/display_mode"
     private val hapticChannelName = "com.example.repetita/haptics"
+    private val widgetChannelName = "com.example.repetita/widget"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -142,6 +143,19 @@ class MainActivity : FlutterActivity() {
                         constant,
                         HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
                     )
+                    result.success(true)
+                }
+                else -> result.notImplemented()
+            }
+        }
+
+        // 3. App Widget Channel
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, widgetChannelName).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "updateWidget" -> {
+                    val dueCount = call.argument<Int>("dueCount") ?: 0
+                    val newCount = call.argument<Int>("newCount") ?: 0
+                    RepetitaAppWidgetProvider.updateWidget(this, dueCount, newCount)
                     result.success(true)
                 }
                 else -> result.notImplemented()

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/database_provider.dart';
 import '../../../core/l10n/generated/app_localizations.dart';
+import '../../../core/services/home_widget_service.dart';
 import '../../decks/presentation/deck_list_screen.dart';
 import '../../settings/data/haptic_service.dart';
 import '../../settings/presentation/controllers/haptic_controller.dart';
@@ -40,6 +41,8 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(rollingBackupServiceProvider).checkAndPerformAutoBackup();
+      final db = ref.read(databaseProvider);
+      ref.read(homeWidgetServiceProvider).syncWithDatabase(db);
     });
   }
 
