@@ -625,4 +625,24 @@
     }
   },
   "studyDeckAndSubdecks": "Study Deck + Subdecks"
+,
+  "imageNotFound": "Image not found",
+  "insertImage": "Image",
+  "insertImageTooltip": "Insert image into card",
+  "imageOcclusion": "Image Occlusion",
+  "imageOcclusionEditorTitle": "Image Occlusion Editor",
+  "imageOcclusionSubtitle": "Create cards by covering parts of an image",
+  "drawOcclusionPrompt": "Drag on image to create mask rectangles",
+  "occlusionCount": "{count, plural, =0{No masks} =1{1 mask (1 card)} other{{count} masks ({count} cards)}}",
+  "@occlusionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteOcclusionBox": "Delete mask",
+  "maskLabelHint": "Optional label / answer hint...",
+  "saveOcclusionCards": "Save Cards",
+  "pickImagePrompt": "Select Image"
 }

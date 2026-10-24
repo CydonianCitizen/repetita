@@ -14,13 +14,15 @@ class MediaDao extends DatabaseAccessor<AppDatabase> with _$MediaDaoMixin {
   }
 
   Future<MediaData?> getMediaByChecksum(String checksum) {
-    return (select(media)..where((t) => t.checksum.equals(checksum)))
-        .getSingleOrNull();
+    return (select(
+      media,
+    )..where((t) => t.checksum.equals(checksum))).getSingleOrNull();
   }
 
   Future<MediaData?> getMediaByFileName(String fileName) {
-    return (select(media)..where((t) => t.fileName.equals(fileName)))
-        .getSingleOrNull();
+    return (select(
+      media,
+    )..where((t) => t.fileName.equals(fileName))).getSingleOrNull();
   }
 
   Future<MediaData?> getMediaById(int id) {

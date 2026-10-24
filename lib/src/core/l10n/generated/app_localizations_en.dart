@@ -1244,4 +1244,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get studyDeckAndSubdecks => 'Study Deck + Subdecks';
+
+  @override
+  String get imageNotFound => 'Image not found';
+
+  @override
+  String get insertImage => 'Image';
+
+  @override
+  String get insertImageTooltip => 'Insert image into card';
+
+  @override
+  String get imageOcclusion => 'Image Occlusion';
+
+  @override
+  String get imageOcclusionEditorTitle => 'Image Occlusion Editor';
+
+  @override
+  String get imageOcclusionSubtitle =>
+      'Create cards by covering parts of an image';
+
+  @override
+  String get drawOcclusionPrompt => 'Drag on image to create mask rectangles';
+
+  @override
+  String occlusionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count masks ($count cards)',
+      one: '1 mask (1 card)',
+      zero: 'No masks',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deleteOcclusionBox => 'Delete mask';
+
+  @override
+  String get maskLabelHint => 'Optional label / answer hint...';
+
+  @override
+  String get saveOcclusionCards => 'Save Cards';
+
+  @override
+  String get pickImagePrompt => 'Select Image';
 }

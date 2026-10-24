@@ -17,10 +17,7 @@ void main() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     mediaDao = MediaDao(db);
     tempDir = await Directory.systemTemp.createTemp('repetita_media_test_');
-    mediaService = MediaService(
-      mediaDao: mediaDao,
-      mediaDirectory: tempDir,
-    );
+    mediaService = MediaService(mediaDao: mediaDao, mediaDirectory: tempDir);
   });
 
   tearDown(() async {
@@ -52,7 +49,7 @@ void main() {
       expect(media1.sizeBytes, 6);
       expect(media1.fileName.endsWith('.jpg'), isTrue);
 
-      final file1 = await mediaService.getMediaFile(media1.fileName);
+      final file1 = mediaService.getMediaFile(media1.fileName);
       expect(await file1.exists(), isTrue);
 
       // Attempt to save identical bytes with a different name
@@ -76,7 +73,7 @@ void main() {
         originalFileName: 'to_delete.png',
       );
 
-      final file = await mediaService.getMediaFile(media.fileName);
+      final file = mediaService.getMediaFile(media.fileName);
       expect(await file.exists(), isTrue);
 
       await mediaService.deleteMedia(media.id);

@@ -1,4 +1,10 @@
+import '../../../core/services/file_picker_service.dart';
+
 import 'package:flutter/material.dart';
+
+import '../../media/presentation/widgets/media_image_widget.dart';
+import '../../media/utils/media_content_renderer.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -136,6 +142,117 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
     _frontController.value = TextEditingValue(
       text: newText,
       selection: TextSelection.collapsed(offset: newCursorOffset),
+    );
+  }
+
+  Future<void> _pickAndInsertImage(TextEditingController controller) async {
+    final picker = ref.read(filePickerServiceProvider);
+    final picked = await picker.pickImage();
+    if (picked == null) return;
+    final bytes = await picked.readBytes();
+    if (bytes.isEmpty) return;
+
+    final mediaService = ref.read(mediaServiceProvider);
+    final media = await mediaService.saveImageBytes(
+      bytes,
+      originalFileName: picked.name,
+    );
+
+    final insertTag = '![alt](media://${media.fileName})';
+    final text = controller.text;
+    final selection = controller.selection;
+    final start = selection.start >= 0 ? selection.start : text.length;
+    final end = selection.end >= 0 ? selection.end : text.length;
+
+    final newText = text.replaceRange(start, end, insertTag);
+    controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: start + insertTag.length),
+    );
+  }
+
+  Widget _buildImageThumbnails(TextEditingController controller) {
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: controller,
+      builder: (context, value, _) {
+        final fileNames = MediaContentRenderer.extractMediaFilenames(
+          value.text,
+        );
+        if (fileNames.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: SizedBox(
+            height: 72,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: fileNames.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final name = fileNames[index];
+                return Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: MediaImageWidget(
+                          mediaReference: name,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 2,
+                      right: 2,
+                      child: GestureDetector(
+                        onTap: () {
+                          final text = controller.text;
+                          final stripped = text
+                              .replaceAll(
+                                RegExp(
+                                  r'!\[.*?\]\(media:\/\/' +
+                                      RegExp.escape(name) +
+                                      r'\)',
+                                ),
+                                '',
+                              )
+                              .replaceAll('media://$name', '')
+                              .trim();
+                          controller.value = TextEditingValue(
+                            text: stripped,
+                            selection: TextSelection.collapsed(
+                              offset: stripped.length,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.6),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -459,6 +576,15 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                                 'Wrap selection with Cloze deletion',
                             onPressed: _insertCloze,
                           ),
+                          const SizedBox(width: 8),
+                          ActionChip(
+                            key: const Key('insert_image_button'),
+                            avatar: const Icon(Icons.image_outlined, size: 16),
+                            label: Text(l10n?.insertImage ?? 'Image'),
+                            tooltip: l10n?.insertImage ?? 'Insert Image',
+                            onPressed: () =>
+                                _pickAndInsertImage(_frontController),
+                          ),
                           ValueListenableBuilder<TextEditingValue>(
                             valueListenable: _frontController,
                             builder: (context, value, _) {
@@ -486,6 +612,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                           ),
                         ],
                       ),
+                      _buildImageThumbnails(_frontController),
                       const SizedBox(height: 16),
                       ValueListenableBuilder<TextEditingValue>(
                         valueListenable: _backController,
@@ -530,6 +657,20 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                           );
                         },
                       ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          ActionChip(
+                            key: const Key('insert_image_back_button'),
+                            avatar: const Icon(Icons.image_outlined, size: 16),
+                            label: Text(l10n?.insertImage ?? 'Image'),
+                            tooltip: l10n?.insertImage ?? 'Insert Image',
+                            onPressed: () =>
+                                _pickAndInsertImage(_backController),
+                          ),
+                        ],
+                      ),
+                      _buildImageThumbnails(_backController),
                       if (!widget.isEditing) ...[
                         const SizedBox(height: 12),
                         ValueListenableBuilder<TextEditingValue>(

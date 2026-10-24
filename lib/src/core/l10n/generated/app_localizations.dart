@@ -2227,6 +2227,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Study Deck + Subdecks'**
   String get studyDeckAndSubdecks;
+
+  /// No description provided for @imageNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Image not found'**
+  String get imageNotFound;
+
+  /// No description provided for @insertImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get insertImage;
+
+  /// No description provided for @insertImageTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Insert image into card'**
+  String get insertImageTooltip;
+
+  /// No description provided for @imageOcclusion.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Occlusion'**
+  String get imageOcclusion;
+
+  /// No description provided for @imageOcclusionEditorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Occlusion Editor'**
+  String get imageOcclusionEditorTitle;
+
+  /// No description provided for @imageOcclusionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create cards by covering parts of an image'**
+  String get imageOcclusionSubtitle;
+
+  /// No description provided for @drawOcclusionPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag on image to create mask rectangles'**
+  String get drawOcclusionPrompt;
+
+  /// No description provided for @occlusionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No masks} =1{1 mask (1 card)} other{{count} masks ({count} cards)}}'**
+  String occlusionCount(int count);
+
+  /// No description provided for @deleteOcclusionBox.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete mask'**
+  String get deleteOcclusionBox;
+
+  /// No description provided for @maskLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional label / answer hint...'**
+  String get maskLabelHint;
+
+  /// No description provided for @saveOcclusionCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Cards'**
+  String get saveOcclusionCards;
+
+  /// No description provided for @pickImagePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image'**
+  String get pickImagePrompt;
 }
 
 class _AppLocalizationsDelegate

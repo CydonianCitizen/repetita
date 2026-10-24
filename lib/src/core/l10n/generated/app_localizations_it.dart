@@ -1255,4 +1255,51 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get studyDeckAndSubdecks => 'Studia mazzo + sottomazzi';
+
+  @override
+  String get imageNotFound => 'Immagine non trovata';
+
+  @override
+  String get insertImage => 'Immagine';
+
+  @override
+  String get insertImageTooltip => 'Inserisci immagine nella carta';
+
+  @override
+  String get imageOcclusion => 'Mascheratura Immagine';
+
+  @override
+  String get imageOcclusionEditorTitle => 'Editor Mascheratura Immagine';
+
+  @override
+  String get imageOcclusionSubtitle =>
+      'Crea carte nascondendo parti di un\'immagine';
+
+  @override
+  String get drawOcclusionPrompt =>
+      'Trascina sull\'immagine per disegnare maschere';
+
+  @override
+  String occlusionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count maschere ($count carte)',
+      one: '1 maschera (1 carta)',
+      zero: 'Nessuna maschera',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deleteOcclusionBox => 'Elimina maschera';
+
+  @override
+  String get maskLabelHint => 'Etichetta o indizio opzionale...';
+
+  @override
+  String get saveOcclusionCards => 'Salva carte';
+
+  @override
+  String get pickImagePrompt => 'Seleziona immagine';
 }

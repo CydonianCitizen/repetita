@@ -11,6 +11,8 @@ import '../../../../core/algorithms/type_in/type_in_differ.dart';
 import '../../../../core/l10n/generated/app_localizations.dart';
 import '../../../../core/utils/text_direction_utils.dart';
 import '../../../cards/domain/card_entity.dart';
+import '../../../media/presentation/widgets/media_image_widget.dart';
+import '../../../media/utils/media_content_renderer.dart';
 import '../../../settings/presentation/controllers/animation_level_controller.dart';
 import '../controllers/type_in_controller.dart';
 
@@ -81,6 +83,30 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
     _answerSegments = ClozeParser.getAnswerSegments(
       widget.card.front,
       activeIndex: activeIndex,
+    );
+  }
+
+  Widget _buildMediaImages(String content) {
+    final fileNames = MediaContentRenderer.extractMediaFilenames(content);
+    if (fileNames.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: fileNames.map((fileName) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 260),
+              child: MediaImageWidget(
+                mediaReference: fileName,
+                fit: BoxFit.contain,
+                enableZoom: true,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -264,7 +290,9 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                           key: const Key('card_front_text'),
                         )
                       : Text(
-                          widget.card.front,
+                          MediaContentRenderer.stripMediaTags(
+                            widget.card.front,
+                          ),
                           key: const Key('card_front_text'),
                           style: theme.textTheme.headlineSmall?.copyWith(
                             color: colorScheme.onSurface,
@@ -274,6 +302,7 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                         ),
                 ),
               ),
+              _buildMediaImages(widget.card.front),
               if (typeInEnabled) ...[
                 const SizedBox(height: 20),
                 Directionality(
@@ -397,7 +426,9 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
             ),
             const SizedBox(height: 16),
             Text(
-              isCloze ? _promptText : widget.card.front,
+              isCloze
+                  ? _promptText
+                  : MediaContentRenderer.stripMediaTags(widget.card.front),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -445,7 +476,7 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                         key: const Key('card_back_text'),
                       )
                     : Text(
-                        widget.card.back,
+                        MediaContentRenderer.stripMediaTags(widget.card.back),
                         key: const Key('card_back_text'),
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: colorScheme.onSurface,
@@ -456,6 +487,7 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                       ),
               ),
             ),
+            _buildMediaImages(widget.card.back),
             if (diff != null) ...[
               const SizedBox(height: 16),
               Container(

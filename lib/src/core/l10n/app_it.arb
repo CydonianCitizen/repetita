@@ -517,4 +517,17 @@
   "cardsFoundCount": "{count, plural, =0{Nessuna carta trovata} =1{1 carta trovata} other{{count} carte trovate}}",
   "subdecksCount": "{count, plural, =1{1 sottomazzo} other{{count} sottomazzi}}",
   "studyDeckAndSubdecks": "Studia mazzo + sottomazzi"
+,
+  "imageNotFound": "Immagine non trovata",
+  "insertImage": "Immagine",
+  "insertImageTooltip": "Inserisci immagine nella carta",
+  "imageOcclusion": "Mascheratura Immagine",
+  "imageOcclusionEditorTitle": "Editor Mascheratura Immagine",
+  "imageOcclusionSubtitle": "Crea carte nascondendo parti di un'immagine",
+  "drawOcclusionPrompt": "Trascina sull'immagine per disegnare maschere",
+  "occlusionCount": "{count, plural, =0{Nessuna maschera} =1{1 maschera (1 carta)} other{{count} maschere ({count} carte)}}",
+  "deleteOcclusionBox": "Elimina maschera",
+  "maskLabelHint": "Etichetta o indizio opzionale...",
+  "saveOcclusionCards": "Salva carte",
+  "pickImagePrompt": "Seleziona immagine"
 }

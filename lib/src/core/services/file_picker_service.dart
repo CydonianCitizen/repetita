@@ -33,6 +33,21 @@ class PickedFileResult {
 class FilePickerService {
   const FilePickerService();
 
+  Future<PickedFileResult?> pickImage() async {
+    final file = await FilePicker.pickFile(type: FileType.image);
+    if (file == null) return null;
+    return PickedFileResult(
+      name: file.name,
+      path: file.path,
+      bytesReader: () async {
+        if (file.path != null) {
+          return File(file.path!).readAsBytes();
+        }
+        return file.xFile.readAsBytes();
+      },
+    );
+  }
+
   Future<PickedFileResult?> pickFile({List<String>? allowedExtensions}) async {
     final file = await FilePicker.pickFile(
       type: allowedExtensions != null ? FileType.custom : FileType.any,

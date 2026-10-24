@@ -9,26 +9,24 @@ import '../../../../core/database/app_database.dart';
 import '../media_dao.dart';
 
 class MediaService {
-  MediaService({
-    required this.mediaDao,
-    Directory? mediaDirectory,
-  }) : _mediaDirectoryOverride = mediaDirectory;
+  MediaService({required this.mediaDao, this.mediaDirectory});
 
   final MediaDao mediaDao;
-  final Directory? _mediaDirectoryOverride;
+  Directory? mediaDirectory;
 
   Future<Directory> getMediaDirectory() async {
-    if (_mediaDirectoryOverride != null) {
-      if (!await _mediaDirectoryOverride.exists()) {
-        await _mediaDirectoryOverride.create(recursive: true);
+    if (mediaDirectory != null) {
+      if (!mediaDirectory!.existsSync()) {
+        mediaDirectory!.createSync(recursive: true);
       }
-      return _mediaDirectoryOverride;
+      return mediaDirectory!;
     }
     final appDocDir = await getApplicationDocumentsDirectory();
     final mediaDir = Directory(p.join(appDocDir.path, 'media'));
-    if (!await mediaDir.exists()) {
-      await mediaDir.create(recursive: true);
+    if (!mediaDir.existsSync()) {
+      mediaDir.createSync(recursive: true);
     }
+    mediaDirectory = mediaDir;
     return mediaDir;
   }
 
@@ -49,9 +47,8 @@ class MediaService {
     // Check if media with identical checksum already exists
     final existing = await mediaDao.getMediaByChecksum(checksum);
     if (existing != null) {
-      final mediaDir = await getMediaDirectory();
-      final existingFile = File(p.join(mediaDir.path, existing.fileName));
-      if (await existingFile.exists()) {
+      final existingFile = getMediaFile(existing.fileName);
+      if (existingFile.existsSync()) {
         return existing;
       }
     }
@@ -60,9 +57,9 @@ class MediaService {
     final sanitizedExt = ext.isNotEmpty ? ext : '.png';
     final fileName = '${checksum.substring(0, 16)}$sanitizedExt';
 
-    final mediaDir = await getMediaDirectory();
-    final targetFile = File(p.join(mediaDir.path, fileName));
-    await targetFile.writeAsBytes(bytes);
+    await getMediaDirectory();
+    final targetFile = getMediaFile(fileName);
+    targetFile.writeAsBytesSync(bytes);
 
     final mediaId = await mediaDao.insertMedia(
       MediaCompanion.insert(
@@ -82,22 +79,25 @@ class MediaService {
     return saveImageBytes(bytes, originalFileName: name);
   }
 
-  /// Resolves a file reference (e.g. "image.png" or "media://image.png") to a local File.
-  Future<File> getMediaFile(String mediaReference) async {
+  /// Resolves a file reference (e.g. "image.png" or "media://image.png") to a local File synchronously.
+  File getMediaFile(String mediaReference) {
     final cleanName = mediaReference.startsWith('media://')
         ? mediaReference.substring('media://'.length)
         : mediaReference;
-    final mediaDir = await getMediaDirectory();
-    return File(p.join(mediaDir.path, cleanName));
+
+    if (mediaDirectory != null) {
+      return File(p.join(mediaDirectory!.path, cleanName));
+    }
+    return File(cleanName);
   }
 
   /// Deletes a media file and database entry.
   Future<void> deleteMedia(int id) async {
     final media = await mediaDao.getMediaById(id);
     if (media != null) {
-      final file = await getMediaFile(media.fileName);
-      if (await file.exists()) {
-        await file.delete();
+      final file = getMediaFile(media.fileName);
+      if (file.existsSync()) {
+        file.deleteSync();
       }
       await mediaDao.deleteMedia(id);
     }
