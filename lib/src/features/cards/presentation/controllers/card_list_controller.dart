@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/algorithms/image_occlusion/image_occlusion_box.dart';
+import '../../../../core/algorithms/image_occlusion/image_occlusion_parser.dart';
 import '../../../../core/database/database_provider.dart';
 import '../../../tags/presentation/controllers/tags_controller.dart';
 import '../../data/cards_dao.dart';
@@ -125,6 +127,43 @@ class CardListController extends _$CardListController {
           front: front,
           back: back,
           clozeIndex: idx,
+          noteId: sharedNoteId,
+        );
+        if (tagIds.isNotEmpty) {
+          await tagsDao.setCardTags(cardId, tagIds);
+        }
+        cardIds.add(cardId);
+      }
+      return cardIds;
+    });
+  }
+
+  Future<List<int>> createImageOcclusionCards({
+    required String mediaReference,
+    required List<ImageOcclusionBox> boxes,
+    String backNotes = '',
+    List<int> tagIds = const [],
+    int? noteId,
+  }) async {
+    final dao = ref.read(cardsDaoProvider);
+    final tagsDao = ref.read(tagsDaoProvider);
+    final sharedNoteId =
+        noteId ?? DateTime.now().toUtc().microsecondsSinceEpoch;
+    return dao.attachedDatabase.transaction(() async {
+      final cardIds = <int>[];
+      for (final box in boxes) {
+        final front = ImageOcclusionParser.encode(
+          mediaReference: mediaReference,
+          activeBoxId: box.id,
+          boxes: boxes,
+        );
+        final back = box.label != null && box.label!.isNotEmpty
+            ? (backNotes.isNotEmpty ? '${box.label}\n\n$backNotes' : box.label!)
+            : backNotes;
+        final cardId = await dao.createCard(
+          deckId: deckId,
+          front: front,
+          back: back,
           noteId: sharedNoteId,
         );
         if (tagIds.isNotEmpty) {

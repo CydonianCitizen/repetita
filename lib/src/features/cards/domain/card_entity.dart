@@ -1,4 +1,5 @@
 import '../../../core/algorithms/cloze/cloze_parser.dart';
+import '../../../core/algorithms/image_occlusion/image_occlusion_parser.dart';
 import '../../../core/algorithms/fsrs/models/fsrs_card.dart';
 import '../../../core/algorithms/fsrs/models/fsrs_models.dart';
 
@@ -44,6 +45,8 @@ class CardEntity {
   final int? noteId;
 
   bool get isCloze => ClozeParser.isCloze(front);
+
+  bool get isImageOcclusion => ImageOcclusionParser.isImageOcclusion(front);
 
   int get activeClozeIndex =>
       clozeIndex ?? (ClozeParser.extractClozeIndices(front).firstOrNull ?? 1);
