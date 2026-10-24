@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:repetita/src/core/database/app_database.dart';
 import 'package:repetita/src/core/database/database_provider.dart';
 import 'package:repetita/src/features/cards/presentation/card_editor_screen.dart';
+import 'package:repetita/src/features/cards/presentation/widgets/card_content_renderer.dart';
 
 void main() {
   late AppDatabase db;
@@ -256,6 +257,29 @@ void main() {
 
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(milliseconds: 50));
+    });
+
+    testWidgets('tapping preview button shows rendered card preview dialog', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildSubject(
+        initialFront: r'Formula $E=mc^2$',
+        initialBack: '**Energy** is mass times speed of light squared',
+      ));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('open_editor_button')));
+      await tester.pumpAndSettle();
+
+      final previewBtn = find.byKey(const Key('preview_card_button'));
+      expect(previewBtn, findsOneWidget);
+      await tester.tap(previewBtn);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Anteprima Carta'), findsOneWidget);
+      expect(find.byType(CardContentRenderer), findsNWidgets(2));
+      await tester.tap(find.text('Chiudi'));
+      await tester.pumpAndSettle();
     });
   });
 }

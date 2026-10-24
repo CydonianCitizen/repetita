@@ -17,6 +17,7 @@ import '../../tags/domain/tag_entity.dart';
 import '../../tags/presentation/controllers/tags_controller.dart';
 import 'controllers/card_list_controller.dart';
 import 'image_occlusion_editor_screen.dart';
+import 'widgets/card_content_renderer.dart';
 
 class CardEditorScreen extends ConsumerStatefulWidget {
   const CardEditorScreen({
@@ -516,6 +517,67 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
     }
   }
 
+  void _showPreview(BuildContext context) {
+    final front = _frontController.text.trim();
+    final back = _backController.text.trim();
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.visibility_outlined, size: 20),
+            SizedBox(width: 8),
+            Text('Anteprima Carta'),
+          ],
+        ),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'FRONTE',
+                  style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(ctx).colorScheme.primary,
+                      ),
+                ),
+                const SizedBox(height: 6),
+                CardContentRenderer(
+                  content: front.isEmpty ? '(Vuoto)' : front,
+                  textStyle: Theme.of(ctx).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                Text(
+                  'RETRO',
+                  style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(ctx).colorScheme.secondary,
+                      ),
+                ),
+                const SizedBox(height: 6),
+                CardContentRenderer(
+                  content: back.isEmpty ? '(Vuoto)' : back,
+                  textStyle: Theme.of(ctx).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Chiudi'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -550,7 +612,17 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
           }
         },
         child: Scaffold(
-          appBar: AppBar(title: Text(title)),
+          appBar: AppBar(
+            title: Text(title),
+            actions: [
+              IconButton(
+                key: const Key('preview_card_button'),
+                icon: const Icon(Icons.visibility_outlined),
+                tooltip: 'Anteprima Math & Markdown',
+                onPressed: () => _showPreview(context),
+              ),
+            ],
+          ),
           body: SafeArea(
             child: Center(
               child: ConstrainedBox(

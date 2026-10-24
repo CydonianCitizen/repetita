@@ -12,6 +12,7 @@ import '../../../../core/l10n/generated/app_localizations.dart';
 import '../../../../core/utils/text_direction_utils.dart';
 import '../../../../core/algorithms/image_occlusion/image_occlusion_parser.dart';
 import '../../../cards/domain/card_entity.dart';
+import '../../../cards/presentation/widgets/card_content_renderer.dart';
 import 'image_occlusion_card_view.dart';
 import '../../../media/presentation/widgets/media_image_widget.dart';
 import '../../../media/utils/media_content_renderer.dart';
@@ -310,16 +311,19 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                             ),
                           ],
                         )
-                      : Text(
-                          MediaContentRenderer.stripMediaTags(
+                      : CardContentRenderer(
+                          content: MediaContentRenderer.stripMediaTags(
                             widget.card.front,
                           ),
                           key: const Key('card_front_text'),
-                          style: theme.textTheme.headlineSmall?.copyWith(
+                          textStyle: theme.textTheme.headlineSmall?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: FontWeight.w600,
                             height: 1.4,
                           ),
+                          textAlign: promptDirection == TextDirection.rtl
+                              ? TextAlign.right
+                              : TextAlign.start,
                         ),
                 ),
               ),
@@ -508,14 +512,17 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                           ),
                           if (widget.card.back.isNotEmpty) ...[
                             const SizedBox(height: 12),
-                            Text(
-                              MediaContentRenderer.stripMediaTags(
+                            CardContentRenderer(
+                              content: MediaContentRenderer.stripMediaTags(
                                 widget.card.back,
                               ),
                               key: const Key('card_back_text'),
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                              textStyle: theme.textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
+                              textAlign: answerDirection == TextDirection.rtl
+                                  ? TextAlign.right
+                                  : TextAlign.start,
                             ),
                           ] else
                             const SizedBox(
@@ -525,15 +532,20 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                             ),
                         ],
                       )
-                    : Text(
-                        MediaContentRenderer.stripMediaTags(widget.card.back),
+                    : CardContentRenderer(
+                        content: MediaContentRenderer.stripMediaTags(
+                          widget.card.back,
+                        ),
                         key: const Key('card_back_text'),
-                        style: theme.textTheme.titleMedium?.copyWith(
+                        textStyle: theme.textTheme.titleMedium?.copyWith(
                           color: colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
                           fontSize: 18,
                           height: 1.5,
                         ),
+                        textAlign: answerDirection == TextDirection.rtl
+                            ? TextAlign.right
+                            : TextAlign.start,
                       ),
               ),
             ),
