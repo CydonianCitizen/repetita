@@ -1,4 +1,5 @@
 import '../../../core/services/file_picker_service.dart';
+import '../../../core/database/app_database.dart' show MediaData;
 
 import 'package:flutter/material.dart';
 
@@ -147,18 +148,23 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
     );
   }
 
-  Future<void> _pickAndInsertImage(TextEditingController controller) async {
+  Future<MediaData?> _pickAndSaveImage() async {
     final picker = ref.read(filePickerServiceProvider);
     final picked = await picker.pickImage();
-    if (picked == null) return;
+    if (picked == null) return null;
     final bytes = await picked.readBytes();
-    if (bytes.isEmpty) return;
+    if (bytes.isEmpty) return null;
 
     final mediaService = ref.read(mediaServiceProvider);
-    final media = await mediaService.saveImageBytes(
+    return mediaService.saveImageBytes(
       bytes,
       originalFileName: picked.name,
     );
+  }
+
+  Future<void> _pickAndInsertImage(TextEditingController controller) async {
+    final media = await _pickAndSaveImage();
+    if (media == null) return;
 
     final insertTag = '![alt](media://${media.fileName})';
     final text = controller.text;
@@ -259,19 +265,8 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
   }
 
   Future<void> _openImageOcclusionEditor() async {
-    final picker = ref.read(filePickerServiceProvider);
-    final picked = await picker.pickImage();
-    if (picked == null) return;
-    final bytes = await picked.readBytes();
-    if (bytes.isEmpty) return;
-
-    final mediaService = ref.read(mediaServiceProvider);
-    final media = await mediaService.saveImageBytes(
-      bytes,
-      originalFileName: picked.name,
-    );
-
-    if (!mounted) return;
+    final media = await _pickAndSaveImage();
+    if (media == null || !mounted) return;
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (context) => ImageOcclusionEditorScreen(
@@ -520,14 +515,15 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
   void _showPreview(BuildContext context) {
     final front = _frontController.text.trim();
     final back = _backController.text.trim();
+    final l10n = AppLocalizations.of(context);
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.visibility_outlined, size: 20),
-            SizedBox(width: 8),
-            Text('Anteprima Carta'),
+            const Icon(Icons.visibility_outlined, size: 20),
+            const SizedBox(width: 8),
+            Text(l10n?.cardPreviewTitle ?? 'Card Preview'),
           ],
         ),
         content: ConstrainedBox(
@@ -538,7 +534,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'FRONTE',
+                  l10n?.previewFront ?? 'FRONT',
                   style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(ctx).colorScheme.primary,
@@ -546,14 +542,15 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                 ),
                 const SizedBox(height: 6),
                 CardContentRenderer(
-                  content: front.isEmpty ? '(Vuoto)' : front,
+                  content:
+                      front.isEmpty ? (l10n?.emptyField ?? '(Empty)') : front,
                   textStyle: Theme.of(ctx).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 16),
                 const Divider(),
                 const SizedBox(height: 8),
                 Text(
-                  'RETRO',
+                  l10n?.previewBack ?? 'BACK',
                   style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(ctx).colorScheme.secondary,
@@ -561,7 +558,8 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                 ),
                 const SizedBox(height: 6),
                 CardContentRenderer(
-                  content: back.isEmpty ? '(Vuoto)' : back,
+                  content:
+                      back.isEmpty ? (l10n?.emptyField ?? '(Empty)') : back,
                   textStyle: Theme.of(ctx).textTheme.bodyLarge,
                 ),
               ],
@@ -571,7 +569,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Chiudi'),
+            child: Text(l10n?.close ?? 'Close'),
           ),
         ],
       ),
@@ -618,7 +616,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
               IconButton(
                 key: const Key('preview_card_button'),
                 icon: const Icon(Icons.visibility_outlined),
-                tooltip: 'Anteprima Math & Markdown',
+                tooltip: l10n?.previewMathMarkdownTooltip ?? 'Preview Math & Markdown',
                 onPressed: () => _showPreview(context),
               ),
             ],

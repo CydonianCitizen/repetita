@@ -108,7 +108,6 @@
   "hapticStrongDesc": "Strong pulse",
   "testHaptic": "Test Haptics",
   "sectionLanguage": "Language & Localization",
-  "selectLanguage": "Select Language",
   "language": "Language",
   "systemLanguageSubtitle": "Follow device system language",
   "english": "English",
@@ -254,7 +253,6 @@
   "addTag": "Add Tag",
   "newTagHint": "Enter tag name...",
   "filterAll": "All",
-  "noTags": "No tags",
   "selectTags": "Select Tags",
   "failedToLoadDecks": "Failed to load decks",
   "deckStatsTitle": "{deckName} Stats",
@@ -486,7 +484,6 @@
     }
   },
   "srsAlgorithm": "SRS Algorithm",
-  "srsAlgorithmDesc": "Select the spaced repetition scheduler for card reviews.",
   "fsrsAlgorithmName": "FSRS (Default)",
   "fsrsAlgorithmDesc": "Modern stability model",
   "sm2AlgorithmName": "SM-2 (Classic)",
@@ -569,7 +566,6 @@
   "timeboxReachedTitle": "Timebox reached",
   "timeboxReachedMessage": "Your session time limit has expired. Would you like to wrap up or continue?",
   "timeboxing": "Session timeboxing",
-  "timeboxingSubtitle": "Set a study session time limit",
   "timeboxMinutes": "{minutes, plural, =0{Disabled} =1{1 minute} other{{minutes} minutes}}",
   "@timeboxMinutes": {
     "placeholders": {
@@ -579,7 +575,6 @@
     }
   },
   "autoAdvance": "Auto-advance",
-  "autoAdvanceSubtitle": "Automatically reveal answer after a delay",
   "autoAdvanceSeconds": "{seconds, plural, =0{Disabled} =1{1 second} other{{seconds} seconds}}",
   "@autoAdvanceSeconds": {
     "placeholders": {
@@ -591,7 +586,6 @@
   "continueStudying": "Continue studying",
   "finishSession": "Finish session",
   "exportAnki": "Export Anki (.apkg)",
-  "exportAnkiDescription": "Export decks to an Anki package (.apkg) compatible with Anki Desktop and AnkiDroid.",
   "exportAllDecksAnki": "Export All Decks (.apkg)",
   "exportDeckAnki": "Export Deck (.apkg)",
   "ankiExportSuccess": "Exported {count} cards to Anki package.",
@@ -605,7 +599,6 @@
   "cardBrowserTitle": "Card Browser",
   "cardBrowserSearchHint": "Search cards, tags, contents...",
   "filterAllDecks": "All Decks",
-  "filterFlag": "Flag",
   "filterSuspended": "Suspended",
   "filterDue": "Due",
   "cardsFoundCount": "{count, plural, =0{No cards found} =1{1 card found} other{{count} cards found}}",
@@ -624,11 +617,8 @@
       }
     }
   },
-  "studyDeckAndSubdecks": "Study Deck + Subdecks"
-,
   "imageNotFound": "Image not found",
   "insertImage": "Image",
-  "insertImageTooltip": "Insert image into card",
   "imageOcclusion": "Image Occlusion",
   "imageOcclusionEditorTitle": "Image Occlusion Editor",
   "imageOcclusionSubtitle": "Create cards by covering parts of an image",
@@ -644,5 +634,32 @@
   "deleteOcclusionBox": "Delete mask",
   "maskLabelHint": "Optional label / answer hint...",
   "saveOcclusionCards": "Save Cards",
-  "pickImagePrompt": "Select Image"
+  "cardPreviewTitle": "Card Preview",
+  "@cardPreviewTitle": {
+    "description": "Title for card preview dialog"
+  },
+  "previewFront": "FRONT",
+  "@previewFront": {
+    "description": "Label for front in preview"
+  },
+  "previewBack": "BACK",
+  "@previewBack": {
+    "description": "Label for back in preview"
+  },
+  "emptyField": "(Empty)",
+  "@emptyField": {
+    "description": "Placeholder when field is empty"
+  },
+  "previewMathMarkdownTooltip": "Preview Math & Markdown",
+  "@previewMathMarkdownTooltip": {
+    "description": "Tooltip for card preview action"
+  },
+  "errorLoadingCards": "Error loading cards",
+  "@errorLoadingCards": {
+    "description": "Title shown when loading cards fails"
+  },
+  "newCardUnreviewed": "New card • Unreviewed",
+  "@newCardUnreviewed": {
+    "description": "Status subtitle for an unreviewed card"
+  }
 }

@@ -34,7 +34,7 @@ final class DeckListControllerProvider
 }
 
 String _$deckListControllerHash() =>
-    r'3efd7f97d879b8a998bc697abe84d2dc318789ba';
+    r'62fd04f213a9ad72033867d1cc63498865373eaf';
 
 abstract class _$DeckListController
     extends $StreamNotifier<List<DeckWithCounts>> {

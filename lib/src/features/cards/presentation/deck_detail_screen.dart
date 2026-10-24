@@ -10,6 +10,7 @@ import '../../../core/theme/card_state_colors.dart';
 import '../../../core/utils/clock_provider.dart';
 import '../../../core/widgets/error_view.dart';
 import '../../backup_transfer/presentation/controllers/backup_controller.dart';
+import '../../decks/presentation/controllers/deck_list_controller.dart';
 import '../../decks/presentation/widgets/exam_plan_card.dart';
 import '../../study_session/presentation/study_screen.dart';
 import '../../study_session/presentation/widgets/custom_study_dialog.dart';
@@ -87,7 +88,7 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Export failed: $e'),
+                      content: Text('${l10n?.exportFailed ?? "Export failed"}: $e'),
                       backgroundColor: Theme.of(context).colorScheme.error,
                     ),
                   );
@@ -122,7 +123,7 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
         child: cardsAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, _) => ErrorView(
-            title: 'Error loading cards',
+            title: l10n?.errorLoadingCards ?? 'Error loading cards',
             error: error,
             onRetry: () =>
                 ref.invalidate(cardListControllerProvider(widget.deck.id)),
@@ -136,16 +137,12 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
             final now = ref.watch(clockProvider)();
             final dueCount = cards.where((c) => c.isDue(now)).length;
 
-            final deckStream = ref
-                .watch(decksDaoProvider)
-                .watchDeckById(widget.deck.id);
+            final currentDeck = ref
+                    .watch(watchDeckProvider(widget.deck.id))
+                    .value ??
+                widget.deck;
 
-            return StreamBuilder<Deck?>(
-              stream: deckStream,
-              initialData: widget.deck,
-              builder: (context, deckSnap) {
-                final currentDeck = deckSnap.data ?? widget.deck;
-                return Column(
+            return Column(
                   children: [
                     _DeckStudyHeader(
                       deck: currentDeck,
@@ -197,8 +194,6 @@ class _DeckDetailScreenState extends ConsumerState<DeckDetailScreen> {
                     ),
                   ],
                 );
-              },
-            );
           },
         ),
       ),
@@ -732,7 +727,7 @@ class _CardTile extends StatelessWidget {
                   children: [
                     if (card.state == 0)
                       Text(
-                        'New card • Unreviewed',
+                        l10n?.newCardUnreviewed ?? 'New card • Unreviewed',
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: scheme.outline,
                         ),

@@ -35,7 +35,7 @@ final class FsrsOptimizerControllerProvider
 }
 
 String _$fsrsOptimizerControllerHash() =>
-    r'5ddf00c81839ec5e095e70d1a67b45ad55c13e8d';
+    r'303c58cbe9166368fd7b1ea8f669171802c4b3c2';
 
 abstract class _$FsrsOptimizerController
     extends $AsyncNotifier<FsrsOptimizerState> {

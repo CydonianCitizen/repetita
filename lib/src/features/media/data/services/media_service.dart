@@ -72,13 +72,6 @@ class MediaService {
     return (await mediaDao.getMediaById(mediaId))!;
   }
 
-  /// Imports an image file into media storage.
-  Future<MediaData> saveImageFile(File file) async {
-    final bytes = await file.readAsBytes();
-    final name = p.basename(file.path);
-    return saveImageBytes(bytes, originalFileName: name);
-  }
-
   /// Resolves a file reference (e.g. "image.png" or "media://image.png") to a local File synchronously.
   File getMediaFile(String mediaReference) {
     final cleanName = mediaReference.startsWith('media://')

@@ -14,13 +14,6 @@ class MediaContentRenderer {
     '][^>]*>',
   );
 
-  /// Checks if [text] contains any media reference.
-  static bool hasMedia(String text) {
-    return markdownImageRegex.hasMatch(text) ||
-        directMediaRegex.hasMatch(text) ||
-        imgTagRegex.hasMatch(text);
-  }
-
   /// Extracts cleaned media file names (without `media://` scheme).
   static List<String> extractMediaFilenames(String text) {
     return extractMediaReferences(text).map((ref) {

@@ -644,12 +644,6 @@ abstract class AppLocalizations {
   /// **'Language & Localization'**
   String get sectionLanguage;
 
-  /// No description provided for @selectLanguage.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Language'**
-  String get selectLanguage;
-
   /// No description provided for @language.
   ///
   /// In en, this message translates to:
@@ -1268,12 +1262,6 @@ abstract class AppLocalizations {
   /// **'All'**
   String get filterAll;
 
-  /// No description provided for @noTags.
-  ///
-  /// In en, this message translates to:
-  /// **'No tags'**
-  String get noTags;
-
   /// No description provided for @selectTags.
   ///
   /// In en, this message translates to:
@@ -1820,12 +1808,6 @@ abstract class AppLocalizations {
   /// **'SRS Algorithm'**
   String get srsAlgorithm;
 
-  /// No description provided for @srsAlgorithmDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Select the spaced repetition scheduler for card reviews.'**
-  String get srsAlgorithmDesc;
-
   /// No description provided for @fsrsAlgorithmName.
   ///
   /// In en, this message translates to:
@@ -2108,12 +2090,6 @@ abstract class AppLocalizations {
   /// **'Session timeboxing'**
   String get timeboxing;
 
-  /// No description provided for @timeboxingSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Set a study session time limit'**
-  String get timeboxingSubtitle;
-
   /// No description provided for @timeboxMinutes.
   ///
   /// In en, this message translates to:
@@ -2125,12 +2101,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Auto-advance'**
   String get autoAdvance;
-
-  /// No description provided for @autoAdvanceSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Automatically reveal answer after a delay'**
-  String get autoAdvanceSubtitle;
 
   /// No description provided for @autoAdvanceSeconds.
   ///
@@ -2155,12 +2125,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export Anki (.apkg)'**
   String get exportAnki;
-
-  /// No description provided for @exportAnkiDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Export decks to an Anki package (.apkg) compatible with Anki Desktop and AnkiDroid.'**
-  String get exportAnkiDescription;
 
   /// No description provided for @exportAllDecksAnki.
   ///
@@ -2222,12 +2186,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 subdeck} other{{count} subdecks}}'**
   String subdecksCount(int count);
 
-  /// No description provided for @studyDeckAndSubdecks.
-  ///
-  /// In en, this message translates to:
-  /// **'Study Deck + Subdecks'**
-  String get studyDeckAndSubdecks;
-
   /// No description provided for @imageNotFound.
   ///
   /// In en, this message translates to:
@@ -2239,12 +2197,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Image'**
   String get insertImage;
-
-  /// No description provided for @insertImageTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Insert image into card'**
-  String get insertImageTooltip;
 
   /// No description provided for @imageOcclusion.
   ///
@@ -2294,11 +2246,47 @@ abstract class AppLocalizations {
   /// **'Save Cards'**
   String get saveOcclusionCards;
 
-  /// No description provided for @pickImagePrompt.
+  /// Title for card preview dialog
   ///
   /// In en, this message translates to:
-  /// **'Select Image'**
-  String get pickImagePrompt;
+  /// **'Card Preview'**
+  String get cardPreviewTitle;
+
+  /// Label for front in preview
+  ///
+  /// In en, this message translates to:
+  /// **'FRONT'**
+  String get previewFront;
+
+  /// Label for back in preview
+  ///
+  /// In en, this message translates to:
+  /// **'BACK'**
+  String get previewBack;
+
+  /// Placeholder when field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'(Empty)'**
+  String get emptyField;
+
+  /// Tooltip for card preview action
+  ///
+  /// In en, this message translates to:
+  /// **'Preview Math & Markdown'**
+  String get previewMathMarkdownTooltip;
+
+  /// Title shown when loading cards fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading cards'**
+  String get errorLoadingCards;
+
+  /// Status subtitle for an unreviewed card
+  ///
+  /// In en, this message translates to:
+  /// **'New card • Unreviewed'**
+  String get newCardUnreviewed;
 }
 
 class _AppLocalizationsDelegate

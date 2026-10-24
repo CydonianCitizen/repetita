@@ -293,9 +293,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionLanguage => 'Language & Localization';
 
   @override
-  String get selectLanguage => 'Select Language';
-
-  @override
   String get language => 'Language';
 
   @override
@@ -629,9 +626,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterAll => 'All';
-
-  @override
-  String get noTags => 'No tags';
 
   @override
   String get selectTags => 'Select Tags';
@@ -973,10 +967,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get srsAlgorithm => 'SRS Algorithm';
 
   @override
-  String get srsAlgorithmDesc =>
-      'Select the spaced repetition scheduler for card reviews.';
-
-  @override
   String get fsrsAlgorithmName => 'FSRS (Default)';
 
   @override
@@ -1148,9 +1138,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeboxing => 'Session timeboxing';
 
   @override
-  String get timeboxingSubtitle => 'Set a study session time limit';
-
-  @override
   String timeboxMinutes(int minutes) {
     String _temp0 = intl.Intl.pluralLogic(
       minutes,
@@ -1164,9 +1151,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get autoAdvance => 'Auto-advance';
-
-  @override
-  String get autoAdvanceSubtitle => 'Automatically reveal answer after a delay';
 
   @override
   String autoAdvanceSeconds(int seconds) {
@@ -1188,10 +1172,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportAnki => 'Export Anki (.apkg)';
-
-  @override
-  String get exportAnkiDescription =>
-      'Export decks to an Anki package (.apkg) compatible with Anki Desktop and AnkiDroid.';
 
   @override
   String get exportAllDecksAnki => 'Export All Decks (.apkg)';
@@ -1243,16 +1223,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get studyDeckAndSubdecks => 'Study Deck + Subdecks';
-
-  @override
   String get imageNotFound => 'Image not found';
 
   @override
   String get insertImage => 'Image';
-
-  @override
-  String get insertImageTooltip => 'Insert image into card';
 
   @override
   String get imageOcclusion => 'Image Occlusion';
@@ -1289,5 +1263,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveOcclusionCards => 'Save Cards';
 
   @override
-  String get pickImagePrompt => 'Select Image';
+  String get cardPreviewTitle => 'Card Preview';
+
+  @override
+  String get previewFront => 'FRONT';
+
+  @override
+  String get previewBack => 'BACK';
+
+  @override
+  String get emptyField => '(Empty)';
+
+  @override
+  String get previewMathMarkdownTooltip => 'Preview Math & Markdown';
+
+  @override
+  String get errorLoadingCards => 'Error loading cards';
+
+  @override
+  String get newCardUnreviewed => 'New card • Unreviewed';
 }

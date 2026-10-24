@@ -52,13 +52,6 @@ class FsrsOptimizerController extends _$FsrsOptimizerController {
     return FsrsOptimizerState(reviewCount: count);
   }
 
-  Future<void> refreshReviewCount() async {
-    final statsDao = ref.read(statsDaoProvider);
-    final count = await statsDao.getTotalReviewsCount();
-    final current = state.value ?? const FsrsOptimizerState();
-    state = AsyncData(current.copyWith(reviewCount: count));
-  }
-
   Future<OptimizationResult?> startOptimization({
     int maxIterations = 40,
     double learningRate = 0.04,

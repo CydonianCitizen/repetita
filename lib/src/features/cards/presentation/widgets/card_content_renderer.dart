@@ -11,13 +11,11 @@ class CardContentRenderer extends StatelessWidget {
     required this.content,
     this.textStyle,
     this.textAlign = TextAlign.start,
-    this.highlightActiveCloze = false,
   });
 
   final String content;
   final TextStyle? textStyle;
   final TextAlign textAlign;
-  final bool highlightActiveCloze;
 
   static final _hasMathOrMarkdown = RegExp(r'(\$|\\\(|\\\[|\*\*|\*|`|~~)');
   static final _displayMathRegex = RegExp(

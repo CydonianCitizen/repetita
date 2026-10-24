@@ -278,9 +278,9 @@ void main() {
       await tester.tap(previewBtn);
       await tester.pumpAndSettle();
 
-      expect(find.text('Anteprima Carta'), findsOneWidget);
+      expect(find.text('Card Preview'), findsOneWidget);
       expect(find.byType(CardContentRenderer), findsNWidgets(2));
-      await tester.tap(find.text('Chiudi'));
+      await tester.tap(find.text('Close'));
       await tester.pumpAndSettle();
     });
   });

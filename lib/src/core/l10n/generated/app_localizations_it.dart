@@ -293,9 +293,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sectionLanguage => 'Lingua e localizzazione';
 
   @override
-  String get selectLanguage => 'Seleziona lingua';
-
-  @override
   String get language => 'Lingua';
 
   @override
@@ -630,9 +627,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get filterAll => 'Tutte';
-
-  @override
-  String get noTags => 'Nessun tag';
 
   @override
   String get selectTags => 'Seleziona Tag';
@@ -982,10 +976,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get srsAlgorithm => 'Algoritmo SRS';
 
   @override
-  String get srsAlgorithmDesc =>
-      'Seleziona l\'algoritmo di ripetizione spaziata per lo studio.';
-
-  @override
   String get fsrsAlgorithmName => 'FSRS (Predefinito)';
 
   @override
@@ -1157,10 +1147,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get timeboxing => 'Timeboxing sessione';
 
   @override
-  String get timeboxingSubtitle =>
-      'Imposta un limite di tempo per la sessione di studio';
-
-  @override
   String timeboxMinutes(int minutes) {
     String _temp0 = intl.Intl.pluralLogic(
       minutes,
@@ -1174,10 +1160,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get autoAdvance => 'Avanzamento automatico';
-
-  @override
-  String get autoAdvanceSubtitle =>
-      'Mostra automaticamente la risposta dopo un intervallo';
 
   @override
   String autoAdvanceSeconds(int seconds) {
@@ -1199,10 +1181,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get exportAnki => 'Esporta Anki (.apkg)';
-
-  @override
-  String get exportAnkiDescription =>
-      'Esporta i mazzi in un pacchetto Anki (.apkg) compatibile con Anki Desktop e AnkiDroid.';
 
   @override
   String get exportAllDecksAnki => 'Esporta tutti i mazzi (.apkg)';
@@ -1254,16 +1232,10 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get studyDeckAndSubdecks => 'Studia mazzo + sottomazzi';
-
-  @override
   String get imageNotFound => 'Immagine non trovata';
 
   @override
   String get insertImage => 'Immagine';
-
-  @override
-  String get insertImageTooltip => 'Inserisci immagine nella carta';
 
   @override
   String get imageOcclusion => 'Mascheratura Immagine';
@@ -1301,5 +1273,23 @@ class AppLocalizationsIt extends AppLocalizations {
   String get saveOcclusionCards => 'Salva carte';
 
   @override
-  String get pickImagePrompt => 'Seleziona immagine';
+  String get cardPreviewTitle => 'Anteprima carta';
+
+  @override
+  String get previewFront => 'FRONTE';
+
+  @override
+  String get previewBack => 'RETRO';
+
+  @override
+  String get emptyField => '(Vuoto)';
+
+  @override
+  String get previewMathMarkdownTooltip => 'Anteprima Math & Markdown';
+
+  @override
+  String get errorLoadingCards => 'Errore nel caricamento delle carte';
+
+  @override
+  String get newCardUnreviewed => 'Nuova carta • Non studiata';
 }
