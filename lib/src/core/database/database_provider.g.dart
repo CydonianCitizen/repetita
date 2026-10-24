@@ -303,6 +303,88 @@ final class TagsDaoProvider
 
 String _$tagsDaoHash() => r'caeb7b9a777c785f6eb216a680197de9e1db1cb8';
 
+@ProviderFor(mediaDao)
+final mediaDaoProvider = MediaDaoProvider._();
+
+final class MediaDaoProvider
+    extends $FunctionalProvider<MediaDao, MediaDao, MediaDao>
+    with $Provider<MediaDao> {
+  MediaDaoProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mediaDaoProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mediaDaoHash();
+
+  @$internal
+  @override
+  $ProviderElement<MediaDao> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  MediaDao create(Ref ref) {
+    return mediaDao(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MediaDao value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MediaDao>(value),
+    );
+  }
+}
+
+String _$mediaDaoHash() => r'b4060778524d36c2ddcc0d4aab746e10b4c937c4';
+
+@ProviderFor(mediaService)
+final mediaServiceProvider = MediaServiceProvider._();
+
+final class MediaServiceProvider
+    extends $FunctionalProvider<MediaService, MediaService, MediaService>
+    with $Provider<MediaService> {
+  MediaServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mediaServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mediaServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<MediaService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  MediaService create(Ref ref) {
+    return mediaService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MediaService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MediaService>(value),
+    );
+  }
+}
+
+String _$mediaServiceHash() => r'e831e6d17038e9da4e9f576a922e76ee1e53afc4';
+
 @ProviderFor(backupService)
 final backupServiceProvider = BackupServiceProvider._();
 

@@ -6,6 +6,8 @@ import '../../features/backup_transfer/data/services/backup_service.dart';
 import '../../features/backup_transfer/data/services/rolling_backup_service.dart';
 import '../../features/cards/data/cards_dao.dart';
 import '../../features/decks/data/decks_dao.dart';
+import '../../features/media/data/media_dao.dart';
+import '../../features/media/data/services/media_service.dart';
 import '../../features/stats/data/stats_dao.dart';
 import '../../features/study_session/data/study_session_dao.dart';
 import '../../features/tags/data/tags_dao.dart';
@@ -40,6 +42,13 @@ StatsDao statsDao(Ref ref) => ref.watch(databaseProvider).statsDao;
 
 @Riverpod(keepAlive: true)
 TagsDao tagsDao(Ref ref) => ref.watch(databaseProvider).tagsDao;
+
+@Riverpod(keepAlive: true)
+MediaDao mediaDao(Ref ref) => ref.watch(databaseProvider).mediaDao;
+
+@Riverpod(keepAlive: true)
+MediaService mediaService(Ref ref) =>
+    MediaService(mediaDao: ref.watch(mediaDaoProvider));
 
 @Riverpod(keepAlive: true)
 BackupService backupService(Ref ref) =>

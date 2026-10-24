@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../features/cards/data/cards_dao.dart';
 import '../../features/decks/data/decks_dao.dart';
+import '../../features/media/data/media_dao.dart';
 import '../../features/stats/data/stats_dao.dart';
 import '../../features/study_session/data/study_session_dao.dart';
 import '../../features/tags/data/tags_dao.dart';
@@ -15,8 +16,8 @@ import 'tables.dart';
 part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [Decks, Cards, ReviewLogs, Tags, CardTags, AppSettings],
-  daos: [DecksDao, CardsDao, StudySessionDao, StatsDao, TagsDao],
+  tables: [Decks, Cards, ReviewLogs, Tags, CardTags, AppSettings, Media],
+  daos: [DecksDao, CardsDao, StudySessionDao, StatsDao, TagsDao, MediaDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -24,7 +25,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration {
@@ -79,6 +80,12 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(cards, cards.noteId);
           await customStatement(
             'CREATE INDEX IF NOT EXISTS idx_cards_note_id ON cards (note_id)',
+          );
+        }
+        if (from < 9) {
+          await m.createTable(media);
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_media_checksum ON media (checksum)',
           );
         }
       },

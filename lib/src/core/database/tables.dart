@@ -78,3 +78,12 @@ class AppSettings extends Table {
   @override
   Set<Column> get primaryKey => {key};
 }
+
+@TableIndex(name: 'idx_media_checksum', columns: {#checksum})
+class Media extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get fileName => text()();
+  TextColumn get checksum => text().withLength(min: 64, max: 64)();
+  IntColumn get sizeBytes => integer()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
