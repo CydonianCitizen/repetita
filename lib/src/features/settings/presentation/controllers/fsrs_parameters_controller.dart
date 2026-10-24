@@ -9,6 +9,7 @@ part 'fsrs_parameters_controller.g.dart';
 class FsrsParametersController extends _$FsrsParametersController {
   static const _retentionKey = 'fsrs_request_retention';
   static const _maxIntervalKey = 'fsrs_maximum_interval';
+  static const _customWeightsKey = 'fsrs_custom_weights';
 
   Future<void>? _loadFuture;
 
@@ -24,6 +25,7 @@ class FsrsParametersController extends _$FsrsParametersController {
     final db = ref.read(databaseProvider);
     final retentionStr = await db.getSetting(_retentionKey);
     final maxIntervalStr = await db.getSetting(_maxIntervalKey);
+    final customWeightsStr = await db.getSetting(_customWeightsKey);
 
     final retention = retentionStr != null
         ? double.tryParse(retentionStr) ?? 0.9
@@ -31,23 +33,23 @@ class FsrsParametersController extends _$FsrsParametersController {
     final maxInterval = maxIntervalStr != null
         ? int.tryParse(maxIntervalStr) ?? 36500
         : 36500;
+    final customWeights = FsrsParameters.decodeWeights(customWeightsStr);
 
-    if (retention != 0.9 || maxInterval != 36500) {
+    if (retention != 0.9 ||
+        maxInterval != 36500 ||
+        customWeights != null) {
       if (ref.mounted) {
         state = FsrsParameters(
           requestRetention: retention,
           maximumInterval: maxInterval,
+          w: customWeights ?? FsrsParameters.defaultWeights,
         );
       }
     }
   }
 
   Future<void> setRequestRetention(double retention) async {
-    state = FsrsParameters(
-      requestRetention: retention,
-      maximumInterval: state.maximumInterval,
-      w: state.w,
-    );
+    state = state.copyWith(requestRetention: retention);
     try {
       await ref
           .read(databaseProvider)
@@ -58,15 +60,32 @@ class FsrsParametersController extends _$FsrsParametersController {
   }
 
   Future<void> setMaximumInterval(int maxInterval) async {
-    state = FsrsParameters(
-      requestRetention: state.requestRetention,
-      maximumInterval: maxInterval,
-      w: state.w,
-    );
+    state = state.copyWith(maximumInterval: maxInterval);
     try {
       await ref
           .read(databaseProvider)
           .setSetting(_maxIntervalKey, maxInterval.toString());
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  Future<void> setCustomWeights(List<double> weights) async {
+    state = state.copyWith(w: weights);
+    try {
+      await ref.read(databaseProvider).setSetting(
+            _customWeightsKey,
+            FsrsParameters.encodeWeights(weights),
+          );
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  Future<void> resetWeightsToDefault() async {
+    state = state.copyWith(w: FsrsParameters.defaultWeights);
+    try {
+      await ref.read(databaseProvider).setSetting(_customWeightsKey, '');
     } catch (e) {
       // ignore
     }
@@ -78,6 +97,7 @@ class FsrsParametersController extends _$FsrsParametersController {
     try {
       await db.setSetting(_retentionKey, '0.9');
       await db.setSetting(_maxIntervalKey, '36500');
+      await db.setSetting(_customWeightsKey, '');
     } catch (e) {
       // ignore
     }

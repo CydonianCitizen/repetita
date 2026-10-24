@@ -14,6 +14,7 @@ import '../controllers/srs_algorithm_controller.dart';
 import '../controllers/vacation_mode_controller.dart';
 import '../dialogs/fsrs_settings_dialog.dart';
 import '../dialogs/reminder_dialog.dart';
+import '../widgets/fsrs_optimizer_card.dart';
 import '../widgets/section_header.dart';
 import '../widgets/settings_card.dart';
 import '../widgets/settings_tile.dart';
@@ -284,6 +285,22 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
                   },
                 ),
               ],
+            ),
+            Consumer(
+              builder: (context, ref, _) {
+                final currentAlgo = ref.watch(srsAlgorithmControllerProvider);
+                if (currentAlgo != SrsAlgorithm.fsrs) {
+                  return const SizedBox.shrink();
+                }
+                return const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20),
+                    SectionHeader(title: 'FSRS OPTIMIZER ON-DEVICE'),
+                    FsrsOptimizerCard(),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 20),
             SectionHeader(

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../../../core/algorithms/fsrs/optimizer/fsrs_optimizer_models.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/database/tables.dart';
 import '../domain/stats_models.dart';
@@ -384,5 +385,28 @@ class StatsDao extends DatabaseAccessor<AppDatabase> with _$StatsDaoMixin {
       goodCount: row.read(goodExp) ?? 0,
       easyCount: row.read(easyExp) ?? 0,
     );
+  }
+
+  Future<List<CardReviewHistory>> getCardReviewHistories() async {
+    final rows = await (select(reviewLogs)
+          ..orderBy([
+            (t) => OrderingTerm.asc(t.cardId),
+            (t) => OrderingTerm.asc(t.reviewedAt),
+          ]))
+        .get();
+
+    final grouped = <int, List<ReviewHistoryItem>>{};
+    for (final row in rows) {
+      grouped.putIfAbsent(row.cardId, () => []).add(
+            ReviewHistoryItem(
+              rating: row.rating,
+              elapsedDays: row.elapsedDays.toDouble(),
+            ),
+          );
+    }
+
+    return grouped.entries
+        .map((e) => CardReviewHistory(cardId: e.key, reviews: e.value))
+        .toList();
   }
 }

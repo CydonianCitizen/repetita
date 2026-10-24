@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+
 class FsrsParameters {
   const FsrsParameters({
     this.requestRetention = 0.9,
@@ -10,6 +13,35 @@ class FsrsParameters {
   final int maximumInterval;
   final List<double> w;
   final bool enableFuzz;
+
+  bool get hasCustomWeights => !listEquals(w, defaultWeights);
+
+  static String encodeWeights(List<double> weights) => jsonEncode(weights);
+
+  static List<double>? decodeWeights(String? jsonStr) {
+    if (jsonStr == null || jsonStr.trim().isEmpty) return null;
+    try {
+      final decoded = jsonDecode(jsonStr);
+      if (decoded is List && decoded.length == 17) {
+        return decoded.map((e) => (e as num).toDouble()).toList();
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  FsrsParameters copyWith({
+    double? requestRetention,
+    int? maximumInterval,
+    List<double>? w,
+    bool? enableFuzz,
+  }) {
+    return FsrsParameters(
+      requestRetention: requestRetention ?? this.requestRetention,
+      maximumInterval: maximumInterval ?? this.maximumInterval,
+      w: w ?? this.w,
+      enableFuzz: enableFuzz ?? this.enableFuzz,
+    );
+  }
 
   static const List<double> defaultWeights = <double>[
     0.4,

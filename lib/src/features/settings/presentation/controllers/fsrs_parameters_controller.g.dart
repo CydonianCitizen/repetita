@@ -42,7 +42,7 @@ final class FsrsParametersControllerProvider
 }
 
 String _$fsrsParametersControllerHash() =>
-    r'92b17dd67422c785b54f3a7060ce9f79312e20cd';
+    r'9eee3506e5f40e2236dfa9d1e7ba86f896e7146b';
 
 abstract class _$FsrsParametersController extends $Notifier<FsrsParameters> {
   FsrsParameters build();
