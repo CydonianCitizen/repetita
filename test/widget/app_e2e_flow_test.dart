@@ -10,6 +10,7 @@ import 'package:repetita/src/features/cards/presentation/card_editor_screen.dart
 import 'package:repetita/src/features/cards/presentation/deck_detail_screen.dart';
 import 'package:repetita/src/features/settings/presentation/settings_screen.dart';
 import 'package:repetita/src/features/stats/presentation/stats_screen.dart';
+import 'package:repetita/src/features/stats/presentation/widgets/metric_summary_card.dart';
 import 'package:repetita/src/features/study_session/presentation/study_screen.dart';
 
 void main() {
@@ -140,7 +141,13 @@ void main() {
       await pumpFrames(tester);
 
       expect(find.byType(StatsScreen), findsOneWidget);
-      expect(find.text('100%'), findsOneWidget); // 1 Good rating -> 100%
+      expect(
+        find.descendant(
+          of: find.byType(MetricSummaryCard),
+          matching: find.text('100%'),
+        ),
+        findsOneWidget,
+      ); // 1 Good rating -> 100% in MetricSummaryCard
       expect(find.text('Retention'), findsOneWidget);
       expect(find.text('1'), findsWidgets); // 1 review
       expect(find.text('Reviews'), findsOneWidget);
