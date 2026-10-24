@@ -506,5 +506,45 @@ void main() {
         await tester.pump(const Duration(milliseconds: 50));
       },
     );
+    testWidgets(
+      'tapping whiteboard button in AppBar opens and closes whiteboard overlay',
+      (tester) async {
+        await db.cardsDao.createCard(
+          deckId: testDeckId,
+          front: 'Whiteboard Question',
+          back: 'Whiteboard Answer',
+        );
+
+        await tester.pumpWidget(buildSubject());
+        for (int i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        expect(
+          find.byKey(const Key('study_whiteboard_button')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('whiteboard_container')), findsNothing);
+
+        // Open whiteboard
+        await tester.tap(find.byKey(const Key('study_whiteboard_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('whiteboard_container')), findsOneWidget);
+        expect(
+          find.byKey(const Key('whiteboard_clear_button')),
+          findsOneWidget,
+        );
+
+        // Close whiteboard via AppBar button
+        await tester.tap(find.byKey(const Key('study_whiteboard_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('whiteboard_container')), findsNothing);
+
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(milliseconds: 50));
+      },
+    );
   });
 }

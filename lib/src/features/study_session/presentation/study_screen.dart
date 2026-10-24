@@ -23,6 +23,8 @@ import 'controllers/type_in_controller.dart';
 import 'controllers/autoplay_audio_controller.dart';
 import '../../media/data/services/audio_playback_service.dart';
 import '../../media/data/services/audio_service.dart';
+import 'controllers/whiteboard_controller.dart';
+import 'widgets/whiteboard_canvas.dart';
 import 'widgets/flip_card_view.dart';
 import 'widgets/rating_bar.dart';
 
@@ -44,10 +46,12 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
   Timer? _autoAdvanceTimer;
   int? _lastAutoCardId;
   bool _timeboxTriggered = false;
+  AudioPlaybackService? _audioPlaybackService;
 
   @override
   void initState() {
     super.initState();
+    _audioPlaybackService = ref.read(audioPlaybackServiceProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initTimebox();
     });
@@ -109,7 +113,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
   void dispose() {
     _timeboxTimer?.cancel();
     _autoAdvanceTimer?.cancel();
-    ref.read(audioPlaybackServiceProvider).stop();
+    _audioPlaybackService?.stop();
     super.dispose();
   }
 
@@ -157,6 +161,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
 
       if (prevCardId != nextCardId) {
         ref.read(audioPlaybackServiceProvider).stop();
+        ref.read(whiteboardControllerProvider.notifier).clear();
       }
 
       final autoPlay = ref.read(autoPlayAudioControllerProvider);
@@ -262,6 +267,24 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                           .showSnackBar(SnackBar(content: Text(e.toString())));
                     }
                   }
+                },
+              );
+            },
+          ),
+          Consumer(
+            builder: (context, ref, _) {
+              final isWhiteboardOpen = ref.watch(
+                whiteboardControllerProvider.select((s) => s.isOpen),
+              );
+              return IconButton(
+                key: const Key('study_whiteboard_button'),
+                icon: Icon(
+                  isWhiteboardOpen ? Icons.draw : Icons.draw_outlined,
+                  color: isWhiteboardOpen ? colorScheme.primary : null,
+                ),
+                tooltip: l10n?.whiteboard ?? 'Whiteboard',
+                onPressed: () {
+                  ref.read(whiteboardControllerProvider.notifier).toggle();
                 },
               );
             },
@@ -724,58 +747,84 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.all(16),
-                              child: Consumer(
-                                builder: (context, ref, _) {
-                                  final gestureConfig = ref.watch(
-                                    studyGestureControllerProvider,
-                                  );
+                              child: Stack(
+                                children: [
+                                  Consumer(
+                                    builder: (context, ref, _) {
+                                      final gestureConfig = ref.watch(
+                                        studyGestureControllerProvider,
+                                      );
 
-                                  final cardWidget = FlipCardView(
-                                    card: currentCard,
-                                    isAnswerRevealed:
-                                        sessionState.isAnswerRevealed,
-                                    onCardTap: !sessionState.isAnswerRevealed
-                                        ? revealAnswer
-                                        : null,
-                                  );
+                                      final cardWidget = FlipCardView(
+                                        card: currentCard,
+                                        isAnswerRevealed:
+                                            sessionState.isAnswerRevealed,
+                                        onCardTap:
+                                            !sessionState.isAnswerRevealed
+                                            ? revealAnswer
+                                            : null,
+                                      );
 
-                                  if (!gestureConfig.enableGestures) {
-                                    return cardWidget;
-                                  }
+                                      if (!gestureConfig.enableGestures) {
+                                        return cardWidget;
+                                      }
 
-                                  return GestureDetector(
-                                    key: const Key('study_gesture_detector'),
-                                    behavior: HitTestBehavior.translucent,
-                                    onDoubleTap: () => handleGestureAction(
-                                      gestureConfig.doubleTap,
+                                      return GestureDetector(
+                                        key: const Key(
+                                          'study_gesture_detector',
+                                        ),
+                                        behavior: HitTestBehavior.translucent,
+                                        onDoubleTap: () => handleGestureAction(
+                                          gestureConfig.doubleTap,
+                                        ),
+                                        onHorizontalDragEnd: (details) {
+                                          final vx =
+                                              details.primaryVelocity ?? 0.0;
+                                          if (vx < -200) {
+                                            handleGestureAction(
+                                              gestureConfig.swipeLeft,
+                                            );
+                                          } else if (vx > 200) {
+                                            handleGestureAction(
+                                              gestureConfig.swipeRight,
+                                            );
+                                          }
+                                        },
+                                        onVerticalDragEnd: (details) {
+                                          final vy =
+                                              details.primaryVelocity ?? 0.0;
+                                          if (vy < -200) {
+                                            handleGestureAction(
+                                              gestureConfig.swipeUp,
+                                            );
+                                          } else if (vy > 200) {
+                                            handleGestureAction(
+                                              gestureConfig.swipeDown,
+                                            );
+                                          }
+                                        },
+                                        child: cardWidget,
+                                      );
+                                    },
+                                  ),
+                                  Positioned.fill(
+                                    child: Consumer(
+                                      builder: (context, ref, _) {
+                                        final isWhiteboardOpen = ref.watch(
+                                          whiteboardControllerProvider.select(
+                                            (s) => s.isOpen,
+                                          ),
+                                        );
+                                        return IgnorePointer(
+                                          ignoring: !isWhiteboardOpen,
+                                          child: isWhiteboardOpen
+                                              ? const WhiteboardCanvas()
+                                              : const SizedBox.shrink(),
+                                        );
+                                      },
                                     ),
-                                    onHorizontalDragEnd: (details) {
-                                      final vx = details.primaryVelocity ?? 0.0;
-                                      if (vx < -200) {
-                                        handleGestureAction(
-                                          gestureConfig.swipeLeft,
-                                        );
-                                      } else if (vx > 200) {
-                                        handleGestureAction(
-                                          gestureConfig.swipeRight,
-                                        );
-                                      }
-                                    },
-                                    onVerticalDragEnd: (details) {
-                                      final vy = details.primaryVelocity ?? 0.0;
-                                      if (vy < -200) {
-                                        handleGestureAction(
-                                          gestureConfig.swipeUp,
-                                        );
-                                      } else if (vy > 200) {
-                                        handleGestureAction(
-                                          gestureConfig.swipeDown,
-                                        );
-                                      }
-                                    },
-                                    child: cardWidget,
-                                  );
-                                },
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -1124,13 +1173,16 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                         controller.submitRating(Rating.easy);
                       }
                     },
+                    const SingleActivator(LogicalKeyboardKey.keyW): () {
+                      ref.read(whiteboardControllerProvider.notifier).toggle();
+                    },
                     const SingleActivator(LogicalKeyboardKey.keyR): () {
                       final current = sessionState.currentCard;
                       if (current != null) {
                         final text = sessionState.isAnswerRevealed
                             ? (current.back.isNotEmpty
-                                ? current.back
-                                : current.front)
+                                  ? current.back
+                                  : current.front)
                             : current.front;
                         _playSideAudio(text);
                       }
