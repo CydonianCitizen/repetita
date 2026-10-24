@@ -10,7 +10,9 @@ import '../../../../core/algorithms/cloze/cloze_segment.dart';
 import '../../../../core/algorithms/type_in/type_in_differ.dart';
 import '../../../../core/l10n/generated/app_localizations.dart';
 import '../../../../core/utils/text_direction_utils.dart';
+import '../../../../core/algorithms/image_occlusion/image_occlusion_parser.dart';
 import '../../../cards/domain/card_entity.dart';
+import 'image_occlusion_card_view.dart';
 import '../../../media/presentation/widgets/media_image_widget.dart';
 import '../../../media/utils/media_content_renderer.dart';
 import '../../../settings/presentation/controllers/animation_level_controller.dart';
@@ -183,11 +185,15 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
     AppLocalizations? l10n,
   ) {
     final isCloze = _isCloze;
+    final isIo = widget.card.isImageOcclusion;
+    final ioData = isIo ? ImageOcclusionParser.parse(widget.card.front) : null;
     final typeInEnabled = ref.watch(typeInPracticeControllerProvider);
-    final promptBadgeText = isCloze
-        ? (l10n?.clozeBadge(widget.card.activeClozeIndex) ??
-              'CLOZE c${widget.card.activeClozeIndex}')
-        : (l10n?.promptBadge ?? 'PROMPT');
+    final promptBadgeText = isIo
+        ? ((l10n?.imageOcclusion ?? 'IMAGE OCCLUSION').toUpperCase())
+        : (isCloze
+              ? (l10n?.clozeBadge(widget.card.activeClozeIndex) ??
+                    'CLOZE c${widget.card.activeClozeIndex}')
+              : (l10n?.promptBadge ?? 'PROMPT'));
     final promptText = isCloze ? _promptText : widget.card.front;
     final promptDirection = TextDirectionUtils.getDirection(promptText);
 
@@ -289,6 +295,21 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                           ),
                           key: const Key('card_front_text'),
                         )
+                      : isIo && ioData != null
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ImageOcclusionCardView(
+                              data: ioData,
+                              isAnswerRevealed: false,
+                            ),
+                            const SizedBox(
+                              key: Key('card_front_text'),
+                              height: 0,
+                              width: 0,
+                            ),
+                          ],
+                        )
                       : Text(
                           MediaContentRenderer.stripMediaTags(
                             widget.card.front,
@@ -357,6 +378,8 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
     AppLocalizations? l10n,
   ) {
     final isCloze = _isCloze;
+    final isIo = widget.card.isImageOcclusion;
+    final ioData = isIo ? ImageOcclusionParser.parse(widget.card.front) : null;
     final typeInEnabled = ref.watch(typeInPracticeControllerProvider);
     final answerText = isCloze ? _answerText : widget.card.back;
     final answerDirection = TextDirectionUtils.getDirection(answerText);
@@ -474,6 +497,33 @@ class _FlipCardViewState extends ConsumerState<FlipCardView> {
                           }).toList(),
                         ),
                         key: const Key('card_back_text'),
+                      )
+                    : isIo && ioData != null
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ImageOcclusionCardView(
+                            data: ioData,
+                            isAnswerRevealed: true,
+                          ),
+                          if (widget.card.back.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            Text(
+                              MediaContentRenderer.stripMediaTags(
+                                widget.card.back,
+                              ),
+                              key: const Key('card_back_text'),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ] else
+                            const SizedBox(
+                              key: Key('card_back_text'),
+                              height: 0,
+                              width: 0,
+                            ),
+                        ],
                       )
                     : Text(
                         MediaContentRenderer.stripMediaTags(widget.card.back),
