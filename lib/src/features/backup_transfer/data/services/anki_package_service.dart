@@ -9,12 +9,14 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 import '../../../../core/database/app_database.dart';
 import '../../domain/models/anki_models.dart';
 import '../../domain/services/anki_html_sanitizer.dart';
+import '../../../media/data/services/media_service.dart';
 
 /// Service responsible for importing Anki packages (.apkg) into Repetita.
 class AnkiPackageService {
-  const AnkiPackageService(this.db);
+  const AnkiPackageService(this.db, {this.mediaService});
 
   final AppDatabase db;
+  final MediaService? mediaService;
 
   /// Imports an Anki package (.apkg) from raw bytes.
   /// If [targetDeckId] is provided, all imported cards are assigned to that deck.
@@ -32,12 +34,15 @@ class AnkiPackageService {
     }
 
     ArchiveFile? sqliteEntry;
+    ArchiveFile? mediaEntry;
+    final mediaNumberedFiles = <String, ArchiveFile>{};
     for (final file in archive) {
-      if (file.name == 'collection.anki2') {
-        sqliteEntry = file;
-        break;
-      } else if (file.name == 'collection.anki21') {
-        sqliteEntry = file;
+      if (file.name == 'collection.anki2' || file.name == 'collection.anki21') {
+        sqliteEntry ??= file;
+      } else if (file.name == 'media') {
+        mediaEntry = file;
+      } else {
+        mediaNumberedFiles[file.name] = file;
       }
     }
 
@@ -51,8 +56,42 @@ class AnkiPackageService {
     final tempDbFile = File(p.join(tempDir.path, 'collection.anki2'));
 
     try {
-      final content = sqliteEntry.content;
+      final content = sqliteEntry.content as List<int>;
       await tempDbFile.writeAsBytes(content);
+
+      if (mediaService != null && mediaEntry != null) {
+        await mediaService!.getMediaDirectory();
+        try {
+          final mediaJson = mediaEntry.content is String
+              ? mediaEntry.content as String
+              : utf8.decode(mediaEntry.content as List<int>);
+          final mediaMap = jsonDecode(mediaJson) as Map<String, dynamic>;
+          for (final entry in mediaMap.entries) {
+            final numberedName = entry.key;
+            final targetName = entry.value as String;
+            final fileEntry = mediaNumberedFiles[numberedName];
+            if (fileEntry != null) {
+              final bytes = Uint8List.fromList(fileEntry.content as List<int>);
+              final targetFile = mediaService!.getMediaFile(targetName);
+              await targetFile.writeAsBytes(bytes);
+
+              final checksum = mediaService!.computeChecksum(bytes);
+              final existing = await mediaService!.mediaDao.getMediaByChecksum(
+                checksum,
+              );
+              if (existing == null) {
+                await mediaService!.mediaDao.insertMedia(
+                  MediaCompanion.insert(
+                    fileName: targetName,
+                    checksum: checksum,
+                    sizeBytes: bytes.length,
+                  ),
+                );
+              }
+            }
+          }
+        } catch (_) {}
+      }
 
       return await _processAnkiDatabase(
         tempDbFile.path,

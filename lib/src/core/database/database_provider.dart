@@ -17,8 +17,10 @@ import 'app_database.dart';
 part 'database_provider.g.dart';
 
 @Riverpod(keepAlive: true)
-AnkiExportService ankiExportService(Ref ref) =>
-    AnkiExportService(ref.watch(databaseProvider));
+AnkiExportService ankiExportService(Ref ref) => AnkiExportService(
+  ref.watch(databaseProvider),
+  mediaService: ref.watch(mediaServiceProvider),
+);
 
 @Riverpod(keepAlive: true)
 AppDatabase database(Ref ref) {
@@ -65,5 +67,7 @@ VacationModeService vacationModeService(Ref ref) =>
     VacationModeService(ref.watch(databaseProvider));
 
 @Riverpod(keepAlive: true)
-AnkiPackageService ankiPackageService(Ref ref) =>
-    AnkiPackageService(ref.watch(databaseProvider));
+AnkiPackageService ankiPackageService(Ref ref) => AnkiPackageService(
+  ref.watch(databaseProvider),
+  mediaService: ref.watch(mediaServiceProvider),
+);

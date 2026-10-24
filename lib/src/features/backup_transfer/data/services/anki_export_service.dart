@@ -7,12 +7,16 @@ import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 import '../../../../core/database/app_database.dart';
+import '../../../media/data/services/audio_service.dart';
+import '../../../media/data/services/media_service.dart';
+import '../../../media/utils/media_content_renderer.dart';
 
 /// Service responsible for exporting Repetita cards and decks into Anki (.apkg) format.
 class AnkiExportService {
-  const AnkiExportService(this.db);
+  const AnkiExportService(this.db, {this.mediaService});
 
   final AppDatabase db;
+  final MediaService? mediaService;
 
   /// Exports cards of a specific [deckId] (and optionally its subdecks) to .apkg bytes.
   Future<List<int>> exportDeckToApkg(
@@ -92,6 +96,19 @@ class AnkiExportService {
 
       final collectionBytes = await tempDbFile.readAsBytes();
 
+      // Collect referenced media files (audio [sound:...] and media://)
+      final referencedMedia = <String>{};
+      for (final card in cards) {
+        referencedMedia.addAll(AudioService.extractSoundTags(card.front));
+        referencedMedia.addAll(AudioService.extractSoundTags(card.back));
+        referencedMedia.addAll(
+          MediaContentRenderer.extractMediaFilenames(card.front),
+        );
+        referencedMedia.addAll(
+          MediaContentRenderer.extractMediaFilenames(card.back),
+        );
+      }
+
       // Package into ZIP
       final archive = Archive();
       archive.addFile(
@@ -101,7 +118,25 @@ class AnkiExportService {
           collectionBytes,
         ),
       );
-      archive.addFile(ArchiveFile.string('media', '{}'));
+
+      final mediaMap = <String, String>{};
+      var mediaIdx = 0;
+      if (mediaService != null) {
+        for (final mediaName in referencedMedia) {
+          final file = mediaService!.getMediaFile(mediaName);
+          if (file.existsSync()) {
+            final fileBytes = file.readAsBytesSync();
+            final entryName = mediaIdx.toString();
+            archive.addFile(
+              ArchiveFile(entryName, fileBytes.length, fileBytes),
+            );
+            mediaMap[entryName] = mediaName;
+            mediaIdx++;
+          }
+        }
+      }
+
+      archive.addFile(ArchiveFile.string('media', jsonEncode(mediaMap)));
 
       final zipData = ZipEncoder().encode(archive);
       return zipData;
