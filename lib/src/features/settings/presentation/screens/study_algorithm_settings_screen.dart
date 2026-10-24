@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/l10n/generated/app_localizations.dart';
 import '../../domain/srs_algorithm.dart';
 import '../../../study_session/presentation/controllers/auto_advance_controller.dart';
+import '../../../study_session/presentation/controllers/autoplay_audio_controller.dart';
 import '../../../study_session/presentation/controllers/study_gesture_controller.dart';
 import '../../../study_session/presentation/controllers/timebox_controller.dart';
 import '../../../study_session/presentation/controllers/type_in_controller.dart';
@@ -432,6 +433,35 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
                       onTap: () {
                         ref
                             .read(typeInPracticeControllerProvider.notifier)
+                            .toggle();
+                      },
+                    );
+                  },
+                ),
+                const Divider(indent: 56, height: 1),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final autoPlay = ref.watch(autoPlayAudioControllerProvider);
+                    return SettingsTile(
+                      key: const Key('setting_autoplay_audio_tile'),
+                      icon: Icons.volume_up_outlined,
+                      iconColor: Colors.blueAccent,
+                      title: l10n?.autoPlayAudio ?? 'Autoplay Audio',
+                      subtitle:
+                          l10n?.autoPlayAudioSubtitle ??
+                          'Play card audio notes automatically upon review',
+                      trailing: Switch(
+                        value: autoPlay,
+                        onChanged: (_) {
+                          ref
+                              .read(autoPlayAudioControllerProvider.notifier)
+                              .toggle();
+                        },
+                      ),
+                      showChevron: false,
+                      onTap: () {
+                        ref
+                            .read(autoPlayAudioControllerProvider.notifier)
                             .toggle();
                       },
                     );

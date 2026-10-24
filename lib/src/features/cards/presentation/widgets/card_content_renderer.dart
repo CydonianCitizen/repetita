@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
+import '../../../media/data/services/audio_service.dart';
+import 'audio_player_chip.dart';
+
 /// A rich flashcard content renderer supporting:
 /// - Offline LaTeX math via KaTeX (inline `$...$` or `\(...\)`, display `$$...$$` or `\[...\]`)
 /// - Markdown formatting (bold `**`, italic `*`, inline code `` ` ``, strikethrough `~~`)
@@ -34,21 +37,54 @@ class CardContentRenderer extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final soundTags = AudioService.extractSoundTags(content);
+    if (soundTags.isNotEmpty) {
+      final strippedText = AudioService.stripSoundTags(content).trim();
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: textAlign == TextAlign.center
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
+        children: [
+          if (strippedText.isNotEmpty) _renderBody(context, strippedText),
+          if (strippedText.isNotEmpty) const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            alignment: textAlign == TextAlign.center
+                ? WrapAlignment.center
+                : WrapAlignment.start,
+            children: soundTags.map((sound) {
+              return AudioPlayerChip(
+                key: ValueKey('audio_player_chip_$sound'),
+                audioReference: sound,
+              );
+            }).toList(),
+          ),
+        ],
+      );
+    }
+
+    return _renderBody(context, content);
+  }
+
+  Widget _renderBody(BuildContext context, String text) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final baseStyle =
         textStyle ?? theme.textTheme.bodyLarge ?? const TextStyle();
 
     // Fast path: pure plain text without math or markdown
-    if (!_hasMathOrMarkdown.hasMatch(content)) {
-      return Text(content, style: baseStyle, textAlign: textAlign);
+    if (!_hasMathOrMarkdown.hasMatch(text)) {
+      return Text(text, style: baseStyle, textAlign: textAlign);
     }
 
     // Check if content contains display math blocks
-    final displayMatches = _displayMathRegex.allMatches(content).toList();
+    final displayMatches = _displayMathRegex.allMatches(text).toList();
     if (displayMatches.isNotEmpty) {
       return _buildDisplayLayout(
         context,
+        text,
         baseStyle,
         colorScheme,
         displayMatches,
@@ -56,12 +92,13 @@ class CardContentRenderer extends StatelessWidget {
     }
 
     // Only inline math / markdown
-    final spans = _buildInlineSpans(content, baseStyle, colorScheme);
+    final spans = _buildInlineSpans(text, baseStyle, colorScheme);
     return Text.rich(TextSpan(children: spans), textAlign: textAlign);
   }
 
   Widget _buildDisplayLayout(
     BuildContext context,
+    String text,
     TextStyle baseStyle,
     ColorScheme colorScheme,
     List<RegExpMatch> matches,
@@ -71,7 +108,7 @@ class CardContentRenderer extends StatelessWidget {
 
     for (final match in matches) {
       if (match.start > lastIndex) {
-        final textBefore = content.substring(lastIndex, match.start).trim();
+        final textBefore = text.substring(lastIndex, match.start).trim();
         if (textBefore.isNotEmpty) {
           final spans = _buildInlineSpans(textBefore, baseStyle, colorScheme);
           widgets.add(
@@ -105,8 +142,8 @@ class CardContentRenderer extends StatelessWidget {
       lastIndex = match.end;
     }
 
-    if (lastIndex < content.length) {
-      final textAfter = content.substring(lastIndex).trim();
+    if (lastIndex < text.length) {
+      final textAfter = text.substring(lastIndex).trim();
       if (textAfter.isNotEmpty) {
         final spans = _buildInlineSpans(textAfter, baseStyle, colorScheme);
         widgets.add(Text.rich(TextSpan(children: spans), textAlign: textAlign));

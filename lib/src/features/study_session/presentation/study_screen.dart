@@ -20,6 +20,9 @@ import 'controllers/study_gesture_controller.dart';
 import 'controllers/study_session_controller.dart';
 import 'controllers/timebox_controller.dart';
 import 'controllers/type_in_controller.dart';
+import 'controllers/autoplay_audio_controller.dart';
+import '../../media/data/services/audio_playback_service.dart';
+import '../../media/data/services/audio_service.dart';
 import 'widgets/flip_card_view.dart';
 import 'widgets/rating_bar.dart';
 
@@ -106,7 +109,19 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
   void dispose() {
     _timeboxTimer?.cancel();
     _autoAdvanceTimer?.cancel();
+    ref.read(audioPlaybackServiceProvider).stop();
     super.dispose();
+  }
+
+  Future<void> _playSideAudio(String content) async {
+    final sounds = AudioService.extractSoundTags(content);
+    if (sounds.isNotEmpty) {
+      final mediaService = ref.read(mediaServiceProvider);
+      final file = mediaService.getMediaFile(sounds.first);
+      if (file.existsSync()) {
+        await ref.read(audioPlaybackServiceProvider).playFile(file);
+      }
+    }
   }
 
   String _getFlagLabel(int flag, AppLocalizations? l10n) {
@@ -135,6 +150,24 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
     );
 
     ref.listen(provider, (previous, next) {
+      final prevCardId = previous?.value?.currentCard?.id;
+      final nextCardId = next.value?.currentCard?.id;
+      final prevAnswerRevealed = previous?.value?.isAnswerRevealed ?? false;
+      final nextAnswerRevealed = next.value?.isAnswerRevealed ?? false;
+
+      if (prevCardId != nextCardId) {
+        ref.read(audioPlaybackServiceProvider).stop();
+      }
+
+      final autoPlay = ref.read(autoPlayAudioControllerProvider);
+      if (autoPlay && next.value?.currentCard != null) {
+        if (prevCardId != nextCardId) {
+          _playSideAudio(next.value!.currentCard!.front);
+        } else if (!prevAnswerRevealed && nextAnswerRevealed) {
+          _playSideAudio(next.value!.currentCard!.back);
+        }
+      }
+
       final prevLeech = previous?.value?.lastLeechDetected ?? false;
       final nextLeech = next.value?.lastLeechDetected ?? false;
       if (nextLeech && !prevLeech) {
@@ -1089,6 +1122,17 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                           haptic.triggerRatingFeedback(Rating.easy, intensity),
                         );
                         controller.submitRating(Rating.easy);
+                      }
+                    },
+                    const SingleActivator(LogicalKeyboardKey.keyR): () {
+                      final current = sessionState.currentCard;
+                      if (current != null) {
+                        final text = sessionState.isAnswerRevealed
+                            ? (current.back.isNotEmpty
+                                ? current.back
+                                : current.front)
+                            : current.front;
+                        _playSideAudio(text);
                       }
                     },
                   },
