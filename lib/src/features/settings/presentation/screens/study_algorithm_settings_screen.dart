@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/l10n/generated/app_localizations.dart';
 import '../../domain/srs_algorithm.dart';
 import '../../../study_session/presentation/controllers/auto_advance_controller.dart';
+import '../../../study_session/presentation/controllers/study_gesture_controller.dart';
 import '../../../study_session/presentation/controllers/timebox_controller.dart';
 import '../../../study_session/presentation/controllers/type_in_controller.dart';
+import '../../../study_session/presentation/dialogs/study_gestures_dialog.dart';
 import '../controllers/auto_bury_siblings_controller.dart';
 import '../controllers/fsrs_parameters_controller.dart';
 import '../controllers/reminder_controller.dart';
@@ -281,6 +283,24 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
                             .read(autoBurySiblingsControllerProvider.notifier)
                             .toggle();
                       },
+                    );
+                  },
+                ),
+                const Divider(indent: 56, height: 1),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final gestureConfig = ref.watch(
+                      studyGestureControllerProvider,
+                    );
+                    return SettingsTile(
+                      key: const Key('setting_study_gestures_tile'),
+                      icon: Icons.gesture_rounded,
+                      iconColor: colorScheme.secondary,
+                      title: 'Gesti touch in studio',
+                      subtitle: gestureConfig.enableGestures
+                          ? 'Attivi • Swipe & doppio tocco personalizzati'
+                          : 'Disattivati',
+                      onTap: () => StudyGesturesDialog.show(context),
                     );
                   },
                 ),

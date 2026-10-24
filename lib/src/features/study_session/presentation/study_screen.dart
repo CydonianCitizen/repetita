@@ -14,7 +14,9 @@ import '../../settings/presentation/controllers/animation_level_controller.dart'
 import '../../settings/presentation/controllers/haptic_controller.dart';
 import '../../../core/database/database_provider.dart';
 import '../domain/models/custom_study_config.dart';
+import '../domain/study_gesture_config.dart';
 import 'controllers/auto_advance_controller.dart';
+import 'controllers/study_gesture_controller.dart';
 import 'controllers/study_session_controller.dart';
 import 'controllers/timebox_controller.dart';
 import 'controllers/type_in_controller.dart';
@@ -541,6 +543,51 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                   controller.revealAnswer();
                 }
 
+                void handleGestureAction(StudyGestureAction action) {
+                  if (action == StudyGestureAction.none) return;
+
+                  switch (action) {
+                    case StudyGestureAction.flipCard:
+                      if (!sessionState.isAnswerRevealed) {
+                        revealAnswer();
+                      }
+                    case StudyGestureAction.rateAgain:
+                      if (sessionState.isAnswerRevealed) {
+                        submitRating(Rating.again);
+                      } else {
+                        revealAnswer();
+                      }
+                    case StudyGestureAction.rateHard:
+                      if (sessionState.isAnswerRevealed) {
+                        submitRating(Rating.hard);
+                      } else {
+                        revealAnswer();
+                      }
+                    case StudyGestureAction.rateGood:
+                      if (sessionState.isAnswerRevealed) {
+                        submitRating(Rating.good);
+                      } else {
+                        revealAnswer();
+                      }
+                    case StudyGestureAction.rateEasy:
+                      if (sessionState.isAnswerRevealed) {
+                        submitRating(Rating.easy);
+                      } else {
+                        revealAnswer();
+                      }
+                    case StudyGestureAction.undo:
+                      if (sessionState.canUndo) {
+                        undoReview();
+                      }
+                    case StudyGestureAction.buryCard:
+                      controller.buryCurrentCard();
+                    case StudyGestureAction.suspendCard:
+                      controller.suspendCurrentCard();
+                    case StudyGestureAction.none:
+                      break;
+                  }
+                }
+
                 if (!sessionState.isAnswerRevealed) {
                   final seconds = ref.watch(autoAdvanceControllerProvider);
                   if (seconds > 0) {
@@ -644,12 +691,60 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.all(16),
-                              child: FlipCardView(
-                                card: currentCard,
-                                isAnswerRevealed: sessionState.isAnswerRevealed,
-                                onCardTap: !sessionState.isAnswerRevealed
-                                    ? revealAnswer
-                                    : null,
+                              child: Consumer(
+                                builder: (context, ref, _) {
+                                  final gestureConfig = ref.watch(
+                                    studyGestureControllerProvider,
+                                  );
+
+                                  final cardWidget = FlipCardView(
+                                    card: currentCard,
+                                    isAnswerRevealed:
+                                        sessionState.isAnswerRevealed,
+                                    onCardTap: !sessionState.isAnswerRevealed
+                                        ? revealAnswer
+                                        : null,
+                                  );
+
+                                  if (!gestureConfig.enableGestures) {
+                                    return cardWidget;
+                                  }
+
+                                  return GestureDetector(
+                                    key: const Key('study_gesture_detector'),
+                                    behavior: HitTestBehavior.translucent,
+                                    onDoubleTap: () => handleGestureAction(
+                                      gestureConfig.doubleTap,
+                                    ),
+                                    onHorizontalDragEnd: (details) {
+                                      final vx =
+                                          details.primaryVelocity ?? 0.0;
+                                      if (vx < -200) {
+                                        handleGestureAction(
+                                          gestureConfig.swipeLeft,
+                                        );
+                                      } else if (vx > 200) {
+                                        handleGestureAction(
+                                          gestureConfig.swipeRight,
+                                        );
+                                      }
+                                    },
+                                    onVerticalDragEnd: (details) {
+                                      final vy =
+                                          details.primaryVelocity ?? 0.0;
+                                      if (vy < -200) {
+                                        handleGestureAction(
+                                          gestureConfig.swipeUp,
+                                        );
+                                      } else if (vy > 200) {
+                                        handleGestureAction(
+                                          gestureConfig.swipeDown,
+                                        );
+                                      }
+                                    },
+                                    child: cardWidget,
+                                  );
+                                },
                               ),
                             ),
                           ),
