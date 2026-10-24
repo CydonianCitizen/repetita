@@ -10,7 +10,8 @@ final audioPlaybackServiceProvider = Provider<AudioPlaybackService>((ref) {
 });
 
 class AudioPlaybackService {
-  AudioPlaybackService({AudioPlayer? player}) : _player = player ?? AudioPlayer();
+  AudioPlaybackService({AudioPlayer? player})
+    : _player = player ?? AudioPlayer();
 
   final AudioPlayer _player;
   String? _currentSource;

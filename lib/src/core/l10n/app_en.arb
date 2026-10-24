@@ -661,5 +661,18 @@
   "newCardUnreviewed": "New card • Unreviewed",
   "@newCardUnreviewed": {
     "description": "Status subtitle for an unreviewed card"
-  }
+  },
+  "recordAudioTitle": "Audio Recording",
+  "startRecording": "Record",
+  "stopRecording": "Stop",
+  "playRecording": "Listen",
+  "stopPlayback": "Stop",
+  "insertAudio": "Insert Audio",
+  "recordMicTooltip": "Record audio note",
+  "microphonePermissionDenied": "Microphone permission denied",
+  "whiteboard": "Whiteboard",
+  "clearWhiteboard": "Clear",
+  "toggleWhiteboard": "Whiteboard",
+  "autoPlayAudio": "Autoplay Audio",
+  "autoPlayAudioSubtitle": "Play card audio notes automatically upon review"
 }

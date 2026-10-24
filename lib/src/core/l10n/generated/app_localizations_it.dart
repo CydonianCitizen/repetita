@@ -1292,4 +1292,44 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get newCardUnreviewed => 'Nuova carta • Non studiata';
+
+  @override
+  String get recordAudioTitle => 'Registrazione audio';
+
+  @override
+  String get startRecording => 'Registra';
+
+  @override
+  String get stopRecording => 'Ferma';
+
+  @override
+  String get playRecording => 'Ascolta';
+
+  @override
+  String get stopPlayback => 'Interrompi';
+
+  @override
+  String get insertAudio => 'Inserisci audio';
+
+  @override
+  String get recordMicTooltip => 'Registra nota vocale';
+
+  @override
+  String get microphonePermissionDenied => 'Permesso microfono negato';
+
+  @override
+  String get whiteboard => 'Lavagna';
+
+  @override
+  String get clearWhiteboard => 'Cancella';
+
+  @override
+  String get toggleWhiteboard => 'Lavagna';
+
+  @override
+  String get autoPlayAudio => 'Riproduci audio automaticamente';
+
+  @override
+  String get autoPlayAudioSubtitle =>
+      'Riproduci automaticamente le note vocali della carta';
 }

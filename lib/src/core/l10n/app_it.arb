@@ -525,5 +525,18 @@
   "emptyField": "(Vuoto)",
   "previewMathMarkdownTooltip": "Anteprima Math & Markdown",
   "errorLoadingCards": "Errore nel caricamento delle carte",
-  "newCardUnreviewed": "Nuova carta • Non studiata"
+  "newCardUnreviewed": "Nuova carta • Non studiata",
+  "recordAudioTitle": "Registrazione audio",
+  "startRecording": "Registra",
+  "stopRecording": "Ferma",
+  "playRecording": "Ascolta",
+  "stopPlayback": "Interrompi",
+  "insertAudio": "Inserisci audio",
+  "recordMicTooltip": "Registra nota vocale",
+  "microphonePermissionDenied": "Permesso microfono negato",
+  "whiteboard": "Lavagna",
+  "clearWhiteboard": "Cancella",
+  "toggleWhiteboard": "Lavagna",
+  "autoPlayAudio": "Riproduci audio automaticamente",
+  "autoPlayAudioSubtitle": "Riproduci automaticamente le note vocali della carta"
 }

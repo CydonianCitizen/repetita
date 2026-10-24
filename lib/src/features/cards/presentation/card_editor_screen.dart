@@ -16,8 +16,11 @@ import '../../tags/data/tags_dao.dart';
 import '../../../core/database/database_provider.dart';
 import '../../tags/domain/tag_entity.dart';
 import '../../tags/presentation/controllers/tags_controller.dart';
+import '../../media/data/services/audio_service.dart';
 import 'controllers/card_list_controller.dart';
+import 'dialogs/audio_recorder_dialog.dart';
 import 'image_occlusion_editor_screen.dart';
+import 'widgets/audio_player_chip.dart';
 import 'widgets/card_content_renderer.dart';
 
 class CardEditorScreen extends ConsumerStatefulWidget {
@@ -259,6 +262,44 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
         );
       },
     );
+  }
+
+  Widget _buildAudioChips(TextEditingController controller) {
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: controller,
+      builder: (context, value, _) {
+        final soundTags = AudioService.extractSoundTags(value.text);
+        if (soundTags.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: soundTags.map((sound) {
+              return AudioPlayerChip(
+                key: ValueKey('audio_chip_$sound'),
+                audioReference: sound,
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _recordAndInsertAudio(TextEditingController controller) async {
+    final soundTag = await AudioRecorderDialog.show(context);
+    if (soundTag != null && soundTag.isNotEmpty) {
+      final currentText = controller.text;
+      final separator = currentText.isNotEmpty && !currentText.endsWith('\n')
+          ? '\n'
+          : '';
+      controller.text = '$currentText$separator$soundTag';
+      controller.selection = TextSelection.collapsed(
+        offset: controller.text.length,
+      );
+      setState(() {});
+    }
   }
 
   Future<void> _openImageOcclusionEditor() async {
@@ -688,6 +729,15 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                                 _pickAndInsertImage(_frontController),
                           ),
                           ActionChip(
+                            key: const Key('record_audio_button'),
+                            avatar: const Icon(Icons.mic_outlined, size: 16),
+                            label: Text(l10n?.recordAudioTitle ?? 'Audio'),
+                            tooltip:
+                                l10n?.recordMicTooltip ?? 'Record audio note',
+                            onPressed: () =>
+                                _recordAndInsertAudio(_frontController),
+                          ),
+                          ActionChip(
                             key: const Key('image_occlusion_button'),
                             avatar: const Icon(Icons.crop_rounded, size: 16),
                             label: Text(
@@ -723,6 +773,7 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                         ],
                       ),
                       _buildImageThumbnails(_frontController),
+                      _buildAudioChips(_frontController),
                       const SizedBox(height: 16),
                       ValueListenableBuilder<TextEditingValue>(
                         valueListenable: _backController,
@@ -778,9 +829,20 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                             onPressed: () =>
                                 _pickAndInsertImage(_backController),
                           ),
+                          const SizedBox(width: 8),
+                          ActionChip(
+                            key: const Key('record_audio_back_button'),
+                            avatar: const Icon(Icons.mic_outlined, size: 16),
+                            label: Text(l10n?.recordAudioTitle ?? 'Audio'),
+                            tooltip:
+                                l10n?.recordMicTooltip ?? 'Record audio note',
+                            onPressed: () =>
+                                _recordAndInsertAudio(_backController),
+                          ),
                         ],
                       ),
                       _buildImageThumbnails(_backController),
+                      _buildAudioChips(_backController),
                       if (!widget.isEditing) ...[
                         const SizedBox(height: 12),
                         ValueListenableBuilder<TextEditingValue>(

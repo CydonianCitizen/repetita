@@ -1282,4 +1282,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newCardUnreviewed => 'New card • Unreviewed';
+
+  @override
+  String get recordAudioTitle => 'Audio Recording';
+
+  @override
+  String get startRecording => 'Record';
+
+  @override
+  String get stopRecording => 'Stop';
+
+  @override
+  String get playRecording => 'Listen';
+
+  @override
+  String get stopPlayback => 'Stop';
+
+  @override
+  String get insertAudio => 'Insert Audio';
+
+  @override
+  String get recordMicTooltip => 'Record audio note';
+
+  @override
+  String get microphonePermissionDenied => 'Microphone permission denied';
+
+  @override
+  String get whiteboard => 'Whiteboard';
+
+  @override
+  String get clearWhiteboard => 'Clear';
+
+  @override
+  String get toggleWhiteboard => 'Whiteboard';
+
+  @override
+  String get autoPlayAudio => 'Autoplay Audio';
+
+  @override
+  String get autoPlayAudioSubtitle =>
+      'Play card audio notes automatically upon review';
 }

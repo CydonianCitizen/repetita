@@ -32,7 +32,10 @@ void main() {
       expect(FsrsParameters.decodeWeights('   '), isNull);
       expect(FsrsParameters.decodeWeights('not-a-json'), isNull);
       expect(FsrsParameters.decodeWeights('{"not": "a list"}'), isNull);
-      expect(FsrsParameters.decodeWeights('[1.0, 2.0]'), isNull); // not 17 items
+      expect(
+        FsrsParameters.decodeWeights('[1.0, 2.0]'),
+        isNull,
+      ); // not 17 items
 
       // hasCustomWeights & copyWith
       const defaultParams = FsrsParameters();
@@ -108,10 +111,7 @@ void main() {
       const history = CardReviewHistory(cardId: 42, reviews: [item]);
       final historyJson = history.toJson();
       expect(CardReviewHistory.fromJson(historyJson).cardId, equals(42));
-      expect(
-        CardReviewHistory.fromJson(historyJson).reviews.length,
-        equals(1),
-      );
+      expect(CardReviewHistory.fromJson(historyJson).reviews.length, equals(1));
 
       const progress = OptimizationProgress(
         iteration: 20,

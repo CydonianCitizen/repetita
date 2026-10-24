@@ -2287,6 +2287,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New card • Unreviewed'**
   String get newCardUnreviewed;
+
+  /// No description provided for @recordAudioTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Recording'**
+  String get recordAudioTitle;
+
+  /// No description provided for @startRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get startRecording;
+
+  /// No description provided for @stopRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stopRecording;
+
+  /// No description provided for @playRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen'**
+  String get playRecording;
+
+  /// No description provided for @stopPlayback.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stopPlayback;
+
+  /// No description provided for @insertAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Insert Audio'**
+  String get insertAudio;
+
+  /// No description provided for @recordMicTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Record audio note'**
+  String get recordMicTooltip;
+
+  /// No description provided for @microphonePermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission denied'**
+  String get microphonePermissionDenied;
+
+  /// No description provided for @whiteboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Whiteboard'**
+  String get whiteboard;
+
+  /// No description provided for @clearWhiteboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearWhiteboard;
+
+  /// No description provided for @toggleWhiteboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Whiteboard'**
+  String get toggleWhiteboard;
+
+  /// No description provided for @autoPlayAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Autoplay Audio'**
+  String get autoPlayAudio;
+
+  /// No description provided for @autoPlayAudioSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Play card audio notes automatically upon review'**
+  String get autoPlayAudioSubtitle;
 }
 
 class _AppLocalizationsDelegate

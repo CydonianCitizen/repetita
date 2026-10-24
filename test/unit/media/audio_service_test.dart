@@ -20,7 +20,8 @@ void main() {
     });
 
     test('extractSoundTags extracts Anki sound tags from text', () {
-      const text = 'Hello [sound:pronunciation.mp3] world and [sound:example.m4a]!';
+      const text =
+          'Hello [sound:pronunciation.mp3] world and [sound:example.m4a]!';
       final sounds = AudioService.extractSoundTags(text);
       expect(sounds, equals(['pronunciation.mp3', 'example.m4a']));
 
