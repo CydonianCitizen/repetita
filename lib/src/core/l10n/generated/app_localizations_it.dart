@@ -1332,4 +1332,20 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get autoPlayAudioSubtitle =>
       'Riproduci automaticamente le note vocali della carta';
+
+  @override
+  String get ttsSpeak => 'Ascolta (TTS)';
+
+  @override
+  String get ttsStop => 'Interrompi TTS';
+
+  @override
+  String get autoTts => 'Sintesi vocale offline (TTS)';
+
+  @override
+  String get autoTtsSubtitle =>
+      'Leggi a voce alta il testo della carta se privo di audio';
+
+  @override
+  String get ttsSpeechRate => 'Velocità di lettura';
 }

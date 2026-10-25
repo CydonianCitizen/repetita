@@ -54,7 +54,7 @@ final class AnkiExportServiceProvider
   }
 }
 
-String _$ankiExportServiceHash() => r'0650200cbe8122492eedc68b20f27ce64d2c0c25';
+String _$ankiExportServiceHash() => r'beb85752d1e6aa43e67d3826941132b2fc0f8a52';
 
 @ProviderFor(database)
 final databaseProvider = DatabaseProvider._();
@@ -568,4 +568,4 @@ final class AnkiPackageServiceProvider
 }
 
 String _$ankiPackageServiceHash() =>
-    r'203f0f42ba1880a70865e0282f1b44778805808f';
+    r'b37f3e55498332469e61a1e7ef763ea1fd649f14';

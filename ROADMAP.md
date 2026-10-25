@@ -23,12 +23,9 @@ Documento di pianificazione tecnica basato sulle scelte funzionali definite per 
 | **v0.9.3** <br>*(Completato)* | Media Pipeline & Image Occlusion | • Tabella Drift Media & deduplica SHA-256 [x]<br>• Visualizzatore immagini con zoom pinch-to-zoom [x]<br>• Inserimento immagini in CardEditorScreen [x]<br>• Image Occlusion Editor interattivo con canvas [x]<br>• Hide-all reveal-one studio rendering [x] | Alta |
 | **v0.9.4** <br>*(Completato)* | Advanced Analytics, FSRS Optimizer, Math & Gestures | • Statistiche estese (True retention & istogramma intervalli) [x]<br>• Card Info & curve di stabilità S/D/R [x]<br>• FSRS Optimizer on-device in background Isolate [x]<br>• Rendering Markdown & KaTeX LaTeX offline [x]<br>• Gesture personalizzabili in Studio (swipe & double tap) [x]<br>• Widget Home Screen nativo Android (conteggio dovute/nuove) [x] | Alta |
 | **v0.9.5** <br>*(Completato)* | Audio Pipeline, Ephemeral Whiteboard & SRS Hardening | • 100% test coverage motori SRS (FSRS / SM-2) [x]<br>• Registrazione audio da microfono in Card Editor [x]<br>• Playback audio, autoplay & hotkey 'R' in Studio [x]<br>• Import/Export Anki .apkg con pacchettizzazione audio/media [x]<br>• Whiteboard effimera in Studio per richiamo attivo motorio [x] | Media |
-| **v1.0.0** | Consolidamento & Stabilità Finale | • Migrazioni Drift blindate (test suite automatica) [x]<br>• Zero bug, zero warning, release finale F-Droid e desktop [x] | Bassa |
-
-| **v1.3.0** | Ecosistema, Gerarchia & Card Browser | • Export `.apkg` completo compatibile Anki<br>• Subdeck gerarchici (`PARENT::CHILD`)<br>• Ricerca Globale Flashcard (Card Browser FTS5) | Media |
-| **v1.4.0** | Audio & Ergonomia Mobile | • Audio nelle carte (registrazione/playback open-source)<br>• Widget home screen + quick study<br>• Gesture personalizzabili in Studio<br>• Whiteboard effimera in Studio (recall motorio) | Media |
-| **v1.5.0** | Visual Analytics Avanzate | • Grafici avanzati (`StatsScreen`: ritenzione reale, curve S/D/R per carta) | Bassa |
-| **Spike / v2.0.0** <br>*(Ricerca)* | Ricerca tecnica (PoC non vincolati a versione) | • Sincronizzazione opzionale file-based (zero-cloud) [NUOVA]<br>• FSRS Optimizer on-device (gradient descent Dart puro)<br>• TTS offline di sistema (Android TTS, Windows SAPI, macOS say)<br>• Markdown avanzato + MathJax | Variabile |
+| **v0.9.6** <br>*(Completato)* | TTS Offline di Sistema & Audio Polish | • Sintesi vocale offline nativa (Android TTS, Windows SAPI, Apple AVSpeech, Linux speech-dispatcher) [x]<br>• Sanitizzazione automatica testo carte (strip cloze, math LaTeX, markdown, HTML, audio) [x]<br>• Switch auto-TTS e regolazione velocità di lettura nelle impostazioni [x]<br>• Pulsante TTS in sessione di studio e hotkey desktop 'T' [x] | Bassa |
+| **v1.0.0** | Consolidamento & Stabilità Finale | • Migrazioni Drift blindate (test suite automatica) [x]<br>• Zero bug, zero warning, packaging store F-Droid e desktop [x] | Bassa |
+| **Spike / Future** <br>*(Ricerca)* | Ricerca tecnica zero-cloud | • Sincronizzazione opzionale file-based zero-cloud (cartella condivisa / Syncthing / SMB / USB) [DA STUDIARE] | Variabile |
 
 ---
 
@@ -439,19 +436,19 @@ Il piano evolutivo nasce da un'analisi di benchmark sulle feature dei competitor
 
 Output atteso per ciascuno spike: documento tecnico, PoC prototipale e decisione GO/NO-GO.
 
-#### 14.1 FSRS Optimizer On-Device
+#### 14.1 FSRS Optimizer On-Device [COMPLETATO in v0.9.4]
 * Fattibilità di un ottimizzatore dei parametri FSRS in Dart puro (gradient descent) addestrato sui `ReviewLogs` locali, senza pytorch né servizi esterni.
 * Domande aperte: soglia minima di review per un'ottimizzazione utile; qualità dell'ottimo rispetto all'optimizer di riferimento (benchmark su dataset FSRS-Anki-20k); architettura preset per-mazzo compatibile con lo Strategy Pattern `SrsScheduler`.
 
-#### 14.2 TTS Offline di Sistema
+#### 14.2 TTS Offline di Sistema [COMPLETATO in v0.9.6]
 * Integrazione text-to-speech con i motori di sistema (Android TTS engine, Windows SAPI, macOS `say`) via platform channel, zero servizi cloud.
 * Domande aperte: comportamento su motori AOSP senza Google Services (target F-Droid); selezione lingua per campo/mazzo; fallback desktop.
 
-#### 14.3 Markdown Avanzato + MathJax
+#### 14.3 Markdown Avanzato + MathJax [COMPLETATO in v0.9.4]
 * Rendering di tabelle, blocchi codice con syntax highlighting e formule (LaTeX) in `FlipCardView` e nell'editor.
 * Domande aperte: pacchetti Dart disponibili vs renderer custom (coerenza col principio zero-dependency dell'`ReviewHeatmapWidget`); performance dentro il flip animato (lesson audit §1.8); impatto sull'import/export.
 
-#### 14.4 Grafici Avanzati
+#### 14.4 Grafici Avanzati [COMPLETATO in v0.9.4]
 * Estensione di `StatsScreen`: true retention per bucket di intervallo, distribuzione degli intervalli, breakdown dei pulsanti risposta, curva S/D/R per singola carta (Card Info).
 * Domande aperte: libreria esterna (`fl_chart`) vs custom painting (pattern dell'heatmap esistente); query di aggregazione SQL senza degradare l'I/O (lesson audit §1.4).
 

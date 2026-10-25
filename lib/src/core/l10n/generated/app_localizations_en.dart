@@ -1322,4 +1322,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get autoPlayAudioSubtitle =>
       'Play card audio notes automatically upon review';
+
+  @override
+  String get ttsSpeak => 'Listen (TTS)';
+
+  @override
+  String get ttsStop => 'Stop TTS';
+
+  @override
+  String get autoTts => 'Offline Text-to-Speech';
+
+  @override
+  String get autoTtsSubtitle =>
+      'Read card text aloud automatically if no audio is attached';
+
+  @override
+  String get ttsSpeechRate => 'Speech rate';
 }

@@ -2365,6 +2365,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Play card audio notes automatically upon review'**
   String get autoPlayAudioSubtitle;
+
+  /// No description provided for @ttsSpeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen (TTS)'**
+  String get ttsSpeak;
+
+  /// No description provided for @ttsStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop TTS'**
+  String get ttsStop;
+
+  /// No description provided for @autoTts.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline Text-to-Speech'**
+  String get autoTts;
+
+  /// No description provided for @autoTtsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read card text aloud automatically if no audio is attached'**
+  String get autoTtsSubtitle;
+
+  /// No description provided for @ttsSpeechRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech rate'**
+  String get ttsSpeechRate;
 }
 
 class _AppLocalizationsDelegate

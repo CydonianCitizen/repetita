@@ -1,7 +1,7 @@
 # Repetita 🧠⚡
 
 [![CI](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml/badge.svg)](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-0.9.5-blue.svg)
+![Version](https://img.shields.io/badge/version-0.9.6-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** and **SuperMemo SM-2** algorithms with an extensible multi-engine architecture.
@@ -12,6 +12,11 @@ Repetita is crafted for privacy, mathematical precision, and high performance. I
 
 ## 🌟 Key Features
 
+* **Offline Text-to-Speech (TTS) & Ergonomic Polish (v0.9.6):**
+  * **Device-Native Offline TTS Engine**: Zero-cloud speech synthesis powered directly by operating system speech engines (Android TextToSpeech, Windows SAPI/OneCore, Apple AVSpeechSynthesizer, Linux speech-dispatcher) with F-Droid compatibility.
+  * **Intelligent Card Text Sanitization**: Automated pre-speech text cleanup stripping cloze deletion tags, audio markers (`[sound:...]`), markdown images/links, LaTeX math delimiters, and raw HTML before vocalization.
+  * **Study Session Vocalization & Hotkey 'T'**: Dedicated TTS speaker action in study session AppBar, auto-TTS on card presentation/flip when cards lack recorded audio, and instantaneous speech replay via keyboard hotkey `T`.
+  * **Configurable Speech Settings**: Speech rate slider and language override options integrated cleanly into the Algorithm & Study settings screen.
 * **Audio Pipeline, Ephemeral Whiteboard & SRS Hardening (v0.9.5):**
   * **100% Line Coverage on SRS Engines**: Exhaustive test suites reaching 100% test coverage across FSRS parameter encoders, stability curve calculators, Adam optimizer models, and SM-2 scheduling algorithms.
   * **In-App Microphone Audio Recording**: One-tap recording dialog in `CardEditorScreen` with waveform animation, live playback preview, and automated tagging (`[sound:filename.m4a]`) for card front and back.

@@ -6,6 +6,7 @@ import '../../../../core/l10n/generated/app_localizations.dart';
 import '../../domain/srs_algorithm.dart';
 import '../../../study_session/presentation/controllers/auto_advance_controller.dart';
 import '../../../study_session/presentation/controllers/autoplay_audio_controller.dart';
+import '../../../study_session/presentation/controllers/tts_settings_controller.dart';
 import '../../../study_session/presentation/controllers/study_gesture_controller.dart';
 import '../../../study_session/presentation/controllers/timebox_controller.dart';
 import '../../../study_session/presentation/controllers/type_in_controller.dart';
@@ -464,6 +465,62 @@ class StudyAlgorithmSettingsScreen extends ConsumerWidget {
                             .read(autoPlayAudioControllerProvider.notifier)
                             .toggle();
                       },
+                    );
+                  },
+                ),
+                const Divider(indent: 56, height: 1),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final ttsSettings = ref.watch(
+                      ttsSettingsControllerProvider,
+                    );
+                    final notifier = ref.read(
+                      ttsSettingsControllerProvider.notifier,
+                    );
+                    return Column(
+                      children: [
+                        SettingsTile(
+                          key: const Key('setting_auto_tts_tile'),
+                          icon: Icons.record_voice_over_outlined,
+                          iconColor: Colors.deepPurpleAccent,
+                          title: l10n?.autoTts ?? 'Offline Text-to-Speech',
+                          subtitle: l10n?.autoTtsSubtitle ?? 'Read card text aloud automatically if no audio is attached',
+                          trailing: Switch(
+                            value: ttsSettings.autoTtsEnabled,
+                            onChanged: (_) => notifier.toggleAutoTts(),
+                          ),
+                          showChevron: false,
+                          onTap: () => notifier.toggleAutoTts(),
+                        ),
+                        if (ttsSettings.autoTtsEnabled)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(56, 0, 20, 12),
+                            child: Row(
+                              children: [
+                                Text(
+                                  l10n?.ttsSpeechRate ?? 'Speech rate',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                Expanded(
+                                  child: Slider(
+                                    key: const Key('tts_speech_rate_slider'),
+                                    value: ttsSettings.speechRate.clamp(
+                                      0.2,
+                                      1.0,
+                                    ),
+                                    min: 0.2,
+                                    max: 1.0,
+                                    divisions: 8,
+                                    label:
+                                        '${ttsSettings.speechRate.toStringAsFixed(2)}x',
+                                    onChanged: (val) =>
+                                        notifier.setSpeechRate(val),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
                     );
                   },
                 ),

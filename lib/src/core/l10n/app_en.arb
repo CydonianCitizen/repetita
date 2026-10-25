@@ -674,5 +674,10 @@
   "clearWhiteboard": "Clear",
   "toggleWhiteboard": "Whiteboard",
   "autoPlayAudio": "Autoplay Audio",
-  "autoPlayAudioSubtitle": "Play card audio notes automatically upon review"
+  "autoPlayAudioSubtitle": "Play card audio notes automatically upon review",
+  "ttsSpeak": "Listen (TTS)",
+  "ttsStop": "Stop TTS",
+  "autoTts": "Offline Text-to-Speech",
+  "autoTtsSubtitle": "Read card text aloud automatically if no audio is attached",
+  "ttsSpeechRate": "Speech rate"
 }

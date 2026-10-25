@@ -21,6 +21,8 @@ import 'controllers/study_session_controller.dart';
 import 'controllers/timebox_controller.dart';
 import 'controllers/type_in_controller.dart';
 import 'controllers/autoplay_audio_controller.dart';
+import 'controllers/tts_settings_controller.dart';
+import '../../media/data/services/tts_service.dart';
 import '../../media/data/services/audio_playback_service.dart';
 import '../../media/data/services/audio_service.dart';
 import 'controllers/whiteboard_controller.dart';
@@ -47,11 +49,13 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
   int? _lastAutoCardId;
   bool _timeboxTriggered = false;
   AudioPlaybackService? _audioPlaybackService;
+  TtsService? _ttsService;
 
   @override
   void initState() {
     super.initState();
     _audioPlaybackService = ref.read(audioPlaybackServiceProvider);
+    _ttsService = ref.read(ttsServiceProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initTimebox();
     });
@@ -114,6 +118,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
     _timeboxTimer?.cancel();
     _autoAdvanceTimer?.cancel();
     _audioPlaybackService?.stop();
+    _ttsService?.stop();
     super.dispose();
   }
 
@@ -124,7 +129,19 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
       final file = mediaService.getMediaFile(sounds.first);
       if (file.existsSync()) {
         await ref.read(audioPlaybackServiceProvider).playFile(file);
+        return;
       }
+    }
+
+    final ttsSettings = ref.read(ttsSettingsControllerProvider);
+    if (ttsSettings.autoTtsEnabled) {
+      await ref
+          .read(ttsServiceProvider)
+          .speak(
+            content,
+            language: ttsSettings.language,
+            speechRate: ttsSettings.speechRate,
+          );
     }
   }
 
@@ -162,6 +179,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
       if (prevCardId != nextCardId) {
         ref.read(audioPlaybackServiceProvider).stop();
         ref.read(whiteboardControllerProvider.notifier).clear();
+        ref.read(ttsServiceProvider).stop();
       }
 
       final autoPlay = ref.read(autoPlayAudioControllerProvider);
@@ -285,6 +303,37 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                 tooltip: l10n?.whiteboard ?? 'Whiteboard',
                 onPressed: () {
                   ref.read(whiteboardControllerProvider.notifier).toggle();
+                },
+              );
+            },
+          ),
+          Consumer(
+            builder: (context, ref, _) {
+              final currentCard = ref.watch(
+                provider.select((s) => s.value?.currentCard),
+              );
+              final isAnswerRevealed = ref.watch(
+                provider.select((s) => s.value?.isAnswerRevealed ?? false),
+              );
+              if (currentCard == null) return const SizedBox.shrink();
+              return IconButton(
+                key: const Key('study_tts_button'),
+                icon: const Icon(Icons.record_voice_over_outlined),
+                tooltip: l10n?.ttsSpeak ?? 'Listen (TTS)',
+                onPressed: () {
+                  final text = isAnswerRevealed
+                      ? (currentCard.back.isNotEmpty
+                            ? currentCard.back
+                            : currentCard.front)
+                      : currentCard.front;
+                  final ttsSettings = ref.read(ttsSettingsControllerProvider);
+                  ref
+                      .read(ttsServiceProvider)
+                      .speak(
+                        text,
+                        language: ttsSettings.language,
+                        speechRate: ttsSettings.speechRate,
+                      );
                 },
               );
             },
@@ -1175,6 +1224,26 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                     },
                     const SingleActivator(LogicalKeyboardKey.keyW): () {
                       ref.read(whiteboardControllerProvider.notifier).toggle();
+                    },
+                    const SingleActivator(LogicalKeyboardKey.keyT): () {
+                      final current = sessionState.currentCard;
+                      if (current != null) {
+                        final text = sessionState.isAnswerRevealed
+                            ? (current.back.isNotEmpty
+                                  ? current.back
+                                  : current.front)
+                            : current.front;
+                        final ttsSettings = ref.read(
+                          ttsSettingsControllerProvider,
+                        );
+                        ref
+                            .read(ttsServiceProvider)
+                            .speak(
+                              text,
+                              language: ttsSettings.language,
+                              speechRate: ttsSettings.speechRate,
+                            );
+                      }
                     },
                     const SingleActivator(LogicalKeyboardKey.keyR): () {
                       final current = sessionState.currentCard;

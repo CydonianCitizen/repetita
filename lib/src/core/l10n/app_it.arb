@@ -538,5 +538,10 @@
   "clearWhiteboard": "Cancella",
   "toggleWhiteboard": "Lavagna",
   "autoPlayAudio": "Riproduci audio automaticamente",
-  "autoPlayAudioSubtitle": "Riproduci automaticamente le note vocali della carta"
+  "autoPlayAudioSubtitle": "Riproduci automaticamente le note vocali della carta",
+  "ttsSpeak": "Ascolta (TTS)",
+  "ttsStop": "Interrompi TTS",
+  "autoTts": "Sintesi vocale offline (TTS)",
+  "autoTtsSubtitle": "Leggi a voce alta il testo della carta se privo di audio",
+  "ttsSpeechRate": "Velocità di lettura"
 }
