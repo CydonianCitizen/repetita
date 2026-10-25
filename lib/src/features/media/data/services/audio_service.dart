@@ -41,4 +41,18 @@ abstract final class AudioService {
   static String stripSoundTags(String text) {
     return text.replaceAll(_soundTagRegex, '');
   }
+
+  /// Extracts audio filenames and returns the cleaned text in a single pass.
+  static (List<String> sounds, String cleanText) parseAndStripSoundTags(
+    String text,
+  ) {
+    if (!text.contains('[sound:')) return (const [], text);
+    final sounds = <String>[];
+    final clean = text.replaceAllMapped(_soundTagRegex, (m) {
+      final name = m.group(1)?.trim();
+      if (name != null && name.isNotEmpty) sounds.add(name);
+      return '';
+    });
+    return (sounds, clean);
+  }
 }

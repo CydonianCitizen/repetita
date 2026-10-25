@@ -46,7 +46,7 @@ class RollingBackupService {
       final lastDate = DateTime.tryParse(lastBackupStr)?.toUtc();
       if (lastDate != null) {
         final diff = effectiveNow.difference(lastDate);
-        if (diff.inHours < intervalHours) {
+        if (!diff.isNegative && diff.inHours < intervalHours) {
           return null;
         }
       }

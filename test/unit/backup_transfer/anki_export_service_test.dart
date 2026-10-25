@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repetita/src/core/database/app_database.dart';
@@ -98,6 +99,64 @@ void main() {
       } finally {
         await destDb.close();
       }
+    });
+
+    test('exports deck with review cards and simultaneous revlogs', () async {
+      final deckId = await db.decksDao.createDeck(name: 'Review Deck');
+      final cardId = await db.cardsDao.createCard(
+        deckId: deckId,
+        front: 'Q',
+        back: 'A',
+      );
+
+      final now = DateTime.now();
+      // Update card to review state (state = 2)
+      await (db.update(db.cards)..where((c) => c.id.equals(cardId))).write(
+        CardsCompanion(
+          state: const Value(2),
+          due: Value(now.add(const Duration(days: 4))),
+        ),
+      );
+
+      // Insert two review logs with exact same timestamp
+      await db
+          .into(db.reviewLogs)
+          .insert(
+            ReviewLogsCompanion.insert(
+              cardId: cardId,
+              rating: 3,
+              state: 2,
+              due: now.add(const Duration(days: 4)),
+              stability: 2.0,
+              difficulty: 5.0,
+              elapsedDays: 1,
+              lastElapsedDays: 0,
+              scheduledDays: 4,
+              reviewedAt: now,
+            ),
+          );
+      await db
+          .into(db.reviewLogs)
+          .insert(
+            ReviewLogsCompanion.insert(
+              cardId: cardId,
+              rating: 4,
+              state: 2,
+              due: now.add(const Duration(days: 8)),
+              stability: 4.0,
+              difficulty: 4.5,
+              elapsedDays: 4,
+              lastElapsedDays: 4,
+              scheduledDays: 8,
+              reviewedAt: now,
+            ),
+          );
+
+      final bytes = await exportService.exportDeckToApkg(
+        deckId,
+        includeRevlog: true,
+      );
+      expect(bytes, isNotEmpty);
     });
   });
 }

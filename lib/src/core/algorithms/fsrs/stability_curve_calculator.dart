@@ -24,7 +24,10 @@ abstract final class StabilityCurveCalculator {
   static double retrievability(double elapsedDays, double stability) {
     if (stability <= 0.0) return 0.0;
     if (elapsedDays <= 0.0) return 1.0;
-    return pow(1.0 + factor * (elapsedDays / stability), -0.5).toDouble();
+    return (1.0 / sqrt(1.0 + factor * (elapsedDays / stability))).clamp(
+      0.0,
+      1.0,
+    );
   }
 
   static double daysToRetention(double targetR, double stability) {

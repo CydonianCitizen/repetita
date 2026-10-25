@@ -43,5 +43,23 @@ void main() {
         equals('Question?  More details.'),
       );
     });
+
+    test(
+      'parseAndStripSoundTags extracts sounds and cleans text in single pass',
+      () {
+        const text =
+            'Question? [sound:audio.mp3] More [sound:note.m4a] details.';
+        final (sounds, clean) = AudioService.parseAndStripSoundTags(text);
+        expect(sounds, equals(['audio.mp3', 'note.m4a']));
+        expect(clean, equals('Question?  More  details.'));
+
+        const plain = 'Plain text without sound';
+        final (plainSounds, plainClean) = AudioService.parseAndStripSoundTags(
+          plain,
+        );
+        expect(plainSounds, isEmpty);
+        expect(plainClean, equals(plain));
+      },
+    );
   });
 }

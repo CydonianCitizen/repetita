@@ -1,7 +1,7 @@
 # Repetita 🧠⚡
 
 [![CI](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml/badge.svg)](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-0.9.6-blue.svg)
+![Version](https://img.shields.io/badge/version-0.9.7-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** and **SuperMemo SM-2** algorithms with an extensible multi-engine architecture.
@@ -12,6 +12,11 @@ Repetita is crafted for privacy, mathematical precision, and high performance. I
 
 ## 🌟 Key Features
 
+* **Architectural Optimization & Codebase Hardening (v0.9.7):**
+  * **Zero-Redundancy Backup Pipeline**: Eliminated 5 duplicated DTO data layers, switching to direct Drift entity serialization with bidirectional ISO-8601 `ValueSerializer` (-413 net lines of dead code).
+  * **Anki Compliance & Export Robustness**: Fixed review card due dates relative to `col.crt`, enforced monotonic revlog IDs preventing primary key collisions, and chunked SQLite parameters for decks >1000 cards.
+  * **FSRS Optimizer Loop Boost**: Precalculated loop invariants (`d0Good`, `exp(w[8])`) and replaced slow transcendental `pow(x, -0.5)` with `1 / sqrt(x)` for faster on-device training.
+  * **Disk-Streaming Archive & Audio Parsing**: Replaced heavy double RAM buffering with disk-streaming `ZipFileEncoder` and optimized audio tag handling to single-pass scanning (`parseAndStripSoundTags`).
 * **Offline Text-to-Speech (TTS) & Ergonomic Polish (v0.9.6):**
   * **Device-Native Offline TTS Engine**: Zero-cloud speech synthesis powered directly by operating system speech engines (Android TextToSpeech, Windows SAPI/OneCore, Apple AVSpeechSynthesizer, Linux speech-dispatcher) with F-Droid compatibility.
   * **Intelligent Card Text Sanitization**: Automated pre-speech text cleanup stripping cloze deletion tags, audio markers (`[sound:...]`), markdown images/links, LaTeX math delimiters, and raw HTML before vocalization.

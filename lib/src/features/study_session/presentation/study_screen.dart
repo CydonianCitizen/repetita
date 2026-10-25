@@ -464,6 +464,30 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                 }
               }
 
+              Future<void> submitRating(Rating rating) async {
+                _lastAutoCardId = null;
+                _autoAdvanceTimer?.cancel();
+                final haptic = ref.read(hapticServiceProvider);
+                final intensity = ref.read(hapticFeedbackControllerProvider);
+                unawaited(haptic.triggerRatingFeedback(rating, intensity));
+                try {
+                  await controller.submitRating(rating);
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(e.toString())));
+                  }
+                }
+              }
+
+              void revealAnswer() {
+                _lastAutoCardId = null;
+                _autoAdvanceTimer?.cancel();
+                final intensity = ref.read(hapticFeedbackControllerProvider);
+                ref.read(hapticServiceProvider).triggerSelection(intensity);
+                controller.revealAnswer();
+              }
+
               final animLevel = ref.watch(animationLevelControllerProvider);
               final isReduced =
                   animLevel.isReduced ||
@@ -623,30 +647,6 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                 final total = sessionState.totalCards;
                 final currentNum = sessionState.currentIndex + 1;
                 final progress = total > 0 ? currentNum / total : 0.0;
-
-                Future<void> submitRating(Rating rating) async {
-                  _lastAutoCardId = null;
-                  _autoAdvanceTimer?.cancel();
-                  final haptic = ref.read(hapticServiceProvider);
-                  final intensity = ref.read(hapticFeedbackControllerProvider);
-                  unawaited(haptic.triggerRatingFeedback(rating, intensity));
-                  try {
-                    await controller.submitRating(rating);
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(e.toString())));
-                    }
-                  }
-                }
-
-                void revealAnswer() {
-                  _lastAutoCardId = null;
-                  _autoAdvanceTimer?.cancel();
-                  final intensity = ref.read(hapticFeedbackControllerProvider);
-                  ref.read(hapticServiceProvider).triggerSelection(intensity);
-                  controller.revealAnswer();
-                }
 
                 void handleGestureAction(StudyGestureAction action) {
                   if (action == StudyGestureAction.none) return;
@@ -1154,72 +1154,32 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
                       sessionState.currentCard != null) ...{
                     const SingleActivator(LogicalKeyboardKey.space): () {
                       if (!sessionState.isAnswerRevealed) {
-                        final intensity = ref.read(
-                          hapticFeedbackControllerProvider,
-                        );
-                        ref
-                            .read(hapticServiceProvider)
-                            .triggerSelection(intensity);
-                        controller.revealAnswer();
+                        revealAnswer();
                       }
                     },
                     const SingleActivator(LogicalKeyboardKey.enter): () {
                       if (!sessionState.isAnswerRevealed) {
-                        final intensity = ref.read(
-                          hapticFeedbackControllerProvider,
-                        );
-                        ref
-                            .read(hapticServiceProvider)
-                            .triggerSelection(intensity);
-                        controller.revealAnswer();
+                        revealAnswer();
                       }
                     },
                     const SingleActivator(LogicalKeyboardKey.digit1): () {
                       if (sessionState.isAnswerRevealed) {
-                        final haptic = ref.read(hapticServiceProvider);
-                        final intensity = ref.read(
-                          hapticFeedbackControllerProvider,
-                        );
-                        unawaited(
-                          haptic.triggerRatingFeedback(Rating.again, intensity),
-                        );
-                        controller.submitRating(Rating.again);
+                        submitRating(Rating.again);
                       }
                     },
                     const SingleActivator(LogicalKeyboardKey.digit2): () {
                       if (sessionState.isAnswerRevealed) {
-                        final haptic = ref.read(hapticServiceProvider);
-                        final intensity = ref.read(
-                          hapticFeedbackControllerProvider,
-                        );
-                        unawaited(
-                          haptic.triggerRatingFeedback(Rating.hard, intensity),
-                        );
-                        controller.submitRating(Rating.hard);
+                        submitRating(Rating.hard);
                       }
                     },
                     const SingleActivator(LogicalKeyboardKey.digit3): () {
                       if (sessionState.isAnswerRevealed) {
-                        final haptic = ref.read(hapticServiceProvider);
-                        final intensity = ref.read(
-                          hapticFeedbackControllerProvider,
-                        );
-                        unawaited(
-                          haptic.triggerRatingFeedback(Rating.good, intensity),
-                        );
-                        controller.submitRating(Rating.good);
+                        submitRating(Rating.good);
                       }
                     },
                     const SingleActivator(LogicalKeyboardKey.digit4): () {
                       if (sessionState.isAnswerRevealed) {
-                        final haptic = ref.read(hapticServiceProvider);
-                        final intensity = ref.read(
-                          hapticFeedbackControllerProvider,
-                        );
-                        unawaited(
-                          haptic.triggerRatingFeedback(Rating.easy, intensity),
-                        );
-                        controller.submitRating(Rating.easy);
+                        submitRating(Rating.easy);
                       }
                     },
                     const SingleActivator(LogicalKeyboardKey.keyW): () {

@@ -348,12 +348,6 @@ class AnkiPackageService {
 
     // Resolve clean deck name
     String deckName = decks[did] ?? 'Anki Deck';
-    if (deckName == 'Default' && decks.length > 1) {
-      deckName = decks.values.firstWhere(
-        (n) => n != 'Default',
-        orElse: () => 'Default',
-      );
-    }
     // Replace Anki's hierarchy separator :: with -
     deckName = deckName.replaceAll('::', ' - ').trim();
     if (deckName.isEmpty) deckName = 'Anki Deck';
@@ -421,6 +415,9 @@ class AnkiPackageService {
       final tagIdMap = <String, int>{};
       int tagsCreated = 0;
 
+      final existingDbTags = await db.select(db.tags).get();
+      final tagNameToId = {for (final t in existingDbTags) t.name: t.id};
+
       for (final rawTag in distinctTags) {
         final cleanTag = rawTag.trim();
         if (cleanTag.isEmpty) continue;
@@ -428,15 +425,12 @@ class AnkiPackageService {
             ? cleanTag.substring(0, 50)
             : cleanTag;
 
-        final existing = await (db.select(
-          db.tags,
-        )..where((t) => t.name.equals(cappedTag))).getSingleOrNull();
-
-        if (existing != null) {
-          tagIdMap[rawTag] = existing.id;
+        if (tagNameToId.containsKey(cappedTag)) {
+          tagIdMap[rawTag] = tagNameToId[cappedTag]!;
         } else {
           final tagId = await db.tagsDao.getOrCreateTag(cappedTag);
           tagIdMap[rawTag] = tagId;
+          tagNameToId[cappedTag] = tagId;
           tagsCreated++;
         }
       }

@@ -87,5 +87,20 @@ void main() {
       final remaining = await rollingService.listAutoBackups();
       expect(remaining, hasLength(3));
     });
+
+    test('checkAndPerformAutoBackup heals when clock drifts backwards into the past', () async {
+      final futureTime = DateTime.utc(2026, 10, 5, 12, 0, 0);
+      await rollingService.checkAndPerformAutoBackup(now: futureTime);
+
+      // System clock jumped backward
+      final pastTime = DateTime.utc(2026, 10, 1, 12, 0, 0);
+      final backup = await rollingService.checkAndPerformAutoBackup(
+        now: pastTime,
+      );
+
+      expect(backup, isNotNull);
+      final lastTimestamp = await db.getSetting('last_auto_backup_timestamp');
+      expect(lastTimestamp, equals(pastTime.toIso8601String()));
+    });
   });
 }

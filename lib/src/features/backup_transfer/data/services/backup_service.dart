@@ -52,74 +52,11 @@ class BackupService {
     final payload = BackupPayload(
       version: 1,
       exportedAt: (now ?? DateTime.now()).toUtc(),
-      decks: decksList
-          .map(
-            (d) => DeckPayload(
-              id: d.id,
-              name: d.name,
-              description: d.description,
-              createdAt: d.createdAt,
-              updatedAt: d.updatedAt,
-              examDate: d.examDate,
-              targetRetention: d.targetRetention,
-            ),
-          )
-          .toList(),
-      cards: cardsList
-          .map(
-            (c) => CardPayload(
-              id: c.id,
-              deckId: c.deckId,
-              front: c.front,
-              back: c.back,
-              state: c.state,
-              stability: c.stability,
-              difficulty: c.difficulty,
-              easinessFactor: c.easinessFactor,
-              due: c.due,
-              lastReview: c.lastReview,
-              reps: c.reps,
-              lapses: c.lapses,
-              createdAt: c.createdAt,
-              isSuspended: c.isSuspended,
-              buriedUntil: c.buriedUntil,
-              clozeIndex: c.clozeIndex,
-              flag: c.flag,
-              noteId: c.noteId,
-            ),
-          )
-          .toList(),
-      reviewLogs: reviewLogsList
-          .map(
-            (r) => ReviewLogPayload(
-              id: r.id,
-              cardId: r.cardId,
-              rating: r.rating,
-              state: r.state,
-              due: r.due,
-              stability: r.stability,
-              difficulty: r.difficulty,
-              easinessFactor: r.easinessFactor,
-              elapsedDays: r.elapsedDays,
-              lastElapsedDays: r.lastElapsedDays,
-              scheduledDays: r.scheduledDays,
-              reviewedAt: r.reviewedAt,
-            ),
-          )
-          .toList(),
-      tags: tagsList
-          .map(
-            (t) => TagPayload(
-              id: t.id,
-              name: t.name,
-              color: t.color,
-              createdAt: t.createdAt,
-            ),
-          )
-          .toList(),
-      cardTags: cardTagsList
-          .map((ct) => CardTagPayload(cardId: ct.cardId, tagId: ct.tagId))
-          .toList(),
+      decks: decksList,
+      cards: cardsList,
+      reviewLogs: reviewLogsList,
+      tags: tagsList,
+      cardTags: cardTagsList,
     );
 
     final json = payload.toJson();
@@ -152,82 +89,33 @@ class BackupService {
         await db.delete(db.decks).go();
 
         final validDeckIds = payload.decks.map((d) => d.id).toSet();
-        final deckCompanions = <DecksCompanion>[
-          for (final d in payload.decks)
-            DecksCompanion.insert(
-              id: Value(d.id),
-              name: d.name,
-              description: Value(d.description),
-              createdAt: Value(d.createdAt),
-              updatedAt: Value(d.updatedAt),
-              examDate: Value(d.examDate),
-              targetRetention: Value(d.targetRetention),
-            ),
+        final deckCompanions = [
+          for (final d in payload.decks) d.toCompanion(false),
         ];
 
         final validCards = payload.cards
             .where((c) => validDeckIds.contains(c.deckId))
             .toList();
         final validCardIds = validCards.map((c) => c.id).toSet();
-        final cardCompanions = <CardsCompanion>[
-          for (final c in validCards)
-            CardsCompanion.insert(
-              id: Value(c.id),
-              deckId: c.deckId,
-              front: c.front,
-              back: c.back,
-              state: Value(c.state),
-              stability: Value(c.stability),
-              difficulty: Value(c.difficulty),
-              due: c.due,
-              lastReview: Value(c.lastReview),
-              reps: Value(c.reps),
-              lapses: Value(c.lapses),
-              createdAt: Value(c.createdAt),
-              isSuspended: Value(c.isSuspended),
-              buriedUntil: Value(c.buriedUntil),
-              clozeIndex: Value(c.clozeIndex),
-              flag: Value(c.flag),
-              noteId: Value(c.noteId),
-            ),
+        final cardCompanions = [
+          for (final c in validCards) c.toCompanion(false),
         ];
 
         final validLogs = payload.reviewLogs
             .where((l) => validCardIds.contains(l.cardId))
             .toList();
-        final logCompanions = <ReviewLogsCompanion>[
-          for (final l in validLogs)
-            ReviewLogsCompanion.insert(
-              id: Value(l.id),
-              cardId: l.cardId,
-              rating: l.rating,
-              state: l.state,
-              due: l.due,
-              stability: l.stability,
-              difficulty: l.difficulty,
-              elapsedDays: l.elapsedDays,
-              lastElapsedDays: l.lastElapsedDays,
-              scheduledDays: l.scheduledDays,
-              reviewedAt: l.reviewedAt,
-            ),
-        ];
+        final logCompanions = [for (final l in validLogs) l.toCompanion(false)];
 
         final validTagIds = payload.tags.map((t) => t.id).toSet();
-        final tagCompanions = <TagsCompanion>[
-          for (final t in payload.tags)
-            TagsCompanion.insert(
-              id: Value(t.id),
-              name: t.name,
-              color: Value(t.color),
-              createdAt: Value(t.createdAt),
-            ),
+        final tagCompanions = [
+          for (final t in payload.tags) t.toCompanion(false),
         ];
 
-        final cardTagCompanions = <CardTagsCompanion>[
+        final cardTagCompanions = [
           for (final ct in payload.cardTags)
             if (validCardIds.contains(ct.cardId) &&
                 validTagIds.contains(ct.tagId))
-              CardTagsCompanion.insert(cardId: ct.cardId, tagId: ct.tagId),
+              ct.toCompanion(false),
         ];
 
         await db.batch((batch) {
@@ -284,26 +172,9 @@ class BackupService {
             assignedId = nextDeckId++;
           }
           deckIdMap[deck.id] = assignedId;
-          newDeckCompanions.add(
-            DecksCompanion.insert(
-              id: Value(assignedId),
-              name: deck.name,
-              description: Value(deck.description),
-              createdAt: Value(deck.createdAt),
-              updatedAt: Value(deck.updatedAt),
-              examDate: Value(deck.examDate),
-              targetRetention: Value(deck.targetRetention),
-            ),
-          );
-          existingDecksById[assignedId] = Deck(
-            id: assignedId,
-            name: deck.name,
-            description: deck.description,
-            createdAt: deck.createdAt,
-            updatedAt: deck.updatedAt,
-            examDate: deck.examDate,
-            targetRetention: deck.targetRetention,
-          );
+          final assignedDeck = deck.copyWith(id: assignedId);
+          newDeckCompanions.add(assignedDeck.toCompanion(false));
+          existingDecksById[assignedId] = assignedDeck;
         }
       }
 
@@ -346,49 +217,13 @@ class BackupService {
             assignedId = nextCardId++;
           }
           cardIdMap[card.id] = assignedId;
-          newCardCompanions.add(
-            CardsCompanion.insert(
-              id: Value(assignedId),
-              deckId: targetDeckId,
-              front: card.front,
-              back: card.back,
-              state: Value(card.state),
-              stability: Value(card.stability),
-              difficulty: Value(card.difficulty),
-              easinessFactor: Value(card.easinessFactor),
-              due: card.due,
-              lastReview: Value(card.lastReview),
-              reps: Value(card.reps),
-              lapses: Value(card.lapses),
-              createdAt: Value(card.createdAt),
-              isSuspended: Value(card.isSuspended),
-              buriedUntil: Value(card.buriedUntil),
-              clozeIndex: Value(card.clozeIndex),
-              flag: Value(card.flag),
-              noteId: Value(card.noteId),
-            ),
-          );
-          final addedCard = Card(
+          final assignedCard = card.copyWith(
             id: assignedId,
             deckId: targetDeckId,
-            front: card.front,
-            back: card.back,
-            state: card.state,
-            stability: card.stability,
-            difficulty: card.difficulty,
-            easinessFactor: card.easinessFactor,
-            due: card.due,
-            lastReview: card.lastReview,
-            reps: card.reps,
-            lapses: card.lapses,
-            createdAt: card.createdAt,
-            isSuspended: card.isSuspended,
-            buriedUntil: card.buriedUntil,
-            clozeIndex: card.clozeIndex,
-            flag: card.flag,
           );
-          existingCardsById[assignedId] = addedCard;
-          existingCardsByContent[contentKey] = addedCard;
+          newCardCompanions.add(assignedCard.toCompanion(false));
+          existingCardsById[assignedId] = assignedCard;
+          existingCardsByContent[contentKey] = assignedCard;
         }
       }
 
@@ -416,36 +251,9 @@ class BackupService {
         if (nextLogId <= log.id) nextLogId = log.id + 1;
         assignedId = nextLogId++;
 
-        newLogCompanions.add(
-          ReviewLogsCompanion.insert(
-            id: Value(assignedId),
-            cardId: targetCardId,
-            rating: log.rating,
-            state: log.state,
-            due: log.due,
-            stability: log.stability,
-            difficulty: log.difficulty,
-            easinessFactor: Value(log.easinessFactor),
-            elapsedDays: log.elapsedDays,
-            lastElapsedDays: log.lastElapsedDays,
-            scheduledDays: log.scheduledDays,
-            reviewedAt: log.reviewedAt,
-          ),
-        );
-        existingLogsByKey[logKey] = ReviewLog(
-          id: assignedId,
-          cardId: targetCardId,
-          rating: log.rating,
-          state: log.state,
-          due: log.due,
-          stability: log.stability,
-          difficulty: log.difficulty,
-          easinessFactor: log.easinessFactor,
-          elapsedDays: log.elapsedDays,
-          lastElapsedDays: log.lastElapsedDays,
-          scheduledDays: log.scheduledDays,
-          reviewedAt: log.reviewedAt,
-        );
+        final assignedLog = log.copyWith(id: assignedId, cardId: targetCardId);
+        newLogCompanions.add(assignedLog.toCompanion(false));
+        existingLogsByKey[logKey] = assignedLog;
       }
 
       final existingTagsByName = {for (final t in existingTags) t.name: t};
@@ -467,22 +275,10 @@ class BackupService {
             assignedId = nextTagId++;
           }
           tagIdMap[tag.id] = assignedId;
-          newTagCompanions.add(
-            TagsCompanion.insert(
-              id: Value(assignedId),
-              name: tag.name,
-              color: Value(tag.color),
-              createdAt: Value(tag.createdAt),
-            ),
-          );
-          final addedTag = Tag(
-            id: assignedId,
-            name: tag.name,
-            color: tag.color,
-            createdAt: tag.createdAt,
-          );
-          existingTagsByName[tag.name] = addedTag;
-          existingTagsById[assignedId] = addedTag;
+          final assignedTag = tag.copyWith(id: assignedId);
+          newTagCompanions.add(assignedTag.toCompanion(false));
+          existingTagsByName[tag.name] = assignedTag;
+          existingTagsById[assignedId] = assignedTag;
         }
       }
 

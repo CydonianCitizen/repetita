@@ -37,9 +37,11 @@ class CardContentRenderer extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final soundTags = AudioService.extractSoundTags(content);
+    final (soundTags, strippedRaw) = AudioService.parseAndStripSoundTags(
+      content,
+    );
     if (soundTags.isNotEmpty) {
-      final strippedText = AudioService.stripSoundTags(content).trim();
+      final strippedText = strippedRaw.trim();
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: textAlign == TextAlign.center

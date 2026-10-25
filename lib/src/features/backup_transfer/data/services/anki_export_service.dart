@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 
-import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart' as sqlite;
@@ -64,16 +65,26 @@ class AnkiExportService {
       db.cards,
     )..where((c) => c.deckId.isIn(targetDeckIds))).get();
 
-    // Query tags per card
-    final cardTagsQuery = (db.select(db.cardTags).join([
-      innerJoin(db.tags, db.tags.id.equalsExp(db.cardTags.tagId)),
-    ]))..where(db.cardTags.cardId.isIn(cards.map((c) => c.id).toSet()));
-
+    // Query tags per card with chunking to avoid SQLite variable limit
     final tagsByCard = <int, List<String>>{};
-    for (final row in await cardTagsQuery.get()) {
-      final cId = row.readTable(db.cardTags).cardId;
-      final tName = row.readTable(db.tags).name;
-      tagsByCard.putIfAbsent(cId, () => []).add(tName);
+    if (cards.isNotEmpty) {
+      final cardIds = cards.map((c) => c.id).toList();
+      const chunkSize = 500;
+      for (var i = 0; i < cardIds.length; i += chunkSize) {
+        final chunk = cardIds.sublist(
+          i,
+          math.min(i + chunkSize, cardIds.length),
+        );
+        final cardTagsQuery = (db.select(db.cardTags).join([
+          innerJoin(db.tags, db.tags.id.equalsExp(db.cardTags.tagId)),
+        ]))..where(db.cardTags.cardId.isIn(chunk));
+
+        for (final row in await cardTagsQuery.get()) {
+          final cId = row.readTable(db.cardTags).cardId;
+          final tName = row.readTable(db.tags).name;
+          tagsByCard.putIfAbsent(cId, () => []).add(tName);
+        }
+      }
     }
 
     // Temporary working directory to create SQLite database
@@ -83,9 +94,16 @@ class AnkiExportService {
     try {
       final ankiDb = sqlite.sqlite3.open(tempDbFile.path);
       try {
+        final crtSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
         _createAnkiSchema(ankiDb);
-        _populateColTable(ankiDb, targetDecks);
-        _populateNotesAndCards(ankiDb, cards, targetDecks, tagsByCard);
+        _populateColTable(ankiDb, targetDecks, crtSeconds);
+        _populateNotesAndCards(
+          ankiDb,
+          cards,
+          targetDecks,
+          tagsByCard,
+          crtSeconds,
+        );
 
         if (includeRevlog && cards.isNotEmpty) {
           await _populateRevlog(ankiDb, cards.map((c) => c.id).toSet());
@@ -93,8 +111,6 @@ class AnkiExportService {
       } finally {
         ankiDb.close();
       }
-
-      final collectionBytes = await tempDbFile.readAsBytes();
 
       // Collect referenced media files (audio [sound:...] and media://)
       final referencedMedia = <String>{};
@@ -109,15 +125,11 @@ class AnkiExportService {
         );
       }
 
-      // Package into ZIP
-      final archive = Archive();
-      archive.addFile(
-        ArchiveFile(
-          'collection.anki2',
-          collectionBytes.length,
-          collectionBytes,
-        ),
-      );
+      // Package into ZIP using ZipFileEncoder directly from disk (zero redundant RAM buffering)
+      final zipFilePath = p.join(tempDir.path, 'export.apkg');
+      final encoder = ZipFileEncoder()..create(zipFilePath);
+
+      encoder.addFileSync(tempDbFile, 'collection.anki2');
 
       final mediaMap = <String, String>{};
       var mediaIdx = 0;
@@ -125,21 +137,20 @@ class AnkiExportService {
         for (final mediaName in referencedMedia) {
           final file = mediaService!.getMediaFile(mediaName);
           if (file.existsSync()) {
-            final fileBytes = file.readAsBytesSync();
             final entryName = mediaIdx.toString();
-            archive.addFile(
-              ArchiveFile(entryName, fileBytes.length, fileBytes),
-            );
+            encoder.addFileSync(file, entryName);
             mediaMap[entryName] = mediaName;
             mediaIdx++;
           }
         }
       }
 
-      archive.addFile(ArchiveFile.string('media', jsonEncode(mediaMap)));
+      final mediaJsonFile = File(p.join(tempDir.path, 'media'));
+      mediaJsonFile.writeAsStringSync(jsonEncode(mediaMap));
+      encoder.addFileSync(mediaJsonFile, 'media');
 
-      final zipData = ZipEncoder().encode(archive);
-      return zipData;
+      encoder.closeSync();
+      return await File(zipFilePath).readAsBytes();
     } finally {
       try {
         if (tempDir.existsSync()) {
@@ -219,8 +230,12 @@ class AnkiExportService {
     ''');
   }
 
-  void _populateColTable(sqlite.Database ankiDb, List<Deck> targetDecks) {
-    final nowSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  void _populateColTable(
+    sqlite.Database ankiDb,
+    List<Deck> targetDecks,
+    int crtSeconds,
+  ) {
+    final nowSeconds = crtSeconds;
 
     // Define standard models (Basic and Cloze)
     final models = {
@@ -388,9 +403,11 @@ class AnkiExportService {
     List<Card> cards,
     List<Deck> targetDecks,
     Map<int, List<String>> tagsByCard,
+    int crtSeconds,
   ) {
     final nowSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final crtDate = DateTime.fromMillisecondsSinceEpoch(crtSeconds * 1000);
 
     final noteStmt = ankiDb.prepare(
       'INSERT INTO notes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -445,9 +462,11 @@ class AnkiExportService {
         }
 
         final factor = (card.easinessFactor * 1000).round();
-        final dueDays = card.due
-            .difference(DateTime.fromMillisecondsSinceEpoch(0))
-            .inDays;
+        final dueVal = card.state == 0
+            ? (i + 1)
+            : (card.state == 1 || card.state == 3
+                  ? card.due.millisecondsSinceEpoch ~/ 1000
+                  : card.due.difference(crtDate).inDays);
         final ord = card.clozeIndex != null ? (card.clozeIndex! - 1) : 0;
         final cardAnkiId = autoNoteCounter * 10 + i;
 
@@ -464,7 +483,7 @@ class AnkiExportService {
               : (card.state == 0
                     ? 0
                     : 2), // queue: -1 suspended, 0 new, 2 review
-          card.state == 0 ? (i + 1) : dueDays, // due
+          dueVal, // due
           0, // ivl
           factor,
           card.reps,
@@ -483,16 +502,31 @@ class AnkiExportService {
   }
 
   Future<void> _populateRevlog(sqlite.Database ankiDb, Set<int> cardIds) async {
-    final logs = await (db.select(
-      db.reviewLogs,
-    )..where((l) => l.cardId.isIn(cardIds))).get();
+    if (cardIds.isEmpty) return;
+    final idList = cardIds.toList();
+    const chunkSize = 500;
+    final logs = <ReviewLog>[];
+    for (var i = 0; i < idList.length; i += chunkSize) {
+      final chunk = idList.sublist(i, math.min(i + chunkSize, idList.length));
+      final chunkLogs = await (db.select(
+        db.reviewLogs,
+      )..where((l) => l.cardId.isIn(chunk))).get();
+      logs.addAll(chunkLogs);
+    }
+
+    logs.sort((a, b) => a.reviewedAt.compareTo(b.reviewedAt));
 
     final stmt = ankiDb.prepare(
       'INSERT INTO revlog VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
     );
     try {
+      int lastId = 0;
       for (final log in logs) {
-        final id = log.reviewedAt.millisecondsSinceEpoch;
+        int id = log.reviewedAt.millisecondsSinceEpoch;
+        if (id <= lastId) {
+          id = lastId + 1;
+        }
+        lastId = id;
         final factor = ((log.easinessFactor) * 1000).round();
         stmt.execute([
           id,

@@ -33,7 +33,9 @@ class FlutterTtsEngine implements TtsEngine {
 
   @override
   Future<void> stop() async {
-    await _tts.stop();
+    try {
+      await _tts.stop();
+    } catch (_) {}
   }
 
   @override

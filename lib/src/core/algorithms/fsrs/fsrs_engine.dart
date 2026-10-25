@@ -5,6 +5,7 @@ import 'models/fsrs_card.dart';
 import 'models/fsrs_models.dart';
 import 'models/fsrs_parameters.dart';
 import 'models/record_log.dart';
+import 'stability_curve_calculator.dart';
 
 class FsrsEngine implements SrsScheduler {
   const FsrsEngine([this.parameters = const FsrsParameters(), this.rng]);
@@ -14,11 +15,8 @@ class FsrsEngine implements SrsScheduler {
 
   static const double factor = 19.0 / 81.0;
 
-  double retrievability(double elapsedDays, double stability) {
-    if (stability <= 0.0) return 0.0;
-    if (elapsedDays <= 0.0) return 1.0;
-    return pow(1.0 + factor * (elapsedDays / stability), -0.5).toDouble();
-  }
+  double retrievability(double elapsedDays, double stability) =>
+      StabilityCurveCalculator.retrievability(elapsedDays, stability);
 
   double initStability(Rating rating) {
     return parameters.w[rating.value - 1];

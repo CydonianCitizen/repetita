@@ -41,36 +41,11 @@ class MediaService {
   Future<MediaData> saveImageBytes(
     Uint8List bytes, {
     required String originalFileName,
-  }) async {
-    final checksum = computeChecksum(bytes);
-
-    // Check if media with identical checksum already exists
-    final existing = await mediaDao.getMediaByChecksum(checksum);
-    if (existing != null) {
-      final existingFile = getMediaFile(existing.fileName);
-      if (existingFile.existsSync()) {
-        return existing;
-      }
-    }
-
-    final ext = p.extension(originalFileName).toLowerCase();
-    final sanitizedExt = ext.isNotEmpty ? ext : '.png';
-    final fileName = '${checksum.substring(0, 16)}$sanitizedExt';
-
-    await getMediaDirectory();
-    final targetFile = getMediaFile(fileName);
-    targetFile.writeAsBytesSync(bytes);
-
-    final mediaId = await mediaDao.insertMedia(
-      MediaCompanion.insert(
-        fileName: fileName,
-        checksum: checksum,
-        sizeBytes: bytes.length,
-      ),
-    );
-
-    return (await mediaDao.getMediaById(mediaId))!;
-  }
+  }) => _saveMediaBytes(
+    bytes,
+    originalFileName: originalFileName,
+    defaultExtension: '.png',
+  );
 
   /// Saves audio bytes to disk with SHA-256 deduplication.
   ///
@@ -78,6 +53,16 @@ class MediaService {
   Future<MediaData> saveAudioBytes(
     Uint8List bytes, {
     required String originalFileName,
+  }) => _saveMediaBytes(
+    bytes,
+    originalFileName: originalFileName,
+    defaultExtension: '.m4a',
+  );
+
+  Future<MediaData> _saveMediaBytes(
+    Uint8List bytes, {
+    required String originalFileName,
+    required String defaultExtension,
   }) async {
     final checksum = computeChecksum(bytes);
 
@@ -90,7 +75,7 @@ class MediaService {
     }
 
     final ext = p.extension(originalFileName).toLowerCase();
-    final sanitizedExt = ext.isNotEmpty ? ext : '.m4a';
+    final sanitizedExt = ext.isNotEmpty ? ext : defaultExtension;
     final fileName = '${checksum.substring(0, 16)}$sanitizedExt';
 
     await getMediaDirectory();

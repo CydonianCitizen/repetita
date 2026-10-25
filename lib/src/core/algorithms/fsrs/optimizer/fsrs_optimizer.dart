@@ -77,6 +77,8 @@ class FsrsOptimizer {
   /// L = - (1/N) * sum [ y_i * ln(R_i) + (1 - y_i) * ln(1 - R_i) ]
   double calculateLoss(List<CardReviewHistory> histories, List<double> w) {
     const factor = 19.0 / 81.0;
+    final d0Good = w[4].clamp(1.0, 10.0);
+    final expW8 = exp(w[8]);
     var totalLoss = 0.0;
     var count = 0;
 
@@ -94,8 +96,7 @@ class FsrsOptimizer {
         final t = max(0.0, review.elapsedDays);
 
         // Retrievability: R(t, S) = (1 + factor * t / S)^(-0.5)
-        var r = pow(1.0 + factor * (t / s), -0.5).toDouble();
-        r = r.clamp(1e-6, 1.0 - 1e-6);
+        var r = (1.0 / sqrt(1.0 + factor * (t / s))).clamp(1e-6, 1.0 - 1e-6);
 
         final y = review.rating > 1 ? 1.0 : 0.0;
         final bce = -(y * log(r) + (1.0 - y) * log(1.0 - r));
@@ -106,7 +107,6 @@ class FsrsOptimizer {
         final rating = review.rating.clamp(1, 4);
         final deltaD = -w[6] * (rating - 3);
         final dPrime = d + deltaD;
-        final d0Good = (w[4] - (3 - 3) * w[5]).clamp(1.0, 10.0);
         d = (w[7] * d0Good + (1.0 - w[7]) * dPrime).clamp(1.0, 10.0);
 
         // Update stability
@@ -124,7 +124,7 @@ class FsrsOptimizer {
           final nextS =
               s *
               (1.0 +
-                  exp(w[8]) *
+                  expW8 *
                       (11.0 - d) *
                       sPower *
                       rFactor *
