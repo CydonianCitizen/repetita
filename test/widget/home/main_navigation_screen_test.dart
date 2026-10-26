@@ -20,6 +20,8 @@ class _FakeDecksDao implements DecksDao {
           name: 'Vocabulary',
           createdAt: DateTime.utc(2026, 1, 1),
           updatedAt: DateTime.utc(2026, 1, 1),
+          globalId: '',
+          updatedHlc: '',
         ),
         totalCards: 5,
         dueCards: 2,

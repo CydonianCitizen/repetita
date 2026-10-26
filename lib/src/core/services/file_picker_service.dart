@@ -79,4 +79,8 @@ class FilePickerService {
     if (uri == null) return null;
     return uri.scheme == 'file' ? uri.toFilePath() : uri.toString();
   }
+
+  Future<String?> pickDirectory({String? dialogTitle}) async {
+    return FilePicker.getDirectoryPath(dialogTitle: dialogTitle);
+  }
 }

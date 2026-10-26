@@ -13,6 +13,7 @@ class BackupDateTimeSerializer extends ValueSerializer {
       if (T == double) return 2.5 as T;
       if (T == int) return 0 as T;
       if (T == bool) return false as T;
+      if (T == String) return '' as T;
       return null as T;
     }
     if (json is num && T == double) {

@@ -140,6 +140,8 @@ void main() {
                   name: 'Bio',
                   createdAt: DateTime.now(),
                   updatedAt: DateTime.now(),
+                  globalId: '',
+                  updatedHlc: '',
                 ),
                 totalCards: 2,
                 dueCards: 2,

@@ -6,7 +6,14 @@ import 'package:repetita/src/features/decks/domain/deck_hierarchy.dart';
 void main() {
   Deck makeDeck(int id, String name) {
     final now = DateTime.now().toUtc();
-    return Deck(id: id, name: name, createdAt: now, updatedAt: now);
+    return Deck(
+      id: id,
+      name: name,
+      createdAt: now,
+      updatedAt: now,
+      globalId: '',
+      updatedHlc: '',
+    );
   }
 
   DeckWithCounts makeDeckCounts(int id, String name, int total, int due) {

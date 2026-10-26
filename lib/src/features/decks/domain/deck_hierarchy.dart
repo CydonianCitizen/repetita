@@ -101,6 +101,8 @@ class DeckHierarchyHelper {
           name: path,
           createdAt: now,
           updatedAt: now,
+          globalId: '',
+          updatedHlc: '',
         );
         nodeMap[path] = DeckNode(
           deckWithCounts: DeckWithCounts(

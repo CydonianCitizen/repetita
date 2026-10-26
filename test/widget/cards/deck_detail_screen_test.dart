@@ -26,6 +26,8 @@ void main() {
       description: 'Introductory biology deck',
       createdAt: DateTime.now().toUtc(),
       updatedAt: DateTime.now().toUtc(),
+      globalId: '',
+      updatedHlc: '',
     );
   });
 

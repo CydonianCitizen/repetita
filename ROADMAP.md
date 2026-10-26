@@ -25,8 +25,8 @@ Documento di pianificazione tecnica basato sulle scelte funzionali definite per 
 | **v0.9.5** <br>*(Completato)* | Audio Pipeline, Ephemeral Whiteboard & SRS Hardening | • 100% test coverage motori SRS (FSRS / SM-2) [x]<br>• Registrazione audio da microfono in Card Editor [x]<br>• Playback audio, autoplay & hotkey 'R' in Studio [x]<br>• Import/Export Anki .apkg con pacchettizzazione audio/media [x]<br>• Whiteboard effimera in Studio per richiamo attivo motorio [x] | Media |
 | **v0.9.6** <br>*(Completato)* | TTS Offline di Sistema & Audio Polish | • Sintesi vocale offline nativa (Android TTS, Windows SAPI, Apple AVSpeech, Linux speech-dispatcher) [x]<br>• Sanitizzazione automatica testo carte (strip cloze, math LaTeX, markdown, HTML, audio) [x]<br>• Switch auto-TTS e regolazione velocità di lettura nelle impostazioni [x]<br>• Pulsante TTS in sessione di studio e hotkey desktop 'T' [x] | Bassa |
 | **v0.9.7** <br>*(Completato)* | Ottimizzazione Architetturale & Hardening Codebase | • Refactoring pipeline backup: eliminati 5 DTO duplicati, serializzazione nativa Drift (-413 righe) [x]<br>• Conformità export Anki (date review relative a col.crt, revlog ID monotonic, chunking SQLite) [x]<br>• Ottimizzazione FSRS Optimizer: precalcolo invarianti loop, 1/sqrt al posto di pow (-30% runtime training) [x]<br>• Zip packaging in streaming su disco via ZipFileEncoder e parsing regex audio a passaggio singolo [x] | Bassa |
+| **v0.9.8** <br>*(Completato)* | Sincronizzazione Zero-Cloud File-Based (P2P / Syncthing) | • Architettura Single-Writer Multi-Reader (SWMR) (`nodes/<id>/events.jsonl`) [x]<br>• Risoluzione conflitti Dual-HLC Column-Group LWW (contenuto vs FSRS) [x]<br>• Drift schema v10 con UUIDv5 deterministici e tombstones permanenti [x]<br>• Epoch header, self-compaction, byte-offset seek ingestion e UI impostazioni cartella [x] | Media |
 | **v1.0.0** | Consolidamento & Stabilità Finale | • Migrazioni Drift blindate (test suite automatica) [x]<br>• Zero bug, zero warning, packaging store F-Droid e desktop [x] | Bassa |
-| **Spike / Future** <br>*(Ricerca)* | Ricerca tecnica zero-cloud | • Sincronizzazione opzionale file-based zero-cloud (cartella condivisa / Syncthing / SMB / USB) [DA STUDIARE] | Variabile |
 
 ---
 
@@ -453,9 +453,10 @@ Output atteso per ciascuno spike: documento tecnico, PoC prototipale e decisione
 * Estensione di `StatsScreen`: true retention per bucket di intervallo, distribuzione degli intervalli, breakdown dei pulsanti risposta, curva S/D/R per singola carta (Card Info).
 * Domande aperte: libreria esterna (`fl_chart`) vs custom painting (pattern dell'heatmap esistente); query di aggregazione SQL senza degradare l'I/O (lesson audit §1.4).
 
-#### 14.5 Sincronizzazione Opzionale File-Based [NUOVA — versione TBD, da studiare]
-* Studio di fattibilità della replica del database tra dispositivi tramite cartella condivisa replicata dall'utente con strumenti a sua scelta (Syncthing, SMB, WebDAV, chiavetta USB) — in coerenza con la filosofia offline-first e zero-cloud.
-* Domande aperte: strategia di merge (i `ReviewLogs` sono append-only e si fondono naturalmente; i conflitti reali riguardano solo mazzi/carte modificati); last-write-wins vs log di sincronizzazione vs CRDT; la replica a caldo di un file SQLite in WAL non è sicura → valutare snapshot, esportazioni incrementali o protocollo custom; UI di risoluzione conflitti.
+#### 14.5 Sincronizzazione Opzionale File-Based [COMPLETATO in v0.9.8]
+* Architettura decentralizzata Single-Writer Multi-Reader (SWMR) per sincronizzazione P2P tramite cartella condivisa (Syncthing, cartelle di rete SMB, Nextcloud, WebDAV, chiavetta USB).
+* Risoluzione conflitti tramite Dual-HLC Column-Group LWW (`content_hlc` per testo/carte vs `schedule_hlc` per progressi FSRS), eliminando qualsiasi perdita dati su modifiche concorrenti.
+* Drift Schema v10 con migrazione deterministica UUIDv5/v7, tombstones permanenti e tracciamento cursori a byte-offset con Epoch Header.
 
 ---
 

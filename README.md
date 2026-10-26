@@ -1,7 +1,7 @@
 # Repetita 🧠⚡
 
 [![CI](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml/badge.svg)](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-0.9.7-blue.svg)
+![Version](https://img.shields.io/badge/version-0.9.8-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** and **SuperMemo SM-2** algorithms with an extensible multi-engine architecture.
@@ -12,6 +12,12 @@ Repetita is crafted for privacy, mathematical precision, and high performance. I
 
 ## 🌟 Key Features
 
+* **File-Based Zero-Cloud Sync (v0.9.8):**
+  * **Single-Writer Multi-Reader (SWMR) Mailbox Architecture**: P2P synchronization designed for Syncthing, shared network folders (SMB/NFS), Nextcloud, WebDAV, and USB flash drives (`nodes/<node_id>/events.jsonl`). Mathematically eliminates Syncthing `.sync-conflict` files by enforcing single-writer ownership per device directory.
+  * **Dual-HLC Column-Group LWW Conflict Resolution**: Decouples card content edits (`content_hlc`) from FSRS scheduling state (`schedule_hlc`). Editing card typos on a desktop and completing study reviews on a smartphone merge seamlessly without mutual clobbering or progress loss.
+  * **Epoch Header & Self-Compaction**: Instantaneous incremental ingestion via byte-offset `seek()`, paired with automated self-compaction and generational epoch headers preventing out-of-order delivery issues.
+  * **Tombstone Slimming & Anti-Zombie Guarantees**: Permanent soft-delete tombstone records (32 bytes each) guaranteeing that long-offline devices never resurrect deleted cards upon reconnection.
+  * **Drift Schema v10 Deterministic Migration**: Full backward compatibility preserving internal SQLite integer row IDs while injecting RFC 4122/9562 UUIDv5/v7 global identifiers.
 * **Architectural Optimization & Codebase Hardening (v0.9.7):**
   * **Zero-Redundancy Backup Pipeline**: Eliminated 5 duplicated DTO data layers, switching to direct Drift entity serialization with bidirectional ISO-8601 `ValueSerializer` (-413 net lines of dead code).
   * **Anki Compliance & Export Robustness**: Fixed review card due dates relative to `col.crt`, enforced monotonic revlog IDs preventing primary key collisions, and chunked SQLite parameters for decks >1000 cards.

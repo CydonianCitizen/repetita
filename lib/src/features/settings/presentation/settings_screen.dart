@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/generated/app_localizations.dart';
 import '../../backup_transfer/presentation/backup_screen.dart';
+import '../../sync/presentation/sync_settings_screen.dart';
 import 'screens/about_settings_screen.dart';
 import 'screens/appearance_settings_screen.dart';
 import 'screens/language_settings_screen.dart';
@@ -111,6 +112,20 @@ class SettingsScreen extends ConsumerWidget {
             SectionHeader(title: l10n?.sectionDataBackup ?? 'DATA & BACKUP'),
             SettingsCard(
               children: [
+                SettingsTile(
+                  key: const Key('setting_sync_tile'),
+                  icon: Icons.sync_rounded,
+                  iconColor: colorScheme.primary,
+                  title: 'Zero-Cloud Sync',
+                  subtitle: 'Syncthing, shared folder, USB',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const SyncSettingsScreen(),
+                      ),
+                    );
+                  },
+                ),
                 SettingsTile(
                   key: const Key('setting_backup_tile'),
                   icon: Icons.backup_outlined,

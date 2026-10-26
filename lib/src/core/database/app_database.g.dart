@@ -21,6 +21,18 @@ class $DecksTable extends Decks with TableInfo<$DecksTable, Deck> {
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _globalIdMeta = const VerificationMeta(
+    'globalId',
+  );
+  @override
+  late final GeneratedColumn<String> globalId = GeneratedColumn<String>(
+    'global_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -91,15 +103,29 @@ class $DecksTable extends Decks with TableInfo<$DecksTable, Deck> {
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    globalId,
     name,
     description,
     createdAt,
     updatedAt,
     examDate,
     targetRetention,
+    updatedHlc,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -115,6 +141,12 @@ class $DecksTable extends Decks with TableInfo<$DecksTable, Deck> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('global_id')) {
+      context.handle(
+        _globalIdMeta,
+        globalId.isAcceptableOrUnknown(data['global_id']!, _globalIdMeta),
+      );
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -160,6 +192,12 @@ class $DecksTable extends Decks with TableInfo<$DecksTable, Deck> {
         ),
       );
     }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    }
     return context;
   }
 
@@ -172,6 +210,10 @@ class $DecksTable extends Decks with TableInfo<$DecksTable, Deck> {
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
+      )!,
+      globalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}global_id'],
       )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -197,6 +239,10 @@ class $DecksTable extends Decks with TableInfo<$DecksTable, Deck> {
         DriftSqlType.double,
         data['${effectivePrefix}target_retention'],
       ),
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
     );
   }
 
@@ -208,25 +254,30 @@ class $DecksTable extends Decks with TableInfo<$DecksTable, Deck> {
 
 class Deck extends DataClass implements Insertable<Deck> {
   final int id;
+  final String globalId;
   final String name;
   final String? description;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? examDate;
   final double? targetRetention;
+  final String updatedHlc;
   const Deck({
     required this.id,
+    required this.globalId,
     required this.name,
     this.description,
     required this.createdAt,
     required this.updatedAt,
     this.examDate,
     this.targetRetention,
+    required this.updatedHlc,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['global_id'] = Variable<String>(globalId);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
@@ -239,12 +290,14 @@ class Deck extends DataClass implements Insertable<Deck> {
     if (!nullToAbsent || targetRetention != null) {
       map['target_retention'] = Variable<double>(targetRetention);
     }
+    map['updated_hlc'] = Variable<String>(updatedHlc);
     return map;
   }
 
   DecksCompanion toCompanion(bool nullToAbsent) {
     return DecksCompanion(
       id: Value(id),
+      globalId: Value(globalId),
       name: Value(name),
       description: description == null && nullToAbsent
           ? const Value.absent()
@@ -257,6 +310,7 @@ class Deck extends DataClass implements Insertable<Deck> {
       targetRetention: targetRetention == null && nullToAbsent
           ? const Value.absent()
           : Value(targetRetention),
+      updatedHlc: Value(updatedHlc),
     );
   }
 
@@ -267,12 +321,14 @@ class Deck extends DataClass implements Insertable<Deck> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Deck(
       id: serializer.fromJson<int>(json['id']),
+      globalId: serializer.fromJson<String>(json['globalId']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String?>(json['description']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       examDate: serializer.fromJson<DateTime?>(json['examDate']),
       targetRetention: serializer.fromJson<double?>(json['targetRetention']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
     );
   }
   @override
@@ -280,25 +336,30 @@ class Deck extends DataClass implements Insertable<Deck> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'globalId': serializer.toJson<String>(globalId),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String?>(description),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'examDate': serializer.toJson<DateTime?>(examDate),
       'targetRetention': serializer.toJson<double?>(targetRetention),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
     };
   }
 
   Deck copyWith({
     int? id,
+    String? globalId,
     String? name,
     Value<String?> description = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
     Value<DateTime?> examDate = const Value.absent(),
     Value<double?> targetRetention = const Value.absent(),
+    String? updatedHlc,
   }) => Deck(
     id: id ?? this.id,
+    globalId: globalId ?? this.globalId,
     name: name ?? this.name,
     description: description.present ? description.value : this.description,
     createdAt: createdAt ?? this.createdAt,
@@ -307,10 +368,12 @@ class Deck extends DataClass implements Insertable<Deck> {
     targetRetention: targetRetention.present
         ? targetRetention.value
         : this.targetRetention,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
   );
   Deck copyWithCompanion(DecksCompanion data) {
     return Deck(
       id: data.id.present ? data.id.value : this.id,
+      globalId: data.globalId.present ? data.globalId.value : this.globalId,
       name: data.name.present ? data.name.value : this.name,
       description: data.description.present
           ? data.description.value
@@ -321,6 +384,9 @@ class Deck extends DataClass implements Insertable<Deck> {
       targetRetention: data.targetRetention.present
           ? data.targetRetention.value
           : this.targetRetention,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
     );
   }
 
@@ -328,12 +394,14 @@ class Deck extends DataClass implements Insertable<Deck> {
   String toString() {
     return (StringBuffer('Deck(')
           ..write('id: $id, ')
+          ..write('globalId: $globalId, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('examDate: $examDate, ')
-          ..write('targetRetention: $targetRetention')
+          ..write('targetRetention: $targetRetention, ')
+          ..write('updatedHlc: $updatedHlc')
           ..write(')'))
         .toString();
   }
@@ -341,89 +409,107 @@ class Deck extends DataClass implements Insertable<Deck> {
   @override
   int get hashCode => Object.hash(
     id,
+    globalId,
     name,
     description,
     createdAt,
     updatedAt,
     examDate,
     targetRetention,
+    updatedHlc,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Deck &&
           other.id == this.id &&
+          other.globalId == this.globalId &&
           other.name == this.name &&
           other.description == this.description &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.examDate == this.examDate &&
-          other.targetRetention == this.targetRetention);
+          other.targetRetention == this.targetRetention &&
+          other.updatedHlc == this.updatedHlc);
 }
 
 class DecksCompanion extends UpdateCompanion<Deck> {
   final Value<int> id;
+  final Value<String> globalId;
   final Value<String> name;
   final Value<String?> description;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> examDate;
   final Value<double?> targetRetention;
+  final Value<String> updatedHlc;
   const DecksCompanion({
     this.id = const Value.absent(),
+    this.globalId = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.examDate = const Value.absent(),
     this.targetRetention = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
   });
   DecksCompanion.insert({
     this.id = const Value.absent(),
+    this.globalId = const Value.absent(),
     required String name,
     this.description = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.examDate = const Value.absent(),
     this.targetRetention = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
   }) : name = Value(name);
   static Insertable<Deck> custom({
     Expression<int>? id,
+    Expression<String>? globalId,
     Expression<String>? name,
     Expression<String>? description,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? examDate,
     Expression<double>? targetRetention,
+    Expression<String>? updatedHlc,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (globalId != null) 'global_id': globalId,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (examDate != null) 'exam_date': examDate,
       if (targetRetention != null) 'target_retention': targetRetention,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
     });
   }
 
   DecksCompanion copyWith({
     Value<int>? id,
+    Value<String>? globalId,
     Value<String>? name,
     Value<String?>? description,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? examDate,
     Value<double?>? targetRetention,
+    Value<String>? updatedHlc,
   }) {
     return DecksCompanion(
       id: id ?? this.id,
+      globalId: globalId ?? this.globalId,
       name: name ?? this.name,
       description: description ?? this.description,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       examDate: examDate ?? this.examDate,
       targetRetention: targetRetention ?? this.targetRetention,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
     );
   }
 
@@ -432,6 +518,9 @@ class DecksCompanion extends UpdateCompanion<Deck> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (globalId.present) {
+      map['global_id'] = Variable<String>(globalId.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -451,6 +540,9 @@ class DecksCompanion extends UpdateCompanion<Deck> {
     if (targetRetention.present) {
       map['target_retention'] = Variable<double>(targetRetention.value);
     }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
     return map;
   }
 
@@ -458,12 +550,14 @@ class DecksCompanion extends UpdateCompanion<Deck> {
   String toString() {
     return (StringBuffer('DecksCompanion(')
           ..write('id: $id, ')
+          ..write('globalId: $globalId, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('examDate: $examDate, ')
-          ..write('targetRetention: $targetRetention')
+          ..write('targetRetention: $targetRetention, ')
+          ..write('updatedHlc: $updatedHlc')
           ..write(')'))
         .toString();
   }
@@ -487,6 +581,18 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _globalIdMeta = const VerificationMeta(
+    'globalId',
+  );
+  @override
+  late final GeneratedColumn<String> globalId = GeneratedColumn<String>(
+    'global_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
   @override
   late final GeneratedColumn<int> deckId = GeneratedColumn<int>(
@@ -498,6 +604,18 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES decks (id) ON DELETE CASCADE',
     ),
+  );
+  static const VerificationMeta _deckGlobalIdMeta = const VerificationMeta(
+    'deckGlobalId',
+  );
+  @override
+  late final GeneratedColumn<String> deckGlobalId = GeneratedColumn<String>(
+    'deck_global_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _frontMeta = const VerificationMeta('front');
   @override
@@ -671,10 +789,36 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _contentHlcMeta = const VerificationMeta(
+    'contentHlc',
+  );
+  @override
+  late final GeneratedColumn<String> contentHlc = GeneratedColumn<String>(
+    'content_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _scheduleHlcMeta = const VerificationMeta(
+    'scheduleHlc',
+  );
+  @override
+  late final GeneratedColumn<String> scheduleHlc = GeneratedColumn<String>(
+    'schedule_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    globalId,
     deckId,
+    deckGlobalId,
     front,
     back,
     state,
@@ -691,6 +835,8 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
     easinessFactor,
     flag,
     noteId,
+    contentHlc,
+    scheduleHlc,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -707,6 +853,12 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('global_id')) {
+      context.handle(
+        _globalIdMeta,
+        globalId.isAcceptableOrUnknown(data['global_id']!, _globalIdMeta),
+      );
+    }
     if (data.containsKey('deck_id')) {
       context.handle(
         _deckIdMeta,
@@ -714,6 +866,15 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
       );
     } else if (isInserting) {
       context.missing(_deckIdMeta);
+    }
+    if (data.containsKey('deck_global_id')) {
+      context.handle(
+        _deckGlobalIdMeta,
+        deckGlobalId.isAcceptableOrUnknown(
+          data['deck_global_id']!,
+          _deckGlobalIdMeta,
+        ),
+      );
     }
     if (data.containsKey('front')) {
       context.handle(
@@ -826,6 +987,21 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
         noteId.isAcceptableOrUnknown(data['note_id']!, _noteIdMeta),
       );
     }
+    if (data.containsKey('content_hlc')) {
+      context.handle(
+        _contentHlcMeta,
+        contentHlc.isAcceptableOrUnknown(data['content_hlc']!, _contentHlcMeta),
+      );
+    }
+    if (data.containsKey('schedule_hlc')) {
+      context.handle(
+        _scheduleHlcMeta,
+        scheduleHlc.isAcceptableOrUnknown(
+          data['schedule_hlc']!,
+          _scheduleHlcMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -839,9 +1015,17 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
+      globalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}global_id'],
+      )!,
       deckId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}deck_id'],
+      )!,
+      deckGlobalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deck_global_id'],
       )!,
       front: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -907,6 +1091,14 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
         DriftSqlType.int,
         data['${effectivePrefix}note_id'],
       ),
+      contentHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content_hlc'],
+      )!,
+      scheduleHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}schedule_hlc'],
+      )!,
     );
   }
 
@@ -918,7 +1110,9 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
 
 class Card extends DataClass implements Insertable<Card> {
   final int id;
+  final String globalId;
   final int deckId;
+  final String deckGlobalId;
   final String front;
   final String back;
   final int state;
@@ -935,9 +1129,13 @@ class Card extends DataClass implements Insertable<Card> {
   final double easinessFactor;
   final int flag;
   final int? noteId;
+  final String contentHlc;
+  final String scheduleHlc;
   const Card({
     required this.id,
+    required this.globalId,
     required this.deckId,
+    required this.deckGlobalId,
     required this.front,
     required this.back,
     required this.state,
@@ -954,12 +1152,16 @@ class Card extends DataClass implements Insertable<Card> {
     required this.easinessFactor,
     required this.flag,
     this.noteId,
+    required this.contentHlc,
+    required this.scheduleHlc,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['global_id'] = Variable<String>(globalId);
     map['deck_id'] = Variable<int>(deckId);
+    map['deck_global_id'] = Variable<String>(deckGlobalId);
     map['front'] = Variable<String>(front);
     map['back'] = Variable<String>(back);
     map['state'] = Variable<int>(state);
@@ -984,13 +1186,17 @@ class Card extends DataClass implements Insertable<Card> {
     if (!nullToAbsent || noteId != null) {
       map['note_id'] = Variable<int>(noteId);
     }
+    map['content_hlc'] = Variable<String>(contentHlc);
+    map['schedule_hlc'] = Variable<String>(scheduleHlc);
     return map;
   }
 
   CardsCompanion toCompanion(bool nullToAbsent) {
     return CardsCompanion(
       id: Value(id),
+      globalId: Value(globalId),
       deckId: Value(deckId),
+      deckGlobalId: Value(deckGlobalId),
       front: Value(front),
       back: Value(back),
       state: Value(state),
@@ -1015,6 +1221,8 @@ class Card extends DataClass implements Insertable<Card> {
       noteId: noteId == null && nullToAbsent
           ? const Value.absent()
           : Value(noteId),
+      contentHlc: Value(contentHlc),
+      scheduleHlc: Value(scheduleHlc),
     );
   }
 
@@ -1025,7 +1233,9 @@ class Card extends DataClass implements Insertable<Card> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Card(
       id: serializer.fromJson<int>(json['id']),
+      globalId: serializer.fromJson<String>(json['globalId']),
       deckId: serializer.fromJson<int>(json['deckId']),
+      deckGlobalId: serializer.fromJson<String>(json['deckGlobalId']),
       front: serializer.fromJson<String>(json['front']),
       back: serializer.fromJson<String>(json['back']),
       state: serializer.fromJson<int>(json['state']),
@@ -1042,6 +1252,8 @@ class Card extends DataClass implements Insertable<Card> {
       easinessFactor: serializer.fromJson<double>(json['easinessFactor']),
       flag: serializer.fromJson<int>(json['flag']),
       noteId: serializer.fromJson<int?>(json['noteId']),
+      contentHlc: serializer.fromJson<String>(json['contentHlc']),
+      scheduleHlc: serializer.fromJson<String>(json['scheduleHlc']),
     );
   }
   @override
@@ -1049,7 +1261,9 @@ class Card extends DataClass implements Insertable<Card> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'globalId': serializer.toJson<String>(globalId),
       'deckId': serializer.toJson<int>(deckId),
+      'deckGlobalId': serializer.toJson<String>(deckGlobalId),
       'front': serializer.toJson<String>(front),
       'back': serializer.toJson<String>(back),
       'state': serializer.toJson<int>(state),
@@ -1066,12 +1280,16 @@ class Card extends DataClass implements Insertable<Card> {
       'easinessFactor': serializer.toJson<double>(easinessFactor),
       'flag': serializer.toJson<int>(flag),
       'noteId': serializer.toJson<int?>(noteId),
+      'contentHlc': serializer.toJson<String>(contentHlc),
+      'scheduleHlc': serializer.toJson<String>(scheduleHlc),
     };
   }
 
   Card copyWith({
     int? id,
+    String? globalId,
     int? deckId,
+    String? deckGlobalId,
     String? front,
     String? back,
     int? state,
@@ -1088,9 +1306,13 @@ class Card extends DataClass implements Insertable<Card> {
     double? easinessFactor,
     int? flag,
     Value<int?> noteId = const Value.absent(),
+    String? contentHlc,
+    String? scheduleHlc,
   }) => Card(
     id: id ?? this.id,
+    globalId: globalId ?? this.globalId,
     deckId: deckId ?? this.deckId,
+    deckGlobalId: deckGlobalId ?? this.deckGlobalId,
     front: front ?? this.front,
     back: back ?? this.back,
     state: state ?? this.state,
@@ -1107,11 +1329,17 @@ class Card extends DataClass implements Insertable<Card> {
     easinessFactor: easinessFactor ?? this.easinessFactor,
     flag: flag ?? this.flag,
     noteId: noteId.present ? noteId.value : this.noteId,
+    contentHlc: contentHlc ?? this.contentHlc,
+    scheduleHlc: scheduleHlc ?? this.scheduleHlc,
   );
   Card copyWithCompanion(CardsCompanion data) {
     return Card(
       id: data.id.present ? data.id.value : this.id,
+      globalId: data.globalId.present ? data.globalId.value : this.globalId,
       deckId: data.deckId.present ? data.deckId.value : this.deckId,
+      deckGlobalId: data.deckGlobalId.present
+          ? data.deckGlobalId.value
+          : this.deckGlobalId,
       front: data.front.present ? data.front.value : this.front,
       back: data.back.present ? data.back.value : this.back,
       state: data.state.present ? data.state.value : this.state,
@@ -1140,6 +1368,12 @@ class Card extends DataClass implements Insertable<Card> {
           : this.easinessFactor,
       flag: data.flag.present ? data.flag.value : this.flag,
       noteId: data.noteId.present ? data.noteId.value : this.noteId,
+      contentHlc: data.contentHlc.present
+          ? data.contentHlc.value
+          : this.contentHlc,
+      scheduleHlc: data.scheduleHlc.present
+          ? data.scheduleHlc.value
+          : this.scheduleHlc,
     );
   }
 
@@ -1147,7 +1381,9 @@ class Card extends DataClass implements Insertable<Card> {
   String toString() {
     return (StringBuffer('Card(')
           ..write('id: $id, ')
+          ..write('globalId: $globalId, ')
           ..write('deckId: $deckId, ')
+          ..write('deckGlobalId: $deckGlobalId, ')
           ..write('front: $front, ')
           ..write('back: $back, ')
           ..write('state: $state, ')
@@ -1163,15 +1399,19 @@ class Card extends DataClass implements Insertable<Card> {
           ..write('clozeIndex: $clozeIndex, ')
           ..write('easinessFactor: $easinessFactor, ')
           ..write('flag: $flag, ')
-          ..write('noteId: $noteId')
+          ..write('noteId: $noteId, ')
+          ..write('contentHlc: $contentHlc, ')
+          ..write('scheduleHlc: $scheduleHlc')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
+    globalId,
     deckId,
+    deckGlobalId,
     front,
     back,
     state,
@@ -1188,13 +1428,17 @@ class Card extends DataClass implements Insertable<Card> {
     easinessFactor,
     flag,
     noteId,
-  );
+    contentHlc,
+    scheduleHlc,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Card &&
           other.id == this.id &&
+          other.globalId == this.globalId &&
           other.deckId == this.deckId &&
+          other.deckGlobalId == this.deckGlobalId &&
           other.front == this.front &&
           other.back == this.back &&
           other.state == this.state &&
@@ -1210,12 +1454,16 @@ class Card extends DataClass implements Insertable<Card> {
           other.clozeIndex == this.clozeIndex &&
           other.easinessFactor == this.easinessFactor &&
           other.flag == this.flag &&
-          other.noteId == this.noteId);
+          other.noteId == this.noteId &&
+          other.contentHlc == this.contentHlc &&
+          other.scheduleHlc == this.scheduleHlc);
 }
 
 class CardsCompanion extends UpdateCompanion<Card> {
   final Value<int> id;
+  final Value<String> globalId;
   final Value<int> deckId;
+  final Value<String> deckGlobalId;
   final Value<String> front;
   final Value<String> back;
   final Value<int> state;
@@ -1232,9 +1480,13 @@ class CardsCompanion extends UpdateCompanion<Card> {
   final Value<double> easinessFactor;
   final Value<int> flag;
   final Value<int?> noteId;
+  final Value<String> contentHlc;
+  final Value<String> scheduleHlc;
   const CardsCompanion({
     this.id = const Value.absent(),
+    this.globalId = const Value.absent(),
     this.deckId = const Value.absent(),
+    this.deckGlobalId = const Value.absent(),
     this.front = const Value.absent(),
     this.back = const Value.absent(),
     this.state = const Value.absent(),
@@ -1251,10 +1503,14 @@ class CardsCompanion extends UpdateCompanion<Card> {
     this.easinessFactor = const Value.absent(),
     this.flag = const Value.absent(),
     this.noteId = const Value.absent(),
+    this.contentHlc = const Value.absent(),
+    this.scheduleHlc = const Value.absent(),
   });
   CardsCompanion.insert({
     this.id = const Value.absent(),
+    this.globalId = const Value.absent(),
     required int deckId,
+    this.deckGlobalId = const Value.absent(),
     required String front,
     required String back,
     this.state = const Value.absent(),
@@ -1271,13 +1527,17 @@ class CardsCompanion extends UpdateCompanion<Card> {
     this.easinessFactor = const Value.absent(),
     this.flag = const Value.absent(),
     this.noteId = const Value.absent(),
+    this.contentHlc = const Value.absent(),
+    this.scheduleHlc = const Value.absent(),
   }) : deckId = Value(deckId),
        front = Value(front),
        back = Value(back),
        due = Value(due);
   static Insertable<Card> custom({
     Expression<int>? id,
+    Expression<String>? globalId,
     Expression<int>? deckId,
+    Expression<String>? deckGlobalId,
     Expression<String>? front,
     Expression<String>? back,
     Expression<int>? state,
@@ -1294,10 +1554,14 @@ class CardsCompanion extends UpdateCompanion<Card> {
     Expression<double>? easinessFactor,
     Expression<int>? flag,
     Expression<int>? noteId,
+    Expression<String>? contentHlc,
+    Expression<String>? scheduleHlc,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (globalId != null) 'global_id': globalId,
       if (deckId != null) 'deck_id': deckId,
+      if (deckGlobalId != null) 'deck_global_id': deckGlobalId,
       if (front != null) 'front': front,
       if (back != null) 'back': back,
       if (state != null) 'state': state,
@@ -1314,12 +1578,16 @@ class CardsCompanion extends UpdateCompanion<Card> {
       if (easinessFactor != null) 'easiness_factor': easinessFactor,
       if (flag != null) 'flag': flag,
       if (noteId != null) 'note_id': noteId,
+      if (contentHlc != null) 'content_hlc': contentHlc,
+      if (scheduleHlc != null) 'schedule_hlc': scheduleHlc,
     });
   }
 
   CardsCompanion copyWith({
     Value<int>? id,
+    Value<String>? globalId,
     Value<int>? deckId,
+    Value<String>? deckGlobalId,
     Value<String>? front,
     Value<String>? back,
     Value<int>? state,
@@ -1336,10 +1604,14 @@ class CardsCompanion extends UpdateCompanion<Card> {
     Value<double>? easinessFactor,
     Value<int>? flag,
     Value<int?>? noteId,
+    Value<String>? contentHlc,
+    Value<String>? scheduleHlc,
   }) {
     return CardsCompanion(
       id: id ?? this.id,
+      globalId: globalId ?? this.globalId,
       deckId: deckId ?? this.deckId,
+      deckGlobalId: deckGlobalId ?? this.deckGlobalId,
       front: front ?? this.front,
       back: back ?? this.back,
       state: state ?? this.state,
@@ -1356,6 +1628,8 @@ class CardsCompanion extends UpdateCompanion<Card> {
       easinessFactor: easinessFactor ?? this.easinessFactor,
       flag: flag ?? this.flag,
       noteId: noteId ?? this.noteId,
+      contentHlc: contentHlc ?? this.contentHlc,
+      scheduleHlc: scheduleHlc ?? this.scheduleHlc,
     );
   }
 
@@ -1365,8 +1639,14 @@ class CardsCompanion extends UpdateCompanion<Card> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
+    if (globalId.present) {
+      map['global_id'] = Variable<String>(globalId.value);
+    }
     if (deckId.present) {
       map['deck_id'] = Variable<int>(deckId.value);
+    }
+    if (deckGlobalId.present) {
+      map['deck_global_id'] = Variable<String>(deckGlobalId.value);
     }
     if (front.present) {
       map['front'] = Variable<String>(front.value);
@@ -1416,6 +1696,12 @@ class CardsCompanion extends UpdateCompanion<Card> {
     if (noteId.present) {
       map['note_id'] = Variable<int>(noteId.value);
     }
+    if (contentHlc.present) {
+      map['content_hlc'] = Variable<String>(contentHlc.value);
+    }
+    if (scheduleHlc.present) {
+      map['schedule_hlc'] = Variable<String>(scheduleHlc.value);
+    }
     return map;
   }
 
@@ -1423,7 +1709,9 @@ class CardsCompanion extends UpdateCompanion<Card> {
   String toString() {
     return (StringBuffer('CardsCompanion(')
           ..write('id: $id, ')
+          ..write('globalId: $globalId, ')
           ..write('deckId: $deckId, ')
+          ..write('deckGlobalId: $deckGlobalId, ')
           ..write('front: $front, ')
           ..write('back: $back, ')
           ..write('state: $state, ')
@@ -1439,7 +1727,9 @@ class CardsCompanion extends UpdateCompanion<Card> {
           ..write('clozeIndex: $clozeIndex, ')
           ..write('easinessFactor: $easinessFactor, ')
           ..write('flag: $flag, ')
-          ..write('noteId: $noteId')
+          ..write('noteId: $noteId, ')
+          ..write('contentHlc: $contentHlc, ')
+          ..write('scheduleHlc: $scheduleHlc')
           ..write(')'))
         .toString();
   }
@@ -1464,6 +1754,18 @@ class $ReviewLogsTable extends ReviewLogs
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _globalIdMeta = const VerificationMeta(
+    'globalId',
+  );
+  @override
+  late final GeneratedColumn<String> globalId = GeneratedColumn<String>(
+    'global_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _cardIdMeta = const VerificationMeta('cardId');
   @override
   late final GeneratedColumn<int> cardId = GeneratedColumn<int>(
@@ -1475,6 +1777,18 @@ class $ReviewLogsTable extends ReviewLogs
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES cards (id) ON DELETE CASCADE',
     ),
+  );
+  static const VerificationMeta _cardGlobalIdMeta = const VerificationMeta(
+    'cardGlobalId',
+  );
+  @override
+  late final GeneratedColumn<String> cardGlobalId = GeneratedColumn<String>(
+    'card_global_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
   @override
@@ -1584,7 +1898,9 @@ class $ReviewLogsTable extends ReviewLogs
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    globalId,
     cardId,
+    cardGlobalId,
     rating,
     state,
     due,
@@ -1611,6 +1927,12 @@ class $ReviewLogsTable extends ReviewLogs
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('global_id')) {
+      context.handle(
+        _globalIdMeta,
+        globalId.isAcceptableOrUnknown(data['global_id']!, _globalIdMeta),
+      );
+    }
     if (data.containsKey('card_id')) {
       context.handle(
         _cardIdMeta,
@@ -1618,6 +1940,15 @@ class $ReviewLogsTable extends ReviewLogs
       );
     } else if (isInserting) {
       context.missing(_cardIdMeta);
+    }
+    if (data.containsKey('card_global_id')) {
+      context.handle(
+        _cardGlobalIdMeta,
+        cardGlobalId.isAcceptableOrUnknown(
+          data['card_global_id']!,
+          _cardGlobalIdMeta,
+        ),
+      );
     }
     if (data.containsKey('rating')) {
       context.handle(
@@ -1722,9 +2053,17 @@ class $ReviewLogsTable extends ReviewLogs
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
+      globalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}global_id'],
+      )!,
       cardId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}card_id'],
+      )!,
+      cardGlobalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}card_global_id'],
       )!,
       rating: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -1777,7 +2116,9 @@ class $ReviewLogsTable extends ReviewLogs
 
 class ReviewLog extends DataClass implements Insertable<ReviewLog> {
   final int id;
+  final String globalId;
   final int cardId;
+  final String cardGlobalId;
   final int rating;
   final int state;
   final DateTime due;
@@ -1790,7 +2131,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
   final double easinessFactor;
   const ReviewLog({
     required this.id,
+    required this.globalId,
     required this.cardId,
+    required this.cardGlobalId,
     required this.rating,
     required this.state,
     required this.due,
@@ -1806,7 +2149,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['global_id'] = Variable<String>(globalId);
     map['card_id'] = Variable<int>(cardId);
+    map['card_global_id'] = Variable<String>(cardGlobalId);
     map['rating'] = Variable<int>(rating);
     map['state'] = Variable<int>(state);
     map['due'] = Variable<DateTime>(due);
@@ -1823,7 +2168,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
   ReviewLogsCompanion toCompanion(bool nullToAbsent) {
     return ReviewLogsCompanion(
       id: Value(id),
+      globalId: Value(globalId),
       cardId: Value(cardId),
+      cardGlobalId: Value(cardGlobalId),
       rating: Value(rating),
       state: Value(state),
       due: Value(due),
@@ -1844,7 +2191,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ReviewLog(
       id: serializer.fromJson<int>(json['id']),
+      globalId: serializer.fromJson<String>(json['globalId']),
       cardId: serializer.fromJson<int>(json['cardId']),
+      cardGlobalId: serializer.fromJson<String>(json['cardGlobalId']),
       rating: serializer.fromJson<int>(json['rating']),
       state: serializer.fromJson<int>(json['state']),
       due: serializer.fromJson<DateTime>(json['due']),
@@ -1862,7 +2211,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'globalId': serializer.toJson<String>(globalId),
       'cardId': serializer.toJson<int>(cardId),
+      'cardGlobalId': serializer.toJson<String>(cardGlobalId),
       'rating': serializer.toJson<int>(rating),
       'state': serializer.toJson<int>(state),
       'due': serializer.toJson<DateTime>(due),
@@ -1878,7 +2229,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
 
   ReviewLog copyWith({
     int? id,
+    String? globalId,
     int? cardId,
+    String? cardGlobalId,
     int? rating,
     int? state,
     DateTime? due,
@@ -1891,7 +2244,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
     double? easinessFactor,
   }) => ReviewLog(
     id: id ?? this.id,
+    globalId: globalId ?? this.globalId,
     cardId: cardId ?? this.cardId,
+    cardGlobalId: cardGlobalId ?? this.cardGlobalId,
     rating: rating ?? this.rating,
     state: state ?? this.state,
     due: due ?? this.due,
@@ -1906,7 +2261,11 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
   ReviewLog copyWithCompanion(ReviewLogsCompanion data) {
     return ReviewLog(
       id: data.id.present ? data.id.value : this.id,
+      globalId: data.globalId.present ? data.globalId.value : this.globalId,
       cardId: data.cardId.present ? data.cardId.value : this.cardId,
+      cardGlobalId: data.cardGlobalId.present
+          ? data.cardGlobalId.value
+          : this.cardGlobalId,
       rating: data.rating.present ? data.rating.value : this.rating,
       state: data.state.present ? data.state.value : this.state,
       due: data.due.present ? data.due.value : this.due,
@@ -1936,7 +2295,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
   String toString() {
     return (StringBuffer('ReviewLog(')
           ..write('id: $id, ')
+          ..write('globalId: $globalId, ')
           ..write('cardId: $cardId, ')
+          ..write('cardGlobalId: $cardGlobalId, ')
           ..write('rating: $rating, ')
           ..write('state: $state, ')
           ..write('due: $due, ')
@@ -1954,7 +2315,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
   @override
   int get hashCode => Object.hash(
     id,
+    globalId,
     cardId,
+    cardGlobalId,
     rating,
     state,
     due,
@@ -1971,7 +2334,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
       identical(this, other) ||
       (other is ReviewLog &&
           other.id == this.id &&
+          other.globalId == this.globalId &&
           other.cardId == this.cardId &&
+          other.cardGlobalId == this.cardGlobalId &&
           other.rating == this.rating &&
           other.state == this.state &&
           other.due == this.due &&
@@ -1986,7 +2351,9 @@ class ReviewLog extends DataClass implements Insertable<ReviewLog> {
 
 class ReviewLogsCompanion extends UpdateCompanion<ReviewLog> {
   final Value<int> id;
+  final Value<String> globalId;
   final Value<int> cardId;
+  final Value<String> cardGlobalId;
   final Value<int> rating;
   final Value<int> state;
   final Value<DateTime> due;
@@ -1999,7 +2366,9 @@ class ReviewLogsCompanion extends UpdateCompanion<ReviewLog> {
   final Value<double> easinessFactor;
   const ReviewLogsCompanion({
     this.id = const Value.absent(),
+    this.globalId = const Value.absent(),
     this.cardId = const Value.absent(),
+    this.cardGlobalId = const Value.absent(),
     this.rating = const Value.absent(),
     this.state = const Value.absent(),
     this.due = const Value.absent(),
@@ -2013,7 +2382,9 @@ class ReviewLogsCompanion extends UpdateCompanion<ReviewLog> {
   });
   ReviewLogsCompanion.insert({
     this.id = const Value.absent(),
+    this.globalId = const Value.absent(),
     required int cardId,
+    this.cardGlobalId = const Value.absent(),
     required int rating,
     required int state,
     required DateTime due,
@@ -2036,7 +2407,9 @@ class ReviewLogsCompanion extends UpdateCompanion<ReviewLog> {
        reviewedAt = Value(reviewedAt);
   static Insertable<ReviewLog> custom({
     Expression<int>? id,
+    Expression<String>? globalId,
     Expression<int>? cardId,
+    Expression<String>? cardGlobalId,
     Expression<int>? rating,
     Expression<int>? state,
     Expression<DateTime>? due,
@@ -2050,7 +2423,9 @@ class ReviewLogsCompanion extends UpdateCompanion<ReviewLog> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (globalId != null) 'global_id': globalId,
       if (cardId != null) 'card_id': cardId,
+      if (cardGlobalId != null) 'card_global_id': cardGlobalId,
       if (rating != null) 'rating': rating,
       if (state != null) 'state': state,
       if (due != null) 'due': due,
@@ -2066,7 +2441,9 @@ class ReviewLogsCompanion extends UpdateCompanion<ReviewLog> {
 
   ReviewLogsCompanion copyWith({
     Value<int>? id,
+    Value<String>? globalId,
     Value<int>? cardId,
+    Value<String>? cardGlobalId,
     Value<int>? rating,
     Value<int>? state,
     Value<DateTime>? due,
@@ -2080,7 +2457,9 @@ class ReviewLogsCompanion extends UpdateCompanion<ReviewLog> {
   }) {
     return ReviewLogsCompanion(
       id: id ?? this.id,
+      globalId: globalId ?? this.globalId,
       cardId: cardId ?? this.cardId,
+      cardGlobalId: cardGlobalId ?? this.cardGlobalId,
       rating: rating ?? this.rating,
       state: state ?? this.state,
       due: due ?? this.due,
@@ -2100,8 +2479,14 @@ class ReviewLogsCompanion extends UpdateCompanion<ReviewLog> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
+    if (globalId.present) {
+      map['global_id'] = Variable<String>(globalId.value);
+    }
     if (cardId.present) {
       map['card_id'] = Variable<int>(cardId.value);
+    }
+    if (cardGlobalId.present) {
+      map['card_global_id'] = Variable<String>(cardGlobalId.value);
     }
     if (rating.present) {
       map['rating'] = Variable<int>(rating.value);
@@ -2140,7 +2525,9 @@ class ReviewLogsCompanion extends UpdateCompanion<ReviewLog> {
   String toString() {
     return (StringBuffer('ReviewLogsCompanion(')
           ..write('id: $id, ')
+          ..write('globalId: $globalId, ')
           ..write('cardId: $cardId, ')
+          ..write('cardGlobalId: $cardGlobalId, ')
           ..write('rating: $rating, ')
           ..write('state: $state, ')
           ..write('due: $due, ')
@@ -2173,6 +2560,18 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'PRIMARY KEY AUTOINCREMENT',
     ),
+  );
+  static const VerificationMeta _globalIdMeta = const VerificationMeta(
+    'globalId',
+  );
+  @override
+  late final GeneratedColumn<String> globalId = GeneratedColumn<String>(
+    'global_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
@@ -2209,8 +2608,27 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, name, color, createdAt];
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    globalId,
+    name,
+    color,
+    createdAt,
+    updatedHlc,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2225,6 +2643,12 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('global_id')) {
+      context.handle(
+        _globalIdMeta,
+        globalId.isAcceptableOrUnknown(data['global_id']!, _globalIdMeta),
+      );
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -2246,6 +2670,12 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
     }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    }
     return context;
   }
 
@@ -2259,6 +2689,10 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
+      globalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}global_id'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -2271,6 +2705,10 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
     );
   }
 
@@ -2282,31 +2720,39 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
 
 class Tag extends DataClass implements Insertable<Tag> {
   final int id;
+  final String globalId;
   final String name;
   final int color;
   final DateTime createdAt;
+  final String updatedHlc;
   const Tag({
     required this.id,
+    required this.globalId,
     required this.name,
     required this.color,
     required this.createdAt,
+    required this.updatedHlc,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['global_id'] = Variable<String>(globalId);
     map['name'] = Variable<String>(name);
     map['color'] = Variable<int>(color);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
     return map;
   }
 
   TagsCompanion toCompanion(bool nullToAbsent) {
     return TagsCompanion(
       id: Value(id),
+      globalId: Value(globalId),
       name: Value(name),
       color: Value(color),
       createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
     );
   }
 
@@ -2317,9 +2763,11 @@ class Tag extends DataClass implements Insertable<Tag> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Tag(
       id: serializer.fromJson<int>(json['id']),
+      globalId: serializer.fromJson<String>(json['globalId']),
       name: serializer.fromJson<String>(json['name']),
       color: serializer.fromJson<int>(json['color']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
     );
   }
   @override
@@ -2327,24 +2775,39 @@ class Tag extends DataClass implements Insertable<Tag> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'globalId': serializer.toJson<String>(globalId),
       'name': serializer.toJson<String>(name),
       'color': serializer.toJson<int>(color),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
     };
   }
 
-  Tag copyWith({int? id, String? name, int? color, DateTime? createdAt}) => Tag(
+  Tag copyWith({
+    int? id,
+    String? globalId,
+    String? name,
+    int? color,
+    DateTime? createdAt,
+    String? updatedHlc,
+  }) => Tag(
     id: id ?? this.id,
+    globalId: globalId ?? this.globalId,
     name: name ?? this.name,
     color: color ?? this.color,
     createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
   );
   Tag copyWithCompanion(TagsCompanion data) {
     return Tag(
       id: data.id.present ? data.id.value : this.id,
+      globalId: data.globalId.present ? data.globalId.value : this.globalId,
       name: data.name.present ? data.name.value : this.name,
       color: data.color.present ? data.color.value : this.color,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
     );
   }
 
@@ -2352,67 +2815,86 @@ class Tag extends DataClass implements Insertable<Tag> {
   String toString() {
     return (StringBuffer('Tag(')
           ..write('id: $id, ')
+          ..write('globalId: $globalId, ')
           ..write('name: $name, ')
           ..write('color: $color, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, color, createdAt);
+  int get hashCode =>
+      Object.hash(id, globalId, name, color, createdAt, updatedHlc);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Tag &&
           other.id == this.id &&
+          other.globalId == this.globalId &&
           other.name == this.name &&
           other.color == this.color &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc);
 }
 
 class TagsCompanion extends UpdateCompanion<Tag> {
   final Value<int> id;
+  final Value<String> globalId;
   final Value<String> name;
   final Value<int> color;
   final Value<DateTime> createdAt;
+  final Value<String> updatedHlc;
   const TagsCompanion({
     this.id = const Value.absent(),
+    this.globalId = const Value.absent(),
     this.name = const Value.absent(),
     this.color = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
   });
   TagsCompanion.insert({
     this.id = const Value.absent(),
+    this.globalId = const Value.absent(),
     required String name,
     this.color = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
   }) : name = Value(name);
   static Insertable<Tag> custom({
     Expression<int>? id,
+    Expression<String>? globalId,
     Expression<String>? name,
     Expression<int>? color,
     Expression<DateTime>? createdAt,
+    Expression<String>? updatedHlc,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (globalId != null) 'global_id': globalId,
       if (name != null) 'name': name,
       if (color != null) 'color': color,
       if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
     });
   }
 
   TagsCompanion copyWith({
     Value<int>? id,
+    Value<String>? globalId,
     Value<String>? name,
     Value<int>? color,
     Value<DateTime>? createdAt,
+    Value<String>? updatedHlc,
   }) {
     return TagsCompanion(
       id: id ?? this.id,
+      globalId: globalId ?? this.globalId,
       name: name ?? this.name,
       color: color ?? this.color,
       createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
     );
   }
 
@@ -2421,6 +2903,9 @@ class TagsCompanion extends UpdateCompanion<Tag> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (globalId.present) {
+      map['global_id'] = Variable<String>(globalId.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -2431,6 +2916,9 @@ class TagsCompanion extends UpdateCompanion<Tag> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
     return map;
   }
 
@@ -2438,9 +2926,11 @@ class TagsCompanion extends UpdateCompanion<Tag> {
   String toString() {
     return (StringBuffer('TagsCompanion(')
           ..write('id: $id, ')
+          ..write('globalId: $globalId, ')
           ..write('name: $name, ')
           ..write('color: $color, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc')
           ..write(')'))
         .toString();
   }
@@ -2475,8 +2965,50 @@ class $CardTagsTable extends CardTags with TableInfo<$CardTagsTable, CardTag> {
       'REFERENCES tags (id) ON DELETE CASCADE',
     ),
   );
+  static const VerificationMeta _cardGlobalIdMeta = const VerificationMeta(
+    'cardGlobalId',
+  );
   @override
-  List<GeneratedColumn> get $columns => [cardId, tagId];
+  late final GeneratedColumn<String> cardGlobalId = GeneratedColumn<String>(
+    'card_global_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _tagGlobalIdMeta = const VerificationMeta(
+    'tagGlobalId',
+  );
+  @override
+  late final GeneratedColumn<String> tagGlobalId = GeneratedColumn<String>(
+    'tag_global_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    cardId,
+    tagId,
+    cardGlobalId,
+    tagGlobalId,
+    updatedHlc,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2505,6 +3037,30 @@ class $CardTagsTable extends CardTags with TableInfo<$CardTagsTable, CardTag> {
     } else if (isInserting) {
       context.missing(_tagIdMeta);
     }
+    if (data.containsKey('card_global_id')) {
+      context.handle(
+        _cardGlobalIdMeta,
+        cardGlobalId.isAcceptableOrUnknown(
+          data['card_global_id']!,
+          _cardGlobalIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tag_global_id')) {
+      context.handle(
+        _tagGlobalIdMeta,
+        tagGlobalId.isAcceptableOrUnknown(
+          data['tag_global_id']!,
+          _tagGlobalIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    }
     return context;
   }
 
@@ -2522,6 +3078,18 @@ class $CardTagsTable extends CardTags with TableInfo<$CardTagsTable, CardTag> {
         DriftSqlType.int,
         data['${effectivePrefix}tag_id'],
       )!,
+      cardGlobalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}card_global_id'],
+      )!,
+      tagGlobalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tag_global_id'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
     );
   }
 
@@ -2534,17 +3102,35 @@ class $CardTagsTable extends CardTags with TableInfo<$CardTagsTable, CardTag> {
 class CardTag extends DataClass implements Insertable<CardTag> {
   final int cardId;
   final int tagId;
-  const CardTag({required this.cardId, required this.tagId});
+  final String cardGlobalId;
+  final String tagGlobalId;
+  final String updatedHlc;
+  const CardTag({
+    required this.cardId,
+    required this.tagId,
+    required this.cardGlobalId,
+    required this.tagGlobalId,
+    required this.updatedHlc,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['card_id'] = Variable<int>(cardId);
     map['tag_id'] = Variable<int>(tagId);
+    map['card_global_id'] = Variable<String>(cardGlobalId);
+    map['tag_global_id'] = Variable<String>(tagGlobalId);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
     return map;
   }
 
   CardTagsCompanion toCompanion(bool nullToAbsent) {
-    return CardTagsCompanion(cardId: Value(cardId), tagId: Value(tagId));
+    return CardTagsCompanion(
+      cardId: Value(cardId),
+      tagId: Value(tagId),
+      cardGlobalId: Value(cardGlobalId),
+      tagGlobalId: Value(tagGlobalId),
+      updatedHlc: Value(updatedHlc),
+    );
   }
 
   factory CardTag.fromJson(
@@ -2555,6 +3141,9 @@ class CardTag extends DataClass implements Insertable<CardTag> {
     return CardTag(
       cardId: serializer.fromJson<int>(json['cardId']),
       tagId: serializer.fromJson<int>(json['tagId']),
+      cardGlobalId: serializer.fromJson<String>(json['cardGlobalId']),
+      tagGlobalId: serializer.fromJson<String>(json['tagGlobalId']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
     );
   }
   @override
@@ -2563,15 +3152,38 @@ class CardTag extends DataClass implements Insertable<CardTag> {
     return <String, dynamic>{
       'cardId': serializer.toJson<int>(cardId),
       'tagId': serializer.toJson<int>(tagId),
+      'cardGlobalId': serializer.toJson<String>(cardGlobalId),
+      'tagGlobalId': serializer.toJson<String>(tagGlobalId),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
     };
   }
 
-  CardTag copyWith({int? cardId, int? tagId}) =>
-      CardTag(cardId: cardId ?? this.cardId, tagId: tagId ?? this.tagId);
+  CardTag copyWith({
+    int? cardId,
+    int? tagId,
+    String? cardGlobalId,
+    String? tagGlobalId,
+    String? updatedHlc,
+  }) => CardTag(
+    cardId: cardId ?? this.cardId,
+    tagId: tagId ?? this.tagId,
+    cardGlobalId: cardGlobalId ?? this.cardGlobalId,
+    tagGlobalId: tagGlobalId ?? this.tagGlobalId,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+  );
   CardTag copyWithCompanion(CardTagsCompanion data) {
     return CardTag(
       cardId: data.cardId.present ? data.cardId.value : this.cardId,
       tagId: data.tagId.present ? data.tagId.value : this.tagId,
+      cardGlobalId: data.cardGlobalId.present
+          ? data.cardGlobalId.value
+          : this.cardGlobalId,
+      tagGlobalId: data.tagGlobalId.present
+          ? data.tagGlobalId.value
+          : this.tagGlobalId,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
     );
   }
 
@@ -2579,44 +3191,66 @@ class CardTag extends DataClass implements Insertable<CardTag> {
   String toString() {
     return (StringBuffer('CardTag(')
           ..write('cardId: $cardId, ')
-          ..write('tagId: $tagId')
+          ..write('tagId: $tagId, ')
+          ..write('cardGlobalId: $cardGlobalId, ')
+          ..write('tagGlobalId: $tagGlobalId, ')
+          ..write('updatedHlc: $updatedHlc')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(cardId, tagId);
+  int get hashCode =>
+      Object.hash(cardId, tagId, cardGlobalId, tagGlobalId, updatedHlc);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is CardTag &&
           other.cardId == this.cardId &&
-          other.tagId == this.tagId);
+          other.tagId == this.tagId &&
+          other.cardGlobalId == this.cardGlobalId &&
+          other.tagGlobalId == this.tagGlobalId &&
+          other.updatedHlc == this.updatedHlc);
 }
 
 class CardTagsCompanion extends UpdateCompanion<CardTag> {
   final Value<int> cardId;
   final Value<int> tagId;
+  final Value<String> cardGlobalId;
+  final Value<String> tagGlobalId;
+  final Value<String> updatedHlc;
   final Value<int> rowid;
   const CardTagsCompanion({
     this.cardId = const Value.absent(),
     this.tagId = const Value.absent(),
+    this.cardGlobalId = const Value.absent(),
+    this.tagGlobalId = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CardTagsCompanion.insert({
     required int cardId,
     required int tagId,
+    this.cardGlobalId = const Value.absent(),
+    this.tagGlobalId = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : cardId = Value(cardId),
        tagId = Value(tagId);
   static Insertable<CardTag> custom({
     Expression<int>? cardId,
     Expression<int>? tagId,
+    Expression<String>? cardGlobalId,
+    Expression<String>? tagGlobalId,
+    Expression<String>? updatedHlc,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (cardId != null) 'card_id': cardId,
       if (tagId != null) 'tag_id': tagId,
+      if (cardGlobalId != null) 'card_global_id': cardGlobalId,
+      if (tagGlobalId != null) 'tag_global_id': tagGlobalId,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2624,11 +3258,17 @@ class CardTagsCompanion extends UpdateCompanion<CardTag> {
   CardTagsCompanion copyWith({
     Value<int>? cardId,
     Value<int>? tagId,
+    Value<String>? cardGlobalId,
+    Value<String>? tagGlobalId,
+    Value<String>? updatedHlc,
     Value<int>? rowid,
   }) {
     return CardTagsCompanion(
       cardId: cardId ?? this.cardId,
       tagId: tagId ?? this.tagId,
+      cardGlobalId: cardGlobalId ?? this.cardGlobalId,
+      tagGlobalId: tagGlobalId ?? this.tagGlobalId,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2642,6 +3282,15 @@ class CardTagsCompanion extends UpdateCompanion<CardTag> {
     if (tagId.present) {
       map['tag_id'] = Variable<int>(tagId.value);
     }
+    if (cardGlobalId.present) {
+      map['card_global_id'] = Variable<String>(cardGlobalId.value);
+    }
+    if (tagGlobalId.present) {
+      map['tag_global_id'] = Variable<String>(tagGlobalId.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2653,6 +3302,9 @@ class CardTagsCompanion extends UpdateCompanion<CardTag> {
     return (StringBuffer('CardTagsCompanion(')
           ..write('cardId: $cardId, ')
           ..write('tagId: $tagId, ')
+          ..write('cardGlobalId: $cardGlobalId, ')
+          ..write('tagGlobalId: $tagGlobalId, ')
+          ..write('updatedHlc: $updatedHlc, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3220,6 +3872,593 @@ class MediaCompanion extends UpdateCompanion<MediaData> {
   }
 }
 
+class $SyncTombstonesTable extends SyncTombstones
+    with TableInfo<$SyncTombstonesTable, SyncTombstone> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncTombstonesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _globalIdMeta = const VerificationMeta(
+    'globalId',
+  );
+  @override
+  late final GeneratedColumn<String> globalId = GeneratedColumn<String>(
+    'global_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedHlcMeta = const VerificationMeta(
+    'deletedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> deletedHlc = GeneratedColumn<String>(
+    'deleted_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
+    'entityType',
+  );
+  @override
+  late final GeneratedColumn<int> entityType = GeneratedColumn<int>(
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [globalId, deletedHlc, entityType];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_tombstones';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncTombstone> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('global_id')) {
+      context.handle(
+        _globalIdMeta,
+        globalId.isAcceptableOrUnknown(data['global_id']!, _globalIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_globalIdMeta);
+    }
+    if (data.containsKey('deleted_hlc')) {
+      context.handle(
+        _deletedHlcMeta,
+        deletedHlc.isAcceptableOrUnknown(data['deleted_hlc']!, _deletedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deletedHlcMeta);
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+        _entityTypeMeta,
+        entityType.isAcceptableOrUnknown(data['entity_type']!, _entityTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityTypeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {globalId};
+  @override
+  SyncTombstone map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncTombstone(
+      globalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}global_id'],
+      )!,
+      deletedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_hlc'],
+      )!,
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}entity_type'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncTombstonesTable createAlias(String alias) {
+    return $SyncTombstonesTable(attachedDatabase, alias);
+  }
+}
+
+class SyncTombstone extends DataClass implements Insertable<SyncTombstone> {
+  final String globalId;
+  final String deletedHlc;
+  final int entityType;
+  const SyncTombstone({
+    required this.globalId,
+    required this.deletedHlc,
+    required this.entityType,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['global_id'] = Variable<String>(globalId);
+    map['deleted_hlc'] = Variable<String>(deletedHlc);
+    map['entity_type'] = Variable<int>(entityType);
+    return map;
+  }
+
+  SyncTombstonesCompanion toCompanion(bool nullToAbsent) {
+    return SyncTombstonesCompanion(
+      globalId: Value(globalId),
+      deletedHlc: Value(deletedHlc),
+      entityType: Value(entityType),
+    );
+  }
+
+  factory SyncTombstone.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncTombstone(
+      globalId: serializer.fromJson<String>(json['globalId']),
+      deletedHlc: serializer.fromJson<String>(json['deletedHlc']),
+      entityType: serializer.fromJson<int>(json['entityType']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'globalId': serializer.toJson<String>(globalId),
+      'deletedHlc': serializer.toJson<String>(deletedHlc),
+      'entityType': serializer.toJson<int>(entityType),
+    };
+  }
+
+  SyncTombstone copyWith({
+    String? globalId,
+    String? deletedHlc,
+    int? entityType,
+  }) => SyncTombstone(
+    globalId: globalId ?? this.globalId,
+    deletedHlc: deletedHlc ?? this.deletedHlc,
+    entityType: entityType ?? this.entityType,
+  );
+  SyncTombstone copyWithCompanion(SyncTombstonesCompanion data) {
+    return SyncTombstone(
+      globalId: data.globalId.present ? data.globalId.value : this.globalId,
+      deletedHlc: data.deletedHlc.present
+          ? data.deletedHlc.value
+          : this.deletedHlc,
+      entityType: data.entityType.present
+          ? data.entityType.value
+          : this.entityType,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncTombstone(')
+          ..write('globalId: $globalId, ')
+          ..write('deletedHlc: $deletedHlc, ')
+          ..write('entityType: $entityType')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(globalId, deletedHlc, entityType);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncTombstone &&
+          other.globalId == this.globalId &&
+          other.deletedHlc == this.deletedHlc &&
+          other.entityType == this.entityType);
+}
+
+class SyncTombstonesCompanion extends UpdateCompanion<SyncTombstone> {
+  final Value<String> globalId;
+  final Value<String> deletedHlc;
+  final Value<int> entityType;
+  final Value<int> rowid;
+  const SyncTombstonesCompanion({
+    this.globalId = const Value.absent(),
+    this.deletedHlc = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncTombstonesCompanion.insert({
+    required String globalId,
+    required String deletedHlc,
+    required int entityType,
+    this.rowid = const Value.absent(),
+  }) : globalId = Value(globalId),
+       deletedHlc = Value(deletedHlc),
+       entityType = Value(entityType);
+  static Insertable<SyncTombstone> custom({
+    Expression<String>? globalId,
+    Expression<String>? deletedHlc,
+    Expression<int>? entityType,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (globalId != null) 'global_id': globalId,
+      if (deletedHlc != null) 'deleted_hlc': deletedHlc,
+      if (entityType != null) 'entity_type': entityType,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncTombstonesCompanion copyWith({
+    Value<String>? globalId,
+    Value<String>? deletedHlc,
+    Value<int>? entityType,
+    Value<int>? rowid,
+  }) {
+    return SyncTombstonesCompanion(
+      globalId: globalId ?? this.globalId,
+      deletedHlc: deletedHlc ?? this.deletedHlc,
+      entityType: entityType ?? this.entityType,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (globalId.present) {
+      map['global_id'] = Variable<String>(globalId.value);
+    }
+    if (deletedHlc.present) {
+      map['deleted_hlc'] = Variable<String>(deletedHlc.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<int>(entityType.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncTombstonesCompanion(')
+          ..write('globalId: $globalId, ')
+          ..write('deletedHlc: $deletedHlc, ')
+          ..write('entityType: $entityType, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SyncPeerCursorsTable extends SyncPeerCursors
+    with TableInfo<$SyncPeerCursorsTable, SyncPeerCursor> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncPeerCursorsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _peerIdMeta = const VerificationMeta('peerId');
+  @override
+  late final GeneratedColumn<String> peerId = GeneratedColumn<String>(
+    'peer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _genMeta = const VerificationMeta('gen');
+  @override
+  late final GeneratedColumn<int> gen = GeneratedColumn<int>(
+    'gen',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _byteOffsetMeta = const VerificationMeta(
+    'byteOffset',
+  );
+  @override
+  late final GeneratedColumn<int> byteOffset = GeneratedColumn<int>(
+    'byte_offset',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [peerId, gen, byteOffset, lastSyncedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_peer_cursors';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncPeerCursor> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('peer_id')) {
+      context.handle(
+        _peerIdMeta,
+        peerId.isAcceptableOrUnknown(data['peer_id']!, _peerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_peerIdMeta);
+    }
+    if (data.containsKey('gen')) {
+      context.handle(
+        _genMeta,
+        gen.isAcceptableOrUnknown(data['gen']!, _genMeta),
+      );
+    }
+    if (data.containsKey('byte_offset')) {
+      context.handle(
+        _byteOffsetMeta,
+        byteOffset.isAcceptableOrUnknown(data['byte_offset']!, _byteOffsetMeta),
+      );
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastSyncedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {peerId};
+  @override
+  SyncPeerCursor map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncPeerCursor(
+      peerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}peer_id'],
+      )!,
+      gen: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}gen'],
+      )!,
+      byteOffset: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}byte_offset'],
+      )!,
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncPeerCursorsTable createAlias(String alias) {
+    return $SyncPeerCursorsTable(attachedDatabase, alias);
+  }
+}
+
+class SyncPeerCursor extends DataClass implements Insertable<SyncPeerCursor> {
+  final String peerId;
+  final int gen;
+  final int byteOffset;
+  final DateTime lastSyncedAt;
+  const SyncPeerCursor({
+    required this.peerId,
+    required this.gen,
+    required this.byteOffset,
+    required this.lastSyncedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['peer_id'] = Variable<String>(peerId);
+    map['gen'] = Variable<int>(gen);
+    map['byte_offset'] = Variable<int>(byteOffset);
+    map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    return map;
+  }
+
+  SyncPeerCursorsCompanion toCompanion(bool nullToAbsent) {
+    return SyncPeerCursorsCompanion(
+      peerId: Value(peerId),
+      gen: Value(gen),
+      byteOffset: Value(byteOffset),
+      lastSyncedAt: Value(lastSyncedAt),
+    );
+  }
+
+  factory SyncPeerCursor.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncPeerCursor(
+      peerId: serializer.fromJson<String>(json['peerId']),
+      gen: serializer.fromJson<int>(json['gen']),
+      byteOffset: serializer.fromJson<int>(json['byteOffset']),
+      lastSyncedAt: serializer.fromJson<DateTime>(json['lastSyncedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'peerId': serializer.toJson<String>(peerId),
+      'gen': serializer.toJson<int>(gen),
+      'byteOffset': serializer.toJson<int>(byteOffset),
+      'lastSyncedAt': serializer.toJson<DateTime>(lastSyncedAt),
+    };
+  }
+
+  SyncPeerCursor copyWith({
+    String? peerId,
+    int? gen,
+    int? byteOffset,
+    DateTime? lastSyncedAt,
+  }) => SyncPeerCursor(
+    peerId: peerId ?? this.peerId,
+    gen: gen ?? this.gen,
+    byteOffset: byteOffset ?? this.byteOffset,
+    lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+  );
+  SyncPeerCursor copyWithCompanion(SyncPeerCursorsCompanion data) {
+    return SyncPeerCursor(
+      peerId: data.peerId.present ? data.peerId.value : this.peerId,
+      gen: data.gen.present ? data.gen.value : this.gen,
+      byteOffset: data.byteOffset.present
+          ? data.byteOffset.value
+          : this.byteOffset,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncPeerCursor(')
+          ..write('peerId: $peerId, ')
+          ..write('gen: $gen, ')
+          ..write('byteOffset: $byteOffset, ')
+          ..write('lastSyncedAt: $lastSyncedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(peerId, gen, byteOffset, lastSyncedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncPeerCursor &&
+          other.peerId == this.peerId &&
+          other.gen == this.gen &&
+          other.byteOffset == this.byteOffset &&
+          other.lastSyncedAt == this.lastSyncedAt);
+}
+
+class SyncPeerCursorsCompanion extends UpdateCompanion<SyncPeerCursor> {
+  final Value<String> peerId;
+  final Value<int> gen;
+  final Value<int> byteOffset;
+  final Value<DateTime> lastSyncedAt;
+  final Value<int> rowid;
+  const SyncPeerCursorsCompanion({
+    this.peerId = const Value.absent(),
+    this.gen = const Value.absent(),
+    this.byteOffset = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncPeerCursorsCompanion.insert({
+    required String peerId,
+    this.gen = const Value.absent(),
+    this.byteOffset = const Value.absent(),
+    required DateTime lastSyncedAt,
+    this.rowid = const Value.absent(),
+  }) : peerId = Value(peerId),
+       lastSyncedAt = Value(lastSyncedAt);
+  static Insertable<SyncPeerCursor> custom({
+    Expression<String>? peerId,
+    Expression<int>? gen,
+    Expression<int>? byteOffset,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (peerId != null) 'peer_id': peerId,
+      if (gen != null) 'gen': gen,
+      if (byteOffset != null) 'byte_offset': byteOffset,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncPeerCursorsCompanion copyWith({
+    Value<String>? peerId,
+    Value<int>? gen,
+    Value<int>? byteOffset,
+    Value<DateTime>? lastSyncedAt,
+    Value<int>? rowid,
+  }) {
+    return SyncPeerCursorsCompanion(
+      peerId: peerId ?? this.peerId,
+      gen: gen ?? this.gen,
+      byteOffset: byteOffset ?? this.byteOffset,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (peerId.present) {
+      map['peer_id'] = Variable<String>(peerId.value);
+    }
+    if (gen.present) {
+      map['gen'] = Variable<int>(gen.value);
+    }
+    if (byteOffset.present) {
+      map['byte_offset'] = Variable<int>(byteOffset.value);
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncPeerCursorsCompanion(')
+          ..write('peerId: $peerId, ')
+          ..write('gen: $gen, ')
+          ..write('byteOffset: $byteOffset, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3230,6 +4469,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CardTagsTable cardTags = $CardTagsTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
   late final $MediaTable media = $MediaTable(this);
+  late final $SyncTombstonesTable syncTombstones = $SyncTombstonesTable(this);
+  late final $SyncPeerCursorsTable syncPeerCursors = $SyncPeerCursorsTable(
+    this,
+  );
+  late final Index idxDecksGlobalId = Index(
+    'idx_decks_global_id',
+    'CREATE INDEX idx_decks_global_id ON decks (global_id)',
+  );
   late final Index idxCardsDeckId = Index(
     'idx_cards_deck_id',
     'CREATE INDEX idx_cards_deck_id ON cards (deck_id)',
@@ -3242,6 +4489,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_cards_note_id',
     'CREATE INDEX idx_cards_note_id ON cards (note_id)',
   );
+  late final Index idxCardsGlobalId = Index(
+    'idx_cards_global_id',
+    'CREATE INDEX idx_cards_global_id ON cards (global_id)',
+  );
   late final Index idxReviewLogsCardId = Index(
     'idx_review_logs_card_id',
     'CREATE INDEX idx_review_logs_card_id ON review_logs (card_id)',
@@ -3249,6 +4500,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index idxReviewLogsReviewedAt = Index(
     'idx_review_logs_reviewed_at',
     'CREATE INDEX idx_review_logs_reviewed_at ON review_logs (reviewed_at)',
+  );
+  late final Index idxReviewLogsGlobalId = Index(
+    'idx_review_logs_global_id',
+    'CREATE INDEX idx_review_logs_global_id ON review_logs (global_id)',
+  );
+  late final Index idxTagsGlobalId = Index(
+    'idx_tags_global_id',
+    'CREATE INDEX idx_tags_global_id ON tags (global_id)',
   );
   late final Index idxCardTagsTagId = Index(
     'idx_card_tags_tag_id',
@@ -3278,11 +4537,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cardTags,
     appSettings,
     media,
+    syncTombstones,
+    syncPeerCursors,
+    idxDecksGlobalId,
     idxCardsDeckId,
     idxCardsDue,
     idxCardsNoteId,
+    idxCardsGlobalId,
     idxReviewLogsCardId,
     idxReviewLogsReviewedAt,
+    idxReviewLogsGlobalId,
+    idxTagsGlobalId,
     idxCardTagsTagId,
     idxMediaChecksum,
   ];
@@ -3321,21 +4586,25 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 
 typedef $$DecksTableCreateCompanionBuilder = DecksCompanion Function({
   Value<int> id,
+  Value<String> globalId,
   required String name,
   Value<String?> description,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> examDate,
   Value<double?> targetRetention,
+  Value<String> updatedHlc,
 });
 typedef $$DecksTableUpdateCompanionBuilder = DecksCompanion Function({
   Value<int> id,
+  Value<String> globalId,
   Value<String> name,
   Value<String?> description,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> examDate,
   Value<double?> targetRetention,
+  Value<String> updatedHlc,
 });
 
 final class $$DecksTableReferences
@@ -3375,6 +4644,11 @@ class $$DecksTableFilterComposer extends Composer<_$AppDatabase, $DecksTable> {
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnFilters(column),
@@ -3402,6 +4676,11 @@ class $$DecksTableFilterComposer extends Composer<_$AppDatabase, $DecksTable> {
 
   ColumnFilters<double> get targetRetention => $composableBuilder(
     column: $table.targetRetention,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedHlc => $composableBuilder(
+    column: $table.updatedHlc,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3445,6 +4724,11 @@ class $$DecksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -3474,6 +4758,11 @@ class $$DecksTableOrderingComposer
     column: $table.targetRetention,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get updatedHlc => $composableBuilder(
+    column: $table.updatedHlc,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DecksTableAnnotationComposer
@@ -3487,6 +4776,9 @@ class $$DecksTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get globalId =>
+      $composableBuilder(column: $table.globalId, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -3507,6 +4799,11 @@ class $$DecksTableAnnotationComposer
 
   GeneratedColumn<double> get targetRetention => $composableBuilder(
     column: $table.targetRetention,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updatedHlc => $composableBuilder(
+    column: $table.updatedHlc,
     builder: (column) => column,
   );
 
@@ -3565,38 +4862,46 @@ class $$DecksTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> globalId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> examDate = const Value.absent(),
                 Value<double?> targetRetention = const Value.absent(),
+                Value<String> updatedHlc = const Value.absent(),
               }) => DecksCompanion(
                 id: id,
+                globalId: globalId,
                 name: name,
                 description: description,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 examDate: examDate,
                 targetRetention: targetRetention,
+                updatedHlc: updatedHlc,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> globalId = const Value.absent(),
                 required String name,
                 Value<String?> description = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> examDate = const Value.absent(),
                 Value<double?> targetRetention = const Value.absent(),
+                Value<String> updatedHlc = const Value.absent(),
               }) => DecksCompanion.insert(
                 id: id,
+                globalId: globalId,
                 name: name,
                 description: description,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 examDate: examDate,
                 targetRetention: targetRetention,
+                updatedHlc: updatedHlc,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -3649,7 +4954,9 @@ typedef $$DecksTableProcessedTableManager =
     >;
 typedef $$CardsTableCreateCompanionBuilder = CardsCompanion Function({
   Value<int> id,
+  Value<String> globalId,
   required int deckId,
+  Value<String> deckGlobalId,
   required String front,
   required String back,
   Value<int> state,
@@ -3666,10 +4973,14 @@ typedef $$CardsTableCreateCompanionBuilder = CardsCompanion Function({
   Value<double> easinessFactor,
   Value<int> flag,
   Value<int?> noteId,
+  Value<String> contentHlc,
+  Value<String> scheduleHlc,
 });
 typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<int> id,
+  Value<String> globalId,
   Value<int> deckId,
+  Value<String> deckGlobalId,
   Value<String> front,
   Value<String> back,
   Value<int> state,
@@ -3686,6 +4997,8 @@ typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<double> easinessFactor,
   Value<int> flag,
   Value<int?> noteId,
+  Value<String> contentHlc,
+  Value<String> scheduleHlc,
 });
 
 final class $$CardsTableReferences
@@ -3757,6 +5070,16 @@ class $$CardsTableFilterComposer extends Composer<_$AppDatabase, $CardsTable> {
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deckGlobalId => $composableBuilder(
+    column: $table.deckGlobalId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3837,6 +5160,16 @@ class $$CardsTableFilterComposer extends Composer<_$AppDatabase, $CardsTable> {
 
   ColumnFilters<int> get noteId => $composableBuilder(
     column: $table.noteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contentHlc => $composableBuilder(
+    column: $table.contentHlc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scheduleHlc => $composableBuilder(
+    column: $table.scheduleHlc,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3928,6 +5261,16 @@ class $$CardsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deckGlobalId => $composableBuilder(
+    column: $table.deckGlobalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get front => $composableBuilder(
     column: $table.front,
     builder: (column) => ColumnOrderings(column),
@@ -4008,6 +5351,16 @@ class $$CardsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get contentHlc => $composableBuilder(
+    column: $table.contentHlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scheduleHlc => $composableBuilder(
+    column: $table.scheduleHlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$DecksTableOrderingComposer get deckId {
     final $$DecksTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4043,6 +5396,14 @@ class $$CardsTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get globalId =>
+      $composableBuilder(column: $table.globalId, builder: (column) => column);
+
+  GeneratedColumn<String> get deckGlobalId => $composableBuilder(
+    column: $table.deckGlobalId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get front =>
       $composableBuilder(column: $table.front, builder: (column) => column);
@@ -4103,6 +5464,16 @@ class $$CardsTableAnnotationComposer
 
   GeneratedColumn<int> get noteId =>
       $composableBuilder(column: $table.noteId, builder: (column) => column);
+
+  GeneratedColumn<String> get contentHlc => $composableBuilder(
+    column: $table.contentHlc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get scheduleHlc => $composableBuilder(
+    column: $table.scheduleHlc,
+    builder: (column) => column,
+  );
 
   $$DecksTableAnnotationComposer get deckId {
     final $$DecksTableAnnotationComposer composer = $composerBuilder(
@@ -4211,7 +5582,9 @@ class $$CardsTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> globalId = const Value.absent(),
                 Value<int> deckId = const Value.absent(),
+                Value<String> deckGlobalId = const Value.absent(),
                 Value<String> front = const Value.absent(),
                 Value<String> back = const Value.absent(),
                 Value<int> state = const Value.absent(),
@@ -4228,9 +5601,13 @@ class $$CardsTableTableManager
                 Value<double> easinessFactor = const Value.absent(),
                 Value<int> flag = const Value.absent(),
                 Value<int?> noteId = const Value.absent(),
+                Value<String> contentHlc = const Value.absent(),
+                Value<String> scheduleHlc = const Value.absent(),
               }) => CardsCompanion(
                 id: id,
+                globalId: globalId,
                 deckId: deckId,
+                deckGlobalId: deckGlobalId,
                 front: front,
                 back: back,
                 state: state,
@@ -4247,11 +5624,15 @@ class $$CardsTableTableManager
                 easinessFactor: easinessFactor,
                 flag: flag,
                 noteId: noteId,
+                contentHlc: contentHlc,
+                scheduleHlc: scheduleHlc,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> globalId = const Value.absent(),
                 required int deckId,
+                Value<String> deckGlobalId = const Value.absent(),
                 required String front,
                 required String back,
                 Value<int> state = const Value.absent(),
@@ -4268,9 +5649,13 @@ class $$CardsTableTableManager
                 Value<double> easinessFactor = const Value.absent(),
                 Value<int> flag = const Value.absent(),
                 Value<int?> noteId = const Value.absent(),
+                Value<String> contentHlc = const Value.absent(),
+                Value<String> scheduleHlc = const Value.absent(),
               }) => CardsCompanion.insert(
                 id: id,
+                globalId: globalId,
                 deckId: deckId,
+                deckGlobalId: deckGlobalId,
                 front: front,
                 back: back,
                 state: state,
@@ -4287,6 +5672,8 @@ class $$CardsTableTableManager
                 easinessFactor: easinessFactor,
                 flag: flag,
                 noteId: noteId,
+                contentHlc: contentHlc,
+                scheduleHlc: scheduleHlc,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -4398,7 +5785,9 @@ typedef $$CardsTableProcessedTableManager =
     >;
 typedef $$ReviewLogsTableCreateCompanionBuilder = ReviewLogsCompanion Function({
   Value<int> id,
+  Value<String> globalId,
   required int cardId,
+  Value<String> cardGlobalId,
   required int rating,
   required int state,
   required DateTime due,
@@ -4412,7 +5801,9 @@ typedef $$ReviewLogsTableCreateCompanionBuilder = ReviewLogsCompanion Function({
 });
 typedef $$ReviewLogsTableUpdateCompanionBuilder = ReviewLogsCompanion Function({
   Value<int> id,
+  Value<String> globalId,
   Value<int> cardId,
+  Value<String> cardGlobalId,
   Value<int> rating,
   Value<int> state,
   Value<DateTime> due,
@@ -4458,6 +5849,16 @@ class $$ReviewLogsTableFilterComposer
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cardGlobalId => $composableBuilder(
+    column: $table.cardGlobalId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4549,6 +5950,16 @@ class $$ReviewLogsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cardGlobalId => $composableBuilder(
+    column: $table.cardGlobalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get rating => $composableBuilder(
     column: $table.rating,
     builder: (column) => ColumnOrderings(column),
@@ -4634,6 +6045,14 @@ class $$ReviewLogsTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get globalId =>
+      $composableBuilder(column: $table.globalId, builder: (column) => column);
+
+  GeneratedColumn<String> get cardGlobalId => $composableBuilder(
+    column: $table.cardGlobalId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get rating =>
       $composableBuilder(column: $table.rating, builder: (column) => column);
@@ -4730,7 +6149,9 @@ class $$ReviewLogsTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> globalId = const Value.absent(),
                 Value<int> cardId = const Value.absent(),
+                Value<String> cardGlobalId = const Value.absent(),
                 Value<int> rating = const Value.absent(),
                 Value<int> state = const Value.absent(),
                 Value<DateTime> due = const Value.absent(),
@@ -4743,7 +6164,9 @@ class $$ReviewLogsTableTableManager
                 Value<double> easinessFactor = const Value.absent(),
               }) => ReviewLogsCompanion(
                 id: id,
+                globalId: globalId,
                 cardId: cardId,
+                cardGlobalId: cardGlobalId,
                 rating: rating,
                 state: state,
                 due: due,
@@ -4758,7 +6181,9 @@ class $$ReviewLogsTableTableManager
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> globalId = const Value.absent(),
                 required int cardId,
+                Value<String> cardGlobalId = const Value.absent(),
                 required int rating,
                 required int state,
                 required DateTime due,
@@ -4771,7 +6196,9 @@ class $$ReviewLogsTableTableManager
                 Value<double> easinessFactor = const Value.absent(),
               }) => ReviewLogsCompanion.insert(
                 id: id,
+                globalId: globalId,
                 cardId: cardId,
+                cardGlobalId: cardGlobalId,
                 rating: rating,
                 state: state,
                 due: due,
@@ -4850,15 +6277,19 @@ typedef $$ReviewLogsTableProcessedTableManager =
     >;
 typedef $$TagsTableCreateCompanionBuilder = TagsCompanion Function({
   Value<int> id,
+  Value<String> globalId,
   required String name,
   Value<int> color,
   Value<DateTime> createdAt,
+  Value<String> updatedHlc,
 });
 typedef $$TagsTableUpdateCompanionBuilder = TagsCompanion Function({
   Value<int> id,
+  Value<String> globalId,
   Value<String> name,
   Value<int> color,
   Value<DateTime> createdAt,
+  Value<String> updatedHlc,
 });
 
 final class $$TagsTableReferences
@@ -4898,6 +6329,11 @@ class $$TagsTableFilterComposer extends Composer<_$AppDatabase, $TagsTable> {
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnFilters(column),
@@ -4910,6 +6346,11 @@ class $$TagsTableFilterComposer extends Composer<_$AppDatabase, $TagsTable> {
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedHlc => $composableBuilder(
+    column: $table.updatedHlc,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4952,6 +6393,11 @@ class $$TagsTableOrderingComposer extends Composer<_$AppDatabase, $TagsTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -4964,6 +6410,11 @@ class $$TagsTableOrderingComposer extends Composer<_$AppDatabase, $TagsTable> {
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedHlc => $composableBuilder(
+    column: $table.updatedHlc,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -4980,6 +6431,9 @@ class $$TagsTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get globalId =>
+      $composableBuilder(column: $table.globalId, builder: (column) => column);
+
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
@@ -4988,6 +6442,11 @@ class $$TagsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedHlc => $composableBuilder(
+    column: $table.updatedHlc,
+    builder: (column) => column,
+  );
 
   Expression<T> cardTagsRefs<T extends Object>(
     Expression<T> Function($$CardTagsTableAnnotationComposer a) f,
@@ -5044,26 +6503,34 @@ class $$TagsTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> globalId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<int> color = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String> updatedHlc = const Value.absent(),
               }) => TagsCompanion(
                 id: id,
+                globalId: globalId,
                 name: name,
                 color: color,
                 createdAt: createdAt,
+                updatedHlc: updatedHlc,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> globalId = const Value.absent(),
                 required String name,
                 Value<int> color = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String> updatedHlc = const Value.absent(),
               }) => TagsCompanion.insert(
                 id: id,
+                globalId: globalId,
                 name: name,
                 color: color,
                 createdAt: createdAt,
+                updatedHlc: updatedHlc,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -5117,11 +6584,17 @@ typedef $$TagsTableProcessedTableManager =
 typedef $$CardTagsTableCreateCompanionBuilder = CardTagsCompanion Function({
   required int cardId,
   required int tagId,
+  Value<String> cardGlobalId,
+  Value<String> tagGlobalId,
+  Value<String> updatedHlc,
   Value<int> rowid,
 });
 typedef $$CardTagsTableUpdateCompanionBuilder = CardTagsCompanion Function({
   Value<int> cardId,
   Value<int> tagId,
+  Value<String> cardGlobalId,
+  Value<String> tagGlobalId,
+  Value<String> updatedHlc,
   Value<int> rowid,
 });
 
@@ -5173,6 +6646,21 @@ class $$CardTagsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<String> get cardGlobalId => $composableBuilder(
+    column: $table.cardGlobalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tagGlobalId => $composableBuilder(
+    column: $table.tagGlobalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedHlc => $composableBuilder(
+    column: $table.updatedHlc,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$CardsTableFilterComposer get cardId {
     final $$CardsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -5229,6 +6717,21 @@ class $$CardTagsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<String> get cardGlobalId => $composableBuilder(
+    column: $table.cardGlobalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tagGlobalId => $composableBuilder(
+    column: $table.tagGlobalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedHlc => $composableBuilder(
+    column: $table.updatedHlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$CardsTableOrderingComposer get cardId {
     final $$CardsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -5285,6 +6788,21 @@ class $$CardTagsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<String> get cardGlobalId => $composableBuilder(
+    column: $table.cardGlobalId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get tagGlobalId => $composableBuilder(
+    column: $table.tagGlobalId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updatedHlc => $composableBuilder(
+    column: $table.updatedHlc,
+    builder: (column) => column,
+  );
+
   $$CardsTableAnnotationComposer get cardId {
     final $$CardsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -5358,19 +6876,36 @@ class $$CardTagsTableTableManager
               $$CardTagsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$CardTagsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> cardId = const Value.absent(),
-            Value<int> tagId = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) => CardTagsCompanion(cardId: cardId, tagId: tagId, rowid: rowid),
+          updateCompanionCallback:
+              ({
+                Value<int> cardId = const Value.absent(),
+                Value<int> tagId = const Value.absent(),
+                Value<String> cardGlobalId = const Value.absent(),
+                Value<String> tagGlobalId = const Value.absent(),
+                Value<String> updatedHlc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CardTagsCompanion(
+                cardId: cardId,
+                tagId: tagId,
+                cardGlobalId: cardGlobalId,
+                tagGlobalId: tagGlobalId,
+                updatedHlc: updatedHlc,
+                rowid: rowid,
+              ),
           createCompanionCallback:
               ({
                 required int cardId,
                 required int tagId,
+                Value<String> cardGlobalId = const Value.absent(),
+                Value<String> tagGlobalId = const Value.absent(),
+                Value<String> updatedHlc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CardTagsCompanion.insert(
                 cardId: cardId,
                 tagId: tagId,
+                cardGlobalId: cardGlobalId,
+                tagGlobalId: tagGlobalId,
+                updatedHlc: updatedHlc,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -5792,6 +7327,383 @@ typedef $$MediaTableProcessedTableManager =
       MediaData,
       PrefetchHooks Function()
     >;
+typedef $$SyncTombstonesTableCreateCompanionBuilder =
+    SyncTombstonesCompanion Function({
+      required String globalId,
+      required String deletedHlc,
+      required int entityType,
+      Value<int> rowid,
+    });
+typedef $$SyncTombstonesTableUpdateCompanionBuilder =
+    SyncTombstonesCompanion Function({
+      Value<String> globalId,
+      Value<String> deletedHlc,
+      Value<int> entityType,
+      Value<int> rowid,
+    });
+
+class $$SyncTombstonesTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncTombstonesTable> {
+  $$SyncTombstonesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deletedHlc => $composableBuilder(
+    column: $table.deletedHlc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncTombstonesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncTombstonesTable> {
+  $$SyncTombstonesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get globalId => $composableBuilder(
+    column: $table.globalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deletedHlc => $composableBuilder(
+    column: $table.deletedHlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncTombstonesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncTombstonesTable> {
+  $$SyncTombstonesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get globalId =>
+      $composableBuilder(column: $table.globalId, builder: (column) => column);
+
+  GeneratedColumn<String> get deletedHlc => $composableBuilder(
+    column: $table.deletedHlc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => column,
+  );
+}
+
+class $$SyncTombstonesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncTombstonesTable,
+          SyncTombstone,
+          $$SyncTombstonesTableFilterComposer,
+          $$SyncTombstonesTableOrderingComposer,
+          $$SyncTombstonesTableAnnotationComposer,
+          $$SyncTombstonesTableCreateCompanionBuilder,
+          $$SyncTombstonesTableUpdateCompanionBuilder,
+          (
+            SyncTombstone,
+            BaseReferences<_$AppDatabase, $SyncTombstonesTable, SyncTombstone>,
+          ),
+          SyncTombstone,
+          PrefetchHooks Function()
+        > {
+  $$SyncTombstonesTableTableManager(
+    _$AppDatabase db,
+    $SyncTombstonesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncTombstonesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncTombstonesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncTombstonesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> globalId = const Value.absent(),
+                Value<String> deletedHlc = const Value.absent(),
+                Value<int> entityType = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncTombstonesCompanion(
+                globalId: globalId,
+                deletedHlc: deletedHlc,
+                entityType: entityType,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String globalId,
+                required String deletedHlc,
+                required int entityType,
+                Value<int> rowid = const Value.absent(),
+              }) => SyncTombstonesCompanion.insert(
+                globalId: globalId,
+                deletedHlc: deletedHlc,
+                entityType: entityType,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SyncTombstonesTable, SyncTombstone>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $SyncTombstonesTable,
+                    SyncTombstone
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncTombstonesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncTombstonesTable,
+      SyncTombstone,
+      $$SyncTombstonesTableFilterComposer,
+      $$SyncTombstonesTableOrderingComposer,
+      $$SyncTombstonesTableAnnotationComposer,
+      $$SyncTombstonesTableCreateCompanionBuilder,
+      $$SyncTombstonesTableUpdateCompanionBuilder,
+      (
+        SyncTombstone,
+        BaseReferences<_$AppDatabase, $SyncTombstonesTable, SyncTombstone>,
+      ),
+      SyncTombstone,
+      PrefetchHooks Function()
+    >;
+typedef $$SyncPeerCursorsTableCreateCompanionBuilder =
+    SyncPeerCursorsCompanion Function({
+      required String peerId,
+      Value<int> gen,
+      Value<int> byteOffset,
+      required DateTime lastSyncedAt,
+      Value<int> rowid,
+    });
+typedef $$SyncPeerCursorsTableUpdateCompanionBuilder =
+    SyncPeerCursorsCompanion Function({
+      Value<String> peerId,
+      Value<int> gen,
+      Value<int> byteOffset,
+      Value<DateTime> lastSyncedAt,
+      Value<int> rowid,
+    });
+
+class $$SyncPeerCursorsTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncPeerCursorsTable> {
+  $$SyncPeerCursorsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get peerId => $composableBuilder(
+    column: $table.peerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get gen => $composableBuilder(
+    column: $table.gen,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get byteOffset => $composableBuilder(
+    column: $table.byteOffset,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncPeerCursorsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncPeerCursorsTable> {
+  $$SyncPeerCursorsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get peerId => $composableBuilder(
+    column: $table.peerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get gen => $composableBuilder(
+    column: $table.gen,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get byteOffset => $composableBuilder(
+    column: $table.byteOffset,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncPeerCursorsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncPeerCursorsTable> {
+  $$SyncPeerCursorsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get peerId =>
+      $composableBuilder(column: $table.peerId, builder: (column) => column);
+
+  GeneratedColumn<int> get gen =>
+      $composableBuilder(column: $table.gen, builder: (column) => column);
+
+  GeneratedColumn<int> get byteOffset => $composableBuilder(
+    column: $table.byteOffset,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$SyncPeerCursorsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncPeerCursorsTable,
+          SyncPeerCursor,
+          $$SyncPeerCursorsTableFilterComposer,
+          $$SyncPeerCursorsTableOrderingComposer,
+          $$SyncPeerCursorsTableAnnotationComposer,
+          $$SyncPeerCursorsTableCreateCompanionBuilder,
+          $$SyncPeerCursorsTableUpdateCompanionBuilder,
+          (
+            SyncPeerCursor,
+            BaseReferences<
+              _$AppDatabase,
+              $SyncPeerCursorsTable,
+              SyncPeerCursor
+            >,
+          ),
+          SyncPeerCursor,
+          PrefetchHooks Function()
+        > {
+  $$SyncPeerCursorsTableTableManager(
+    _$AppDatabase db,
+    $SyncPeerCursorsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncPeerCursorsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncPeerCursorsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncPeerCursorsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> peerId = const Value.absent(),
+                Value<int> gen = const Value.absent(),
+                Value<int> byteOffset = const Value.absent(),
+                Value<DateTime> lastSyncedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncPeerCursorsCompanion(
+                peerId: peerId,
+                gen: gen,
+                byteOffset: byteOffset,
+                lastSyncedAt: lastSyncedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String peerId,
+                Value<int> gen = const Value.absent(),
+                Value<int> byteOffset = const Value.absent(),
+                required DateTime lastSyncedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SyncPeerCursorsCompanion.insert(
+                peerId: peerId,
+                gen: gen,
+                byteOffset: byteOffset,
+                lastSyncedAt: lastSyncedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SyncPeerCursorsTable, SyncPeerCursor>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $SyncPeerCursorsTable,
+                    SyncPeerCursor
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncPeerCursorsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncPeerCursorsTable,
+      SyncPeerCursor,
+      $$SyncPeerCursorsTableFilterComposer,
+      $$SyncPeerCursorsTableOrderingComposer,
+      $$SyncPeerCursorsTableAnnotationComposer,
+      $$SyncPeerCursorsTableCreateCompanionBuilder,
+      $$SyncPeerCursorsTableUpdateCompanionBuilder,
+      (
+        SyncPeerCursor,
+        BaseReferences<_$AppDatabase, $SyncPeerCursorsTable, SyncPeerCursor>,
+      ),
+      SyncPeerCursor,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5809,4 +7721,8 @@ class $AppDatabaseManager {
       $$AppSettingsTableTableManager(_db, _db.appSettings);
   $$MediaTableTableManager get media =>
       $$MediaTableTableManager(_db, _db.media);
+  $$SyncTombstonesTableTableManager get syncTombstones =>
+      $$SyncTombstonesTableTableManager(_db, _db.syncTombstones);
+  $$SyncPeerCursorsTableTableManager get syncPeerCursors =>
+      $$SyncPeerCursorsTableTableManager(_db, _db.syncPeerCursors);
 }

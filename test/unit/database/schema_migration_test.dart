@@ -150,7 +150,7 @@ void main() {
         final versionResult = await appDb
             .customSelect('PRAGMA user_version;')
             .getSingle();
-        expect(versionResult.read<int>('user_version'), 9);
+        expect(versionResult.read<int>('user_version'), 10);
 
         await appDb.close();
       },
@@ -332,7 +332,7 @@ void main() {
       final versionResult = await appDb
           .customSelect('PRAGMA user_version;')
           .getSingle();
-      expect(versionResult.read<int>('user_version'), 9);
+      expect(versionResult.read<int>('user_version'), 10);
 
       await appDb.close();
     });
@@ -388,7 +388,7 @@ void main() {
       final versionResult = await appDb
           .customSelect('PRAGMA user_version;')
           .getSingle();
-      expect(versionResult.read<int>('user_version'), 9);
+      expect(versionResult.read<int>('user_version'), 10);
 
       // Verify creating card with noteId on v8 works
       final newCardId = await appDb.cardsDao.createCard(
@@ -449,7 +449,7 @@ void main() {
       final versionResult = await appDb
           .customSelect('PRAGMA user_version;')
           .getSingle();
-      expect(versionResult.read<int>('user_version'), 9);
+      expect(versionResult.read<int>('user_version'), 10);
 
       // Verify creating media on v9 works
       final newMediaId = await appDb.mediaDao.insertMedia(
@@ -490,7 +490,7 @@ void main() {
         final versionResult = await appDb
             .customSelect('PRAGMA user_version;')
             .getSingle();
-        expect(versionResult.read<int>('user_version'), 9);
+        expect(versionResult.read<int>('user_version'), 10);
         await appDb.close();
       },
     );
