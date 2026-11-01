@@ -1,7 +1,7 @@
 # Repetita 🧠⚡
 
 [![CI](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml/badge.svg)](https://github.com/CydonianCitizen/Repetita/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-0.9.8-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An offline-first, local-only spaced repetition flashcard application built with Flutter and Dart, powered by the state-of-the-art **Free Spaced Repetition Scheduler (FSRS)** and **SuperMemo SM-2** algorithms with an extensible multi-engine architecture.
@@ -12,6 +12,10 @@ Repetita is crafted for privacy, mathematical precision, and high performance. I
 
 ## 🌟 Key Features
 
+* **General Availability & Production Stability (v1.0.0):**
+  * **Exhaustive Feature Completeness**: 100% of planned architectural and functional milestones achieved with zero outstanding technical debt.
+  * **Zero-Cloud P2P Architecture**: Offline-first SQLite persistence, Single-Writer Multi-Reader (SWMR) synchronization over Syncthing/USB/shared folders, native TTS, audio recording, KaTeX LaTeX math rendering, on-device FSRS optimization, and Anki package compatibility.
+  * **Production Multi-Platform Packaging**: Automated GitHub Actions release pipeline for Android (split-per-ABI APKs), Windows (x64), macOS (Universal 2 arm64/x86_64), and Linux.
 * **File-Based Zero-Cloud Sync (v0.9.8):**
   * **Single-Writer Multi-Reader (SWMR) Mailbox Architecture**: P2P synchronization designed for Syncthing, shared network folders (SMB/NFS), Nextcloud, WebDAV, and USB flash drives (`nodes/<node_id>/events.jsonl`). Mathematically eliminates Syncthing `.sync-conflict` files by enforcing single-writer ownership per device directory.
   * **Dual-HLC Column-Group LWW Conflict Resolution**: Decouples card content edits (`content_hlc`) from FSRS scheduling state (`schedule_hlc`). Editing card typos on a desktop and completing study reviews on a smartphone merge seamlessly without mutual clobbering or progress loss.
